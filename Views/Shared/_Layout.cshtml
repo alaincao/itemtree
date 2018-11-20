@@ -1,0 +1,60 @@
+@using System.Collections.Generic
+@{
+	var pageParameters = PageHelper.Parameters.JSONStringify( indented:true );
+	var useMinified = PageHelper.UseMinified;
+}
+<html>
+<head>
+	<title>@PageHelper.Parameters.PageTitle</title>
+
+	@if( useMinified )
+	{
+		<!-- JQuery -->
+		<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/black-tie/jquery-ui.min.css" integrity="sha384-By6dFezAmY4yyNHWYuKP+x3xt+hs52knBO+0Qw12zcaA4Woqu/dBb4q78rXtY2ul" crossorigin="anonymous">
+	}
+	else
+	{
+		<!-- JQuery -->
+		<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/black-tie/jquery-ui.css" integrity="sha384-Q85XGZJo8nnVqesiUBMDp/I9BhYGWLUHa3qQx1aBHSzNfc7bucAPP1fO7ZRC8o/b" crossorigin="anonymous">
+	}
+</head>
+<body>
+
+	<!-- BODY -->
+@RenderBody()
+
+	@if( useMinified )
+	{
+		<!-- JQuery -->
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha384-YWP9O4NjmcGo4oEJFXvvYSEzuHIvey+LbXkBNJ1Kd0yfugEZN9NCQNpRYBVC1RvA" crossorigin="anonymous"></script>
+
+		<!-- Knockout -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js" integrity="sha384-/EjRuG6YTb6zCFou+DBnYCi5u9E1RjUMJanyGOL7DUYLp6wSCUuHNhd58uoGj7jh" crossorigin="anonymous"></script>
+
+		<!-- Customs -->
+		<script src="/js/site.min.js"></script>
+	}
+	else
+	{
+		<!-- JQuery -->
+		<script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha384-p7RDedFtQzvcp0/3247fDud39nqze/MUmahi6MOWjyr3WKWaMOyqhXuCT1sM9Q+l" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js" integrity="sha384-YwCdhNQ2IwiYajqT/nGCj0FiU5SR4oIkzYP3ffzNWtu39GKBddP0M0waDU7Zwco0" crossorigin="anonymous"></script>
+
+		<!-- Knockout -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-debug.js" integrity="sha384-F/fcEO4EVmRT01RLfQkEfISacGoUZoFekRlihw1rlTibSOCSLMnrFJsj7fXgJRie" crossorigin="anonymous"></script>
+
+		<!-- Customs -->
+		<script src="/js/site.js"></script>
+	}
+
+	<!-- Initialize common module -->
+	<script type="text/javascript">
+		itemttt.common.init({ pageParameters:@Html.Raw(pageParameters) });
+	</script>
+
+	<!-- Page's custom script -->
+@RenderSection( "Scripts", required:false )
+
+</body>
+</html>

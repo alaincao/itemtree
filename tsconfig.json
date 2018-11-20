@@ -1,0 +1,13 @@
+{
+
+	"compilerOptions": {
+		// "target": "ES5", "lib": [ "dom", "ES5", "ES2015.Promise", "ES2016.Array.Include", "ES2015.Iterable" ], // <== Would need to manually include some libraries
+		// "target": "ES2016",
+		"target": "ES2017",
+
+		"noImplicitUseStrict": true  // NB: Does not work well with browserify
+	},
+	// NB: This list is NOT used when compiling using gulp+browserify but is still required for the VisualStudio Code's Intellisense
+	// cf. https://stackoverflow.com/questions/44533334/compiler-fails-to-import-type-from-global-d-ts
+	"files": [ "./global.d.ts", "./global.ts" ]
+}
