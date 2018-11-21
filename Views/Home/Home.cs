@@ -26,5 +26,13 @@ namespace ItemTTT.Views
 			PageHelper.Parameters["Logs"] = logHelper.GetLogLines();
 			return View();
 		}
+
+		[HttpGet( Routes.FooBar )]
+		public IActionResult FooBar(string lang)
+		{
+			PageHelper.Parameters.PageTitle = "Foo / bar";
+
+			return View(new{ Lang=""+PageHelper.CurrentLanguage, Parameters=PageHelper.Parameters });
+		}
 	}
 }

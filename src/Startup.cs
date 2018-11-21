@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Routing;
 
 namespace ItemTTT
 {
@@ -57,6 +58,9 @@ namespace ItemTTT
 			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Setup MVC" );
 			services.AddMvc();
 
+			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Add languages constraint" );
+			services.Configure<RouteOptions>( opt=>opt.ConstraintMap.Add(Language.ConstraintName, typeof(LanguageRouteConstraint)) );
+ 
 			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Add database service" );
 			var connectionString = Configuration[ AppSettingsKeys.ConnectionStrings.ItemTTT ];
 			services.AddDbContext<Models.ItemTTT>( options=>
@@ -99,11 +103,14 @@ namespace ItemTTT
 				app.UseForwardedHeaders( options );
 			}
 
+			InitializationLog.AddLogMessage( "Startup: Configure: Add static files support" );
 			app.UseStaticFiles();
 
-			app.UseAuthentication();
-
+			InitializationLog.AddLogMessage( "Startup: Configure: Add MVC support" );
 			app.UseMvc();
+
+			InitializationLog.AddLogMessage( "Startup: Configure: Add languages redirections" );
+			app.UseLanguageRedirect();
 
 			InitializationLog.AddLogMessage( "Startup: Configure END" );
 		}
