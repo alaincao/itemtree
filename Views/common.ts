@@ -2,10 +2,12 @@
 import * as common from "./common";
 
 export const debugMessages : boolean = false;  // NB: 'export' so that it can be easily changed from the browser's console
+export var pageParameters : any;
 
 export function init(p:{ pageParameters:any })
 {
 	common.utils.log( 'INIT', { pageParameters:p.pageParameters} );
+	pageParameters = p.pageParameters;
 }
 
 export namespace utils

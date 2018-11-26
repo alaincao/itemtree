@@ -4,6 +4,7 @@ const common = require("./common");
 exports.debugMessages = false; // NB: 'export' so that it can be easily changed from the browser's console
 function init(p) {
     common.utils.log('INIT', { pageParameters: p.pageParameters });
+    exports.pageParameters = p.pageParameters;
 }
 exports.init = init;
 var utils;

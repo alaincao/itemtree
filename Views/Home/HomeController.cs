@@ -4,10 +4,10 @@ namespace ItemTTT.Views
 {
 	public class HomeController : Controller
 	{
-		private readonly PageHelper		PageHelper;
-		private readonly Models.ItemTTT	DataContext;
+		private readonly PageHelper				PageHelper;
+		private readonly Models.ItemTTTContext	DataContext;
 
-		public HomeController(Models.ItemTTT dataContext, PageHelper pageHelper)
+		public HomeController(Models.ItemTTTContext dataContext, PageHelper pageHelper)
 		{
 			PageHelper = pageHelper;
 			DataContext = dataContext;
@@ -25,14 +25,6 @@ namespace ItemTTT.Views
 			logHelper.AddLogMessage( "Index END" );
 			PageHelper.Parameters["Logs"] = logHelper.GetLogLines();
 			return View();
-		}
-
-		[HttpGet( Routes.FooBar )]
-		public IActionResult FooBar(string lang)
-		{
-			PageHelper.Parameters.PageTitle = "Foo / bar";
-
-			return View(new{ Lang=""+PageHelper.CurrentLanguage, Parameters=PageHelper.Parameters });
 		}
 	}
 }

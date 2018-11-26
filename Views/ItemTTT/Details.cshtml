@@ -1,0 +1,34 @@
+@inherits ItemTTT.Views.BaseView
+@{
+	Init( PageHelper );
+
+	var parameters = PageHelper.Parameters;
+	var item = (ItemTTT.Models.Item)Model;
+	parameters.PageTitle = item.Name;
+}
+@section Scripts
+{
+	<script type="text/javascript">
+		$('#preParameters').html( JSON.stringify(itemttt.common.pageParameters, null, 2) )
+	</script>
+}
+
+<div>
+	<label ttt-only-if="IsEN">Name:</label>
+	<label ttt-only-if="IsFR">Nom:</label>
+	<label ttt-only-if="IsNL">Naam:</label>
+	@item.Name
+</div>
+<div>
+	<label ttt-only-if="IsEN">Description: @item.DescriptionEN</label>
+	<label ttt-only-if="IsFR">Description: @item.DescriptionFR</label>
+	<label ttt-only-if="IsNL">Beschrijving: @item.DescriptionNL</label>
+</div>
+
+<hr/>
+<pre>
+@Html.Raw(JSON( item, indented:true ))
+</pre>
+<hr/>
+<pre id="preParameters">
+</pre>

@@ -18,7 +18,8 @@ namespace ItemTTT
 				PageTitle = "";
 			}
 			public string						PageTitle		{ get { return (string)this["PageTitle"]; } set { this["PageTitle"] = value; } }
-			public Dictionary<Languages,string>	LanguageUrls	{ get { return (Dictionary<Languages,string>)this["LanguageUrls"]; } set { this["LanguageUrls"] = value; } }
+			public string						CurrentLanguage	{ get { return (string)this["CurrentLanguage"]; } }
+			public Dictionary<Languages,string>	LanguageUrls	{ get { return (Dictionary<Languages,string>)this["LanguageUrls"]; } }
 		}
 
 		internal LogHelper			ScopeLogs			{ get; private set; } = new LogHelper();
@@ -62,7 +63,8 @@ namespace ItemTTT
 			DetectLanguage( httpContext, fromUrl:out dummy, current:out current, rawPath:out rawPath );
 
 			CurrentLanguage = current;
-			Parameters.LanguageUrls = Enum.GetValues( typeof(Languages) ).Cast<Languages>()
+			Parameters["CurrentLanguage"] = ""+current;
+			Parameters["LanguageUrls"] = Enum.GetValues( typeof(Languages) ).Cast<Languages>()
 												.Select( v=>new{	lng	= v,
 																	url	= rawPath.Replace(Language.RouteParameter, ""+v) } )
 												.ToDictionary( v=>v.lng, v=>v.url );

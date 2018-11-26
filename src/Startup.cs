@@ -63,7 +63,7 @@ namespace ItemTTT
  
 			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Add database service" );
 			var connectionString = Configuration[ AppSettingsKeys.ConnectionStrings.ItemTTT ];
-			services.AddDbContext<Models.ItemTTT>( options=>
+			services.AddDbContext<Models.ItemTTTContext>( options=>
 				{
 					options.UseSqlServer( connectionString );
 				} );
