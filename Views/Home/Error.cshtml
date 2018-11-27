@@ -1,0 +1,15 @@
+@inherits ItemTTT.Views.BaseView
+@{
+	Init( PageHelper );
+
+	var status = (int?)ViewBag.Status;
+	var hasStatus = (status != null);
+	var isNotFound = (status == 404);
+}
+<div>
+	<div ttt-only-if="IsEN">That’s an error!</div>
+	<div ttt-only-if="IsFR">Une erreur s'est produite !</div>
+	<div ttt-only-if="IsNL">Er is een fout opgetreden</div>
+	<div ttt-only-if="hasStatus">Status: '@status'</div>
+	<div ttt-only-if="isNotFound">Page not found</div>
+</div>

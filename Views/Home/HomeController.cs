@@ -14,7 +14,6 @@ namespace ItemTTT.Views
 		}
 
 		[HttpGet( Routes.Home )]
-		[HttpHead( Routes.Home )]
 		public IActionResult Index()
 		{
 			var logHelper = PageHelper.ScopeLogs;
@@ -25,6 +24,20 @@ namespace ItemTTT.Views
 			logHelper.AddLogMessage( "Index END" );
 			PageHelper.Parameters["Logs"] = logHelper.GetLogLines();
 			return View();
+		}
+
+		[HttpGet( Routes.Error )]
+		[HttpGet( Routes.ErrorStatus )]
+		public IActionResult Error(int? status=null)
+		{
+			ViewBag.Status = status;
+			return View();
+		}
+
+		[HttpGet("/kaboom")]
+		public IActionResult Kaboom()
+		{
+			throw new System.ApplicationException( "Kaboom" );
 		}
 	}
 }

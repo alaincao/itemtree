@@ -12,6 +12,8 @@ namespace ItemTTT
 	{
 		internal const string	InitializationLog	= "/initialization-log";
 		internal const string	Home				= "/";
+		internal const string	Error				= "/error";
+		internal const string	ErrorStatus			= "/error/{status}";
 		internal const string	ItemDetails			= "/"+Language.RouteParameter+"/car-details/{code}";  // "/{lang:lang}/car-details/{code}"
 
 		internal static IApplicationBuilder UseLanguageRedirect(this IApplicationBuilder app)

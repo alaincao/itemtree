@@ -1,6 +1,9 @@
+@inherits ItemTTT.Views.BaseView
 @using System.Collections.Generic
 @{
-	var pageParameters = PageHelper.Parameters.JSONStringify( indented:true );
+	Init( PageHelper );
+
+	var parameters = PageHelper.Parameters;
 	var useMinified = PageHelper.UseMinified;
 }
 <html>
@@ -20,8 +23,19 @@
 </head>
 <body>
 
+	<div>_Layout.cshtml START</div>
+	<ul>
+		<li><a href="@parameters.LanguageUrls[ItemTTT.Languages.en]">EN</a></li>
+		<li><a href="@parameters.LanguageUrls[ItemTTT.Languages.fr]">FR</a></li>
+		<li><a href="@parameters.LanguageUrls[ItemTTT.Languages.nl]">NL</a></li>
+	</ul>
+	<hr/>
+
 	<!-- BODY -->
 @RenderBody()
+
+	<hr/>
+	<div>_Layout.cshtml END</div>
 
 	@if( useMinified )
 	{
@@ -50,7 +64,7 @@
 
 	<!-- Initialize common module -->
 	<script type="text/javascript">
-		itemttt.common.init({ pageParameters:@Html.Raw(pageParameters) });
+		itemttt.common.init({ pageParameters:@Html.Raw(JSON(parameters)) });
 	</script>
 
 	<!-- Page's custom script -->

@@ -19,9 +19,11 @@ namespace ItemTTT.Views
 			pageHelper.ScopeLogs.AddLogMessage( "BaseView Init: END" );
 		}
 
-		protected string JSON(object obj, bool indented=false)
+		protected string JSON(object obj, bool? indented=null)
 		{
-			return obj.JSONStringify( indented:indented );
+			if( indented == null )
+				indented = ( Utils.IsDebug ? true : false );
+			return obj.JSONStringify( indented:indented.Value );
 		}
 	}
 }

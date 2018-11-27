@@ -82,15 +82,23 @@ namespace ItemTTT
 		{
 			InitializationLog.AddLogMessage( "Startup: Configure START" );
 
+			InitializationLog.AddLogMessage( "Startup: Configure: Add handler for internal errors (i.e. status 500)" );
 			if( env.IsDevelopment() )
 			{
 				Utils.IsDebug = true;
-				app.UseDeveloperExceptionPage();  // TODO: ACA: Exception pages
+				app.UseDeveloperExceptionPage();
 			}
+			else
+			{
+				app.UseExceptionHandler( Routes.Error );
+			}
+			InitializationLog.AddLogMessage( "Startup: Configure: Add handler for other errors (e.g. 404)" );
+			app.UseStatusCodePagesWithReExecute( Routes.ErrorStatus.Replace("{status}", "{0}") );
 
+			InitializationLog.AddLogMessage( $"Startup: Configure: Content root path: '{env.ContentRootPath}'" );
 			ContentRootPath = env.ContentRootPath;
 
-			// Support for docker reverse-proxy & https
+			InitializationLog.AddLogMessage( $"Startup: Configure: Support for docker reverse-proxy & https" );
 			// c.f. https://docs.microsoft.com/en-us/aspnet/core/publishing/linuxproduction?tabs=aspnetcore2x
 			// & https://github.com/IdentityServer/IdentityServer4/issues/1331
 			{
