@@ -7,7 +7,8 @@ namespace ItemTTT.Models
 {
 	public class ItemTTTContext : DbContext
 	{
-		public DbSet<Item>		Items		{ get; set; }
+		public DbSet<Item>			Items			{ get; set; }
+		public DbSet<ItemPicture>	ItemPictures	{ get; set; }
 
 		public ItemTTTContext(DbContextOptions options) : base(options)  {}
 
@@ -23,6 +24,14 @@ namespace ItemTTT.Models
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			modelBuilder.Entity<ItemPicture>()
+							.HasOne( v=>v.Item )
+							.WithMany( v=>v.Pictures )
+							.HasForeignKey( v=>v.ItemID )
+							.OnDelete( DeleteBehavior.Cascade );
+			modelBuilder.Entity<ItemPicture>()
+							.HasIndex( v=>new{ v.ItemID, v.Number, v.Type } )
+							.IsUnique();
 		}
 	}
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -32,5 +33,7 @@ namespace ItemTTT.Models
 
 		[Required]
 		public bool		Active			{ get; set; }
+
+		public List<ItemPicture>	Pictures		{ get; set; }
 	}
 }

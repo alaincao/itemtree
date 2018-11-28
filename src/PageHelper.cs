@@ -27,6 +27,8 @@ namespace ItemTTT
 		public bool					UseMinified			{ get { return Utils.IsDebug == false; } }
 		private const Languages		DefaultLanguage		= Languages.nl;
 		public Languages			CurrentLanguage		{ get; private set; }
+		// TODO: Assign if current user has been authenticated or not
+		public bool					IsAutenticated		= true;
 
 		private Func<string,string>	UrlHelperContent;
 
