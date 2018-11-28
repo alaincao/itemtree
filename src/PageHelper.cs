@@ -58,11 +58,22 @@ namespace ItemTTT
 
 		private void InitLangage(HttpContext httpContext)
 		{
-			ScopeLogs.AddLogMessage( "PageHelper: InitLangage" );
-			Languages? dummy;
+			ScopeLogs.AddLogMessage( "PageHelper: InitLangage START" );
+			Languages? fromUrl, fromCookie;
 			Languages current;
 			string rawPath;
-			DetectLanguage( httpContext, fromUrl:out dummy, current:out current, rawPath:out rawPath );
+			DetectLanguage( ScopeLogs, httpContext.Request, fromUrl:out fromUrl, fromCookie:out fromCookie, current:out current, rawPath:out rawPath );
+
+			if( fromUrl != null )
+			{
+				// Language has been forced by the URL
+				if( fromUrl.Value != fromCookie )
+				{
+					// The cookie does not reflect it => Set its new value
+					ScopeLogs.AddLogMessage( $"PageHelper: InitLangage: Set language cookie to '{fromUrl.Value}'" );
+					Language.SetLanguageCookie( httpContext.Response, fromUrl.Value );
+				}
+			}
 
 			CurrentLanguage = current;
 			Parameters["CurrentLanguage"] = ""+current;
@@ -70,13 +81,12 @@ namespace ItemTTT
 												.Select( v=>new{	lng	= v,
 																	url	= rawPath.Replace(Language.RouteParameter, ""+v) } )
 												.ToDictionary( v=>v.lng, v=>v.url );
+			ScopeLogs.AddLogMessage( "PageHelper: InitLangage END" );
 		}
 
-		internal static void DetectLanguage(HttpContext httpContext, out Languages? fromUrl, out Languages current, out string rawPath)
+		internal static void DetectLanguage(LogHelper logHelper, HttpRequest request, out Languages? fromUrl, out Languages? fromCookie, out Languages current, out string rawPath)
 		{
-			var request = httpContext.Request;
-
-			// Split URL segments
+			logHelper.AddLogMessage( "PageHelper: DetectLanguage: Split URL segments" );
 			var segments = (""+request.Path).Split( "/" ).Where(v=>v != "").ToList();
 			if( segments.Count == 0 )
 			{
@@ -84,25 +94,34 @@ namespace ItemTTT
 				segments.Add( "" );
 			}
 
+			logHelper.AddLogMessage( "PageHelper: DetectLanguage: Get from URL" );
 			{
 				object obj;
 				if( Enum.TryParse(typeof(Languages), segments[0], ignoreCase:true, result:out obj) )
 				{
 					// Language found in the first segment of the URL
-
 					segments.RemoveAt( 0 );
 					fromUrl = (Languages)obj;
-					current = fromUrl.Value;
-					goto EXIT;
+				}
+				else
+				{
+					// Not found in URL
+					fromUrl = null;
 				}
 			}
-			// Not found in URL
-			fromUrl = null;
 
-			// TODO: Search in cookies then in browser's config and only then use the fallback
-			current = DefaultLanguage;
+			logHelper.AddLogMessage( "PageHelper: DetectLanguage: Get from cookie" );
+			fromCookie = Language.GetLanguageCookie( request );
 
-		EXIT:
+			// Determine 'current'
+			if( fromUrl != null )
+				current = fromUrl.Value;
+			else if( fromCookie != null )
+				current = fromCookie.Value;
+			else
+				current = DefaultLanguage;
+			logHelper.AddLogMessage( $"PageHelper: DetectLanguage: fromUrl:'{fromUrl}' ; fromCookie:'{fromCookie}' ; current:'{current}'" );
+
 			var segmentsStr = string.Join( "/", segments );
 			rawPath = $"/{Language.RouteParameter}/{segmentsStr}{request.QueryString}";
 		}

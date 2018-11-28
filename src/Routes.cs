@@ -17,16 +17,18 @@ namespace ItemTTT
 		internal const string	ItemDetails			= "/"+Language.RouteParameter+"/car-details/{code}";  // "/{lang:lang}/car-details/{code}"
 		internal const string	ItemPictureGet		= "/car-details/{itemCode}/pictures/{number}";
 
+		/// <summary>Last resort middleware: When no route matched, redirect the same URL prefixed with the language</summary>
 		internal static IApplicationBuilder UseLanguageRedirect(this IApplicationBuilder app)
 		{
 			var languages = Enum.GetNames( typeof(Languages) );
 
 			app.Use( async (context,next) =>
 				{
-					Languages? fromUrl;
+					Languages? fromUrl, fromCookie;
 					Languages current;
 					string rawPath;
-					PageHelper.DetectLanguage( context, fromUrl:out fromUrl, current:out current, rawPath:out rawPath );
+					var discardLogs = new LogHelper();
+					PageHelper.DetectLanguage( discardLogs, context.Request, fromUrl:out fromUrl, fromCookie:out fromCookie, current:out current, rawPath:out rawPath );
 
 					if( fromUrl == null )
 					{
