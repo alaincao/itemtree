@@ -7,6 +7,7 @@ namespace ItemTTT.Models
 {
 	public class ItemTTTContext : DbContext
 	{
+		public DbSet<Configuration>	Configurations	{ get; set; }
 		public DbSet<Item>			Items			{ get; set; }
 		public DbSet<ItemPicture>	ItemPictures	{ get; set; }
 

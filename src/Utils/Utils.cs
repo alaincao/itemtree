@@ -31,5 +31,20 @@ namespace ItemTTT
 			if( IsDebug )
 				System.Console.WriteLine( message );
 		}
+
+		internal static string GetMd5Sum(string str)
+		{
+			using( var md5 = new System.Security.Cryptography.MD5CryptoServiceProvider() )
+			{
+				var bytes = System.Text.Encoding.UTF8.GetBytes( str );
+				bytes = md5.ComputeHash( bytes );
+
+				var sb = new System.Text.StringBuilder();
+				for( var i=0; i < bytes.Length; ++i )
+					sb.Append( bytes[i].ToString("x2") );
+
+				return sb.ToString();
+			}
+		}
 	}
 }

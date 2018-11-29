@@ -17,6 +17,8 @@ namespace ItemTTT
 {
 	public class Startup
 	{
+		internal const string 	AuthScheme 	= Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme;
+
 		internal LogHelper						InitializationLog;
 		internal readonly IConfigurationRoot	Configuration;
 		internal static string					ContentRootPath		{ get; private set; }
@@ -54,6 +56,10 @@ namespace ItemTTT
 
 			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Add this instance to the services" );
 			services.AddSingleton<Startup>( v=>this );
+
+			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Register cookie authentication" );
+			var authentication = services.AddAuthentication( AuthScheme );
+			authentication.AddCookie( AuthScheme );
 
 			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Setup MVC" );
 			services.AddMvc();
@@ -113,6 +119,10 @@ namespace ItemTTT
 
 			InitializationLog.AddLogMessage( "Startup: Configure: Add static files support" );
 			app.UseStaticFiles();
+
+			InitializationLog.AddLogMessage( "Startup: Configure: Activate authentication" );
+			app.UseAuthentication();
+			app.UseCookiePolicy();
 
 			InitializationLog.AddLogMessage( "Startup: Configure: Add MVC support" );
 			app.UseMvc();

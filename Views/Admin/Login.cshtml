@@ -1,0 +1,26 @@
+@inherits ItemTTT.Views.BaseView
+@{
+	Init( PageHelper );
+
+	var postedLogin = (string)ViewBag.PostedLogin;
+	var postedPassword = (string)ViewBag.PostedPassword;
+	var errorMessage = (string)ViewBag.ErrorMessage;
+	var hasError = (errorMessage != null);
+}
+@section Scripts
+{
+	<script type="text/javascript">
+		$('#preParameters').html( JSON.stringify(itemttt.common.pageParameters, null, 2) )
+	</script>
+}
+
+<form method="POST">
+	Login: <input type="text" name="login" value="@postedLogin"/><br/>
+	Password: <input type="password" name="password" value="@postedPassword"/><br/>
+	<div ttt-only-if="hasError">
+		Error: @errorMessage
+	</div>
+	<input type="submit" value="Login"/>
+</form>
+
+<pre id="preParameters"></pre>

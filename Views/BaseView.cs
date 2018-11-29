@@ -9,14 +9,18 @@ namespace ItemTTT.Views
 
 		protected void Init(PageHelper pageHelper)
 		{
-			pageHelper.ScopeLogs.AddLogMessage( "BaseView Init: START" );
+			var logHelper = pageHelper.ScopeLogs;
+			logHelper.AddLogMessage( "BaseView Init: START" );
 
 			var lng = pageHelper.CurrentLanguage;
 			IsEN = (lng == Languages.en);
 			IsFR = (lng == Languages.fr);
 			IsNL = (lng == Languages.nl);
 
-			pageHelper.ScopeLogs.AddLogMessage( "BaseView Init: END" );
+			logHelper.AddLogMessage( "BaseView Init: END" );
+			if( Utils.IsDebug )
+				// Add scope's log to page parameters
+				pageHelper.Parameters["Logs"] = logHelper.GetLogLines();
 		}
 
 		protected string JSON(object obj, bool? indented=null)

@@ -13,22 +13,25 @@ namespace ItemTTT
 	{
 		public class PageParameters : Dictionary<string,object>
 		{
-			internal PageParameters()
+			internal PageParameters(bool isAutenticated, Languages currentLanguage, Dictionary<Languages,string> languageUrls)
 			{
-				PageTitle = "";
+				PageTitle		= "";
+				IsAutenticated	= isAutenticated;
+				CurrentLanguage	= ""+currentLanguage;
+				LanguageUrls	= languageUrls;
 			}
 			public string						PageTitle		{ get { return (string)this["PageTitle"]; } set { this["PageTitle"] = value; } }
-			public string						CurrentLanguage	{ get { return (string)this["CurrentLanguage"]; } }
-			public Dictionary<Languages,string>	LanguageUrls	{ get { return (Dictionary<Languages,string>)this["LanguageUrls"]; } }
+			private bool						IsAutenticated	{ set { this["IsAutenticated"] = value; } }
+			private string						CurrentLanguage	{ set { this["CurrentLanguage"] = value; } }
+			public Dictionary<Languages,string>	LanguageUrls	{ get { return (Dictionary<Languages,string>)this["LanguageUrls"]; } private set { this["LanguageUrls"] = value; } }
 		}
 
-		internal LogHelper			ScopeLogs			{ get; private set; } = new LogHelper();
-		public PageParameters		Parameters			{ get; private set; } = new PageParameters();
-		public bool					UseMinified			{ get { return Utils.IsDebug == false; } }
-		private const Languages		DefaultLanguage		= Languages.nl;
-		public Languages			CurrentLanguage		{ get; private set; }
-		// TODO: Assign if current user has been authenticated or not
-		public bool					IsAutenticated		= true;
+		internal LogHelper				ScopeLogs			{ get; private set; } = new LogHelper();
+		public readonly PageParameters	Parameters;
+		public bool						UseMinified			{ get { return Utils.IsDebug == false; } }
+		private const Languages			DefaultLanguage		= Languages.nl;
+		public readonly Languages		CurrentLanguage;
+		public readonly bool			IsAutenticated;
 
 		private Func<string,string>	UrlHelperContent;
 
@@ -37,6 +40,7 @@ namespace ItemTTT
 			ScopeLogs.AddLogMessage( "PageHelper: Constructor" );
 
 			var actionContext = contextAccessor.ActionContext;
+			var httpContext = actionContext.HttpContext;
 
 			// Create 'UrlHelperContent' callback
 			var urlHelper = new UrlHelper( actionContext );
@@ -45,7 +49,9 @@ namespace ItemTTT
 					return urlHelper.Content( route );
 				};
 
-			InitLangage( actionContext.HttpContext );
+			IsAutenticated	= httpContext.User.Identity.IsAuthenticated;
+			CurrentLanguage	= InitLangage( httpContext, out var languageURLs );
+			Parameters		= new PageParameters( IsAutenticated, CurrentLanguage, languageURLs );
 		}
 
 		internal string ResolveRoute(string route)
@@ -56,7 +62,7 @@ namespace ItemTTT
 			return UrlHelperContent( route );
 		}
 
-		private void InitLangage(HttpContext httpContext)
+		private Languages InitLangage(HttpContext httpContext, out Dictionary<Languages,string> languageUrls)
 		{
 			ScopeLogs.AddLogMessage( "PageHelper: InitLangage START" );
 			Languages? fromUrl, fromCookie;
@@ -75,13 +81,12 @@ namespace ItemTTT
 				}
 			}
 
-			CurrentLanguage = current;
-			Parameters["CurrentLanguage"] = ""+current;
-			Parameters["LanguageUrls"] = Enum.GetValues( typeof(Languages) ).Cast<Languages>()
-												.Select( v=>new{	lng	= v,
-																	url	= rawPath.Replace(Language.RouteParameter, ""+v) } )
-												.ToDictionary( v=>v.lng, v=>v.url );
+			languageUrls = Enum.GetValues( typeof(Languages) ).Cast<Languages>()
+									.Select( v=>new{	lng	= v,
+														url	= rawPath.Replace(Language.RouteParameter, ""+v) } )
+									.ToDictionary( v=>v.lng, v=>v.url );
 			ScopeLogs.AddLogMessage( "PageHelper: InitLangage END" );
+			return current;
 		}
 
 		internal static void DetectLanguage(LogHelper logHelper, HttpRequest request, out Languages? fromUrl, out Languages? fromCookie, out Languages current, out string rawPath)

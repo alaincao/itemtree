@@ -14,6 +14,7 @@ namespace ItemTTT.Views
 		}
 
 		[HttpGet( Routes.Home )]
+		[HttpGet( Routes.HomeForcedLang )]
 		public IActionResult Index()
 		{
 			var logHelper = PageHelper.ScopeLogs;
@@ -22,7 +23,6 @@ namespace ItemTTT.Views
 			PageHelper.Parameters.PageTitle = "Hello world";
 
 			logHelper.AddLogMessage( "Index END" );
-			PageHelper.Parameters["Logs"] = logHelper.GetLogLines();
 			return View();
 		}
 

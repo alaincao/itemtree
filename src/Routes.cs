@@ -10,11 +10,21 @@ namespace ItemTTT
 {
 	internal static class Routes
 	{
+		// Views
 		internal const string	InitializationLog	= "/initialization-log";
 		internal const string	Home				= "/";
+		internal const string	HomeForcedLang		= "/"+Language.RouteParameter;
 		internal const string	Error				= "/error";
 		internal const string	ErrorStatus			= "/error/{status}";
+		internal const string	AdminHome			= Home;  // TODO
+		internal const string	Login				= "/admin/login";
+		internal const string	Logout				= "/admin/logout";
 		internal const string	ItemDetails			= "/"+Language.RouteParameter+"/car-details/{code}";  // "/{lang:lang}/car-details/{code}"
+
+		// APIs
+		internal const string	LoginAPI			= "/api/login";
+		internal const string	LogoutAPI			= "/api/logout";
+		internal const string	ChangePassword		= "/api/change-password";
 		internal const string	ItemPictureGet		= "/car-details/{itemCode}/pictures/{number}";
 
 		/// <summary>Last resort middleware: When no route matched, redirect the same URL prefixed with the language</summary>

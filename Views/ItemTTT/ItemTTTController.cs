@@ -28,8 +28,13 @@ namespace ItemTTT.Views
 				return NotFound();
 
 			if(! item.Active )
-				// TODO: Allow when authenticated
-				return NotFound();
+			{
+				if( PageHelper.IsAutenticated )
+					{/* Ok, continue to view */}
+				else
+					// Hide this page
+					return NotFound();
+			}
 
 			return View( item );
 		}
