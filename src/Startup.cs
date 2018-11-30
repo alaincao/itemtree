@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Mvc.Razor;
 
 namespace ItemTTT
 {
@@ -63,6 +64,16 @@ namespace ItemTTT
 
 			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Setup MVC" );
 			services.AddMvc();
+
+			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Configure Views location" );
+			// https://stackoverflow.com/questions/36747293/how-to-specify-the-view-location-in-asp-net-core-mvc-when-using-custom-locations
+			services.Configure<RazorViewEngineOptions>( o=>
+				{
+					// {2} is area, {1} is controller,{0} is the action    
+//					o.ViewLocationFormats.Clear(); 
+					o.ViewLocationFormats.Add( "/src/Views/{1}/{0}"+RazorViewEngine.ViewExtension );
+					o.ViewLocationFormats.Add( "/src/Views/Shared/{0}"+RazorViewEngine.ViewExtension );
+				} );
 
 			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Add languages constraint" );
 			services.Configure<RouteOptions>( opt=>opt.ConstraintMap.Add(Language.ConstraintName, typeof(LanguageRouteConstraint)) );

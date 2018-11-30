@@ -1,5 +1,5 @@
 
-import * as common from './Views/common';
+import * as common from './src/Views/common';
 
 ///////
 
