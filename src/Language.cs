@@ -14,30 +14,9 @@ namespace ItemTTT
 
 	public static class Language
 	{
-		internal const string	ConstraintName	= "lang";
-		internal const string	RouteParameter	= "{lang:"+ConstraintName+"}";
-		private const string	LanguageCookie	= "language";
-
-		internal static Languages? GetLanguageCookie(HttpRequest request)
-		{
-			var value = request.Cookies[ Language.LanguageCookie ];
-			if( string.IsNullOrWhiteSpace(value) )
-			{
-				return null;
-			}
-			else
-			{
-				object obj;
-				if( Enum.TryParse(typeof(Languages), value, out obj) )
-					return (Languages)obj;
-				return null;
-			}
-		}
-
-		internal static void SetLanguageCookie(HttpResponse response, Languages value)
-		{
-			response.Cookies.Append( Language.LanguageCookie, ""+value );
-		}
+		internal const Languages	Default			= Languages.nl;
+		internal const string		ConstraintName	= "lang";
+		internal const string		RouteParameter	= "{lang:"+ConstraintName+"}";
 	}
 
 	public class LanguageRouteConstraint : IRouteConstraint

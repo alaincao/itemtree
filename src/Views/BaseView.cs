@@ -29,5 +29,12 @@ namespace ItemTTT.Views
 				indented = ( Utils.IsDebug ? true : false );
 			return obj.JSONStringify( indented:indented.Value );
 		}
+
+		protected string FormatPrice(int? price)
+		{
+			if( price == null )
+				return "-";
+			return price.Value.ToString("C0");
+		}
 	}
 }

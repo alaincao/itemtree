@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
@@ -26,11 +28,93 @@ namespace ItemTTT.Services
 			DataContext = dataContext;
 		}
 
-		[HttpGet( Routes.ItemPictureGet )]
+		private static string CreateUrlDownload(string itemCode, int? number=null, string numberTemplate=null, int? height=null, string heightTemplate=null, bool forDownload=false)
+		{
+			Utils.Assert( !string.IsNullOrWhiteSpace(itemCode), typeof(ItemPictureController), $"Missing parameter {nameof(itemCode)}" );
+
+			if( number == null )
+				Utils.Assert( numberTemplate == null, typeof(ItemPictureController), $"If {nameof(number)} is not specified, {nameof(numberTemplate)} should be specified" );
+			else
+				numberTemplate = ""+number;
+
+			var parms = new List<string>();
+
+			if( height != null )
+				heightTemplate = ""+height.Value;
+			if( heightTemplate != null )
+				parms.Add( $"height={heightTemplate}" );
+
+			if( forDownload )
+				parms.Add( $"fordownload=true" );
+
+			var strParms = string.Join( "&", parms );
+			if( strParms.Length > 0 )
+			strParms = $"?{strParms}";
+
+			itemCode = WebUtility.UrlEncode( itemCode );
+			var url = Routes.ItemPictureDownload
+									.Replace( "{itemCode}", itemCode )
+									.Replace( "{number}", numberTemplate )
+							+ strParms;
+			return url;
+		}
+
+		[HttpGet( Routes.ItemPictureList )]
+		[HttpPost( Routes.ItemPictureList )]
+		public async Task<Utils.TTTServiceResult<DTOs.ItemPicture[]>> List(string itemCode=null)
+		{
+			// nb: 'itemCode' is part of URL's path and so 'itemCode=null' should not be accessible from public URL (i.e. only used internally)
+			//		i.e. slow to execute, but required for e.g. ItemsList
+
+			var logHelper = PageHelper.ScopeLogs;
+			logHelper.AddLogMessage( $"ItemPicList: START: '{nameof(itemCode)}':{itemCode}" );
+
+			try
+			{
+				logHelper.AddLogMessage( $"ItemPicList: Try retreive pictures" );
+				var dc = DataContext;
+				var items = dc.Items.AsQueryable();
+				if( itemCode != null )
+					items = items.Where( v=>v.Code == itemCode );
+				if(! PageHelper.IsAutenticated )
+					items = items.Where( v=>v.Active == true );
+				var images = await (	from item in items
+										join pict in dc.ItemPictures on item.ID equals pict.ItemID
+										orderby item.Code, pict.Number
+										select new{	item.Code,
+													item.MainImageNumber,
+													Picture = new DTOs.ItemPicture{ Number=pict.Number } } )
+									.Distinct()
+									.ToArrayAsync();
+
+				logHelper.AddLogMessage( $"ItemPicList: Complete fields for '{images.Length}' images" );
+				foreach( var image in images )
+				{
+					var code = image.Code;
+					var number = image.Picture.Number;
+					image.Picture.ItemCode		= code;
+					image.Picture.IsMainImage	= (image.MainImageNumber == number);
+					image.Picture.UrlOriginal	= PageHelper.ResolveRoute( CreateUrlDownload(code, number) );
+					image.Picture.Url100		= PageHelper.ResolveRoute( CreateUrlDownload(code, number, height:100) );
+					image.Picture.Url133		= PageHelper.ResolveRoute( CreateUrlDownload(code, number, height:133) );
+					image.Picture.Url260		= PageHelper.ResolveRoute( CreateUrlDownload(code, number, height:260) );
+				}
+
+				var result = images.Select( v=>v.Picture ).ToArray();
+				logHelper.AddLogMessage( $"ItemPicList END" );
+				return new Utils.TTTServiceResult<DTOs.ItemPicture[]>( PageHelper ){ Result=result };
+			}
+			catch( System.Exception ex )
+			{
+				return Utils.TTTServiceResult<DTOs.ItemPicture[]>.LogAndNew( PageHelper, ex, result:new DTOs.ItemPicture[]{} );
+			}
+		}
+
+		[HttpGet( Routes.ItemPictureDownload )]
 		public async Task<IActionResult> Download(string itemCode, int number, int? height=null, bool forDownload=false)
 		{
 			var logHelper = PageHelper.ScopeLogs;
-			logHelper.AddLogMessage( $"ItemPicDownload START ; itemCode:'{itemCode}' ; number:{number} ; height:{height} ; forDownload:{forDownload}" );
+			logHelper.AddLogMessage( $"ItemPicDownload: START: {nameof(itemCode)}:{itemCode} ; {nameof(number)}:{number} ; {nameof(height)}:{height} ; {nameof(forDownload)}:{forDownload}" );
 
 			if( string.IsNullOrWhiteSpace(itemCode) )
 				return NotFound();

@@ -29,7 +29,7 @@ namespace ItemTTT.Services
 
 		[HttpGet( Routes.LoginAPI )]
 		[HttpPost( Routes.LoginAPI )]
-		public async Task<Common.TTTServiceResult> Login(string login, string password)
+		public async Task<Utils.TTTServiceResult> Login(string login, string password)
 		{
 			var logHelper = PageHelper.ScopeLogs;
 			string errorMessage;
@@ -37,7 +37,7 @@ namespace ItemTTT.Services
 			if( PageHelper.IsAutenticated )
 			{
 				logHelper.AddLogMessage( $"Login: Already logged-in" );
-				return new Common.TTTServiceResult{ Success=true, ErrorMessage="Already logged-in" };
+				return new Utils.TTTServiceResult( PageHelper, errorMessage:"Already logged-in" );
 			}
 
 			logHelper.AddLogMessage( $"Login: Check login empty" );
@@ -75,29 +75,25 @@ namespace ItemTTT.Services
 			var authProperties = new AuthenticationProperties{};
 			await HttpContext.SignInAsync( Startup.AuthScheme, new ClaimsPrincipal(claimsIdentity), authProperties );
 
-			return new Common.TTTServiceResult{ Success=true };
+			return new Utils.TTTServiceResult( PageHelper );
 
 		FAILED:
 			logHelper.AddLogMessage( "Login: failed" );
-		
-			var rv = new Common.TTTServiceResult{ Success=false, ErrorMessage=errorMessage };
-			if( Utils.IsDebug )
-				rv.Log = logHelper.GetLogLines();
-			return rv;
+			return new Utils.TTTServiceResult( PageHelper, errorMessage:errorMessage );
 		}
 
 		[HttpGet( Routes.LogoutAPI )]
 		[HttpPost( Routes.LogoutAPI )]
-		public async Task<Common.TTTServiceResult> Logout()
+		public async Task<Utils.TTTServiceResult> Logout()
 		{
 			if(! HttpContext.User.Identity.IsAuthenticated )
 			{
-				return new Common.TTTServiceResult{ Success=false, ErrorMessage="Error: not logged-in" };
+				return new Utils.TTTServiceResult( PageHelper, errorMessage:"Error: not logged-in" );
 			}
 			else
 			{
 				await HttpContext.SignOutAsync( Startup.AuthScheme );
-				return new Common.TTTServiceResult{ Success=true };
+				return new Utils.TTTServiceResult( PageHelper );
 			}
 		}
 
@@ -112,11 +108,11 @@ namespace ItemTTT.Services
 			try
 			{
 				if( string.IsNullOrWhiteSpace(newPassword) )
-					throw new Common.TTTException( "The new password has not been specified" );
+					throw new Utils.TTTException( "The new password has not been specified" );
 
 				var originalPasswordOK = await CheckLogin( DataContext, oldPassword );
 				if(! originalPasswordOK )
-					throw new Common.TTTException( "The original password is invalid" );
+					throw new Utils.TTTException( "The original password is invalid" );
 
 				var newPasswordHash = Utils.GetMd5Sum( newPassword );
 				var entry = await DataContext.Configurations.Where( v=>v.Key == Models.Configuration.Key_PasswordHash ).SingleAsync();
@@ -125,7 +121,7 @@ namespace ItemTTT.Services
 
 				return new{ success = true };
 			}
-			catch( Common.TTTException ex )
+			catch( Utils.TTTException ex )
 			{
 				// Don't send the whole exception; Just the error message
 				return new{	succes	= false,

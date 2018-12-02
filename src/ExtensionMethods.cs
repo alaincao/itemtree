@@ -6,7 +6,7 @@ namespace ItemTTT
 	{
 		public static string JSONStringify(this object obj, bool indented=false)
 		{
-			Utils.Assert( obj != null, System.Reflection.MethodInfo.GetCurrentMethod(), "Missing parameter 'obj'" );
+			Utils.Assert( obj != null, System.Reflection.MethodInfo.GetCurrentMethod(), $"Missing parameter {nameof(obj)}" );
 
 			var settings = new Newtonsoft.Json.JsonSerializerSettings();
 			settings.Formatting = indented ? Newtonsoft.Json.Formatting.Indented : Newtonsoft.Json.Formatting.None;  // Indent or not
@@ -26,6 +26,14 @@ namespace ItemTTT
 			if( string.IsNullOrWhiteSpace(json) )
 				return default(T);
 			return Newtonsoft.Json.JsonConvert.DeserializeObject<T>( json );
+		}
+
+		public static V TryGet<K,V>(this IDictionary<K,V> dict, K key)
+		{
+			V value;
+			if( dict.TryGetValue(key, out value) )
+				return value;
+			return default( V );
 		}
 	}
 }

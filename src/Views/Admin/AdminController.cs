@@ -55,7 +55,7 @@ namespace ItemTTT.Views
 
 			var rv = await ( new Services.LoginController(DataContext, PageHelper){ ControllerContext=ControllerContext } )
 												.Logout();
-			return Redirect( Routes.Home );
+			return Redirect( Routes.Home1 );
 		}
 	}
 }

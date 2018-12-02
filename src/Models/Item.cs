@@ -31,8 +31,12 @@ namespace ItemTTT.Models
 		[Column(TypeName = "varchar(max)")]
 		public string	DescriptionNL	{ get; set; }
 
+		public int?		Price			{ get; set; }
+
 		[Required]
 		public bool		Active			{ get; set; }
+
+		public int		MainImageNumber	{ get; set; }
 
 		public List<ItemPicture>	Pictures		{ get; set; }
 	}

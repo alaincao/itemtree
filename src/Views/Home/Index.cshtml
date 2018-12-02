@@ -1,3 +1,10 @@
+@inherits ItemTTT.Views.BaseView
+@{
+	Init( PageHelper );
+
+	var parameters = PageHelper.Parameters;
+	parameters.PageTitle = "Hello world !";
+}
 @section Scripts
 {
 	<script type="text/javascript">

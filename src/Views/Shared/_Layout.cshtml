@@ -23,19 +23,18 @@
 </head>
 <body>
 
-	<div>_Layout.cshtml START</div>
 	<ul>
 		<li><a href="@parameters.LanguageUrls[ItemTTT.Languages.en]">EN</a></li>
 		<li><a href="@parameters.LanguageUrls[ItemTTT.Languages.fr]">FR</a></li>
 		<li><a href="@parameters.LanguageUrls[ItemTTT.Languages.nl]">NL</a></li>
 	</ul>
-	<hr/>
 
 	<!-- BODY -->
-@RenderBody()
-
+	<div>BODY START</div>
 	<hr/>
-	<div>_Layout.cshtml END</div>
+@RenderBody()
+	<hr/>
+	<div>BODY END</div>
 
 	@if( useMinified )
 	{

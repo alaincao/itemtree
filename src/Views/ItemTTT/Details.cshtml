@@ -3,7 +3,7 @@
 	Init( PageHelper );
 
 	var parameters = PageHelper.Parameters;
-	var item = (ItemTTT.Models.Item)Model;
+	var item = (ItemTTT.DTOs.Item)Model;
 	parameters.PageTitle = item.Name;
 }
 @section Scripts
@@ -20,15 +20,38 @@
 	@item.Name
 </div>
 <div>
-	<label ttt-only-if="IsEN">Description: @item.DescriptionEN</label>
-	<label ttt-only-if="IsFR">Description: @item.DescriptionFR</label>
-	<label ttt-only-if="IsNL">Beschrijving: @item.DescriptionNL</label>
+	<span ttt-only-if="IsEN"><label>Description:</label> @item.DescriptionEN</span>
+	<span ttt-only-if="IsFR"><label>Description:</label> @item.DescriptionFR</span>
+	<span ttt-only-if="IsNL"><label>Beschrijving:</label> @item.DescriptionNL</span>
+</div>
+<div>
+	<label ttt-only-if="IsEN">Price:</label>
+	<label ttt-only-if="IsFR">Prix:</label>
+	<label ttt-only-if="IsNL">Prijs:</label>
+	@FormatPrice(item.Price) €
+</div>
+<div>
+	<label>First image:</label>
+	<div style="background-image:url(&quot;@item.FirstImage.UrlOriginal&quot;);background-size:contain;width:300px;height:100px"></div>
+</div>
+<div>
+	<label>Main image:</label>
+	<div style="background-image:url(&quot;@item.MainImage.Url100&quot;);background-size:contain;width:300px;height:100px"></div>
+</div>
+<div>
+	<label>All images:</label><br/>
+	@foreach( var img in item.Pictures )
+	{
+		<img src="@img.Url133"/>
+	}
 </div>
 
-<hr/>
+Model dump:
 <pre>
-@Html.Raw(JSON( item, indented:true ))
+@Html.Raw(JSON( item ))
 </pre>
+
+Page parameters:
 <hr/>
 <pre id="preParameters">
 </pre>

@@ -13,16 +13,10 @@ namespace ItemTTT.Views
 			DataContext = dataContext;
 		}
 
-		[HttpGet( Routes.Home )]
-		[HttpGet( Routes.HomeForcedLang )]
+		[HttpGet( Routes.Home1 )]
+		[HttpGet( Routes.Home2 )]
 		public IActionResult Index()
 		{
-			var logHelper = PageHelper.ScopeLogs;
-			logHelper.AddLogMessage( "Index START" );
-
-			PageHelper.Parameters.PageTitle = "Hello world";
-
-			logHelper.AddLogMessage( "Index END" );
 			return View();
 		}
 
@@ -37,7 +31,8 @@ namespace ItemTTT.Views
 		[HttpGet("/kaboom")]
 		public IActionResult Kaboom()
 		{
-			throw new System.ApplicationException( "Kaboom" );
+			// nb: Test exception behaviour (i.e. run in release mode ...)
+			throw new Utils.TTTException( "Kaboom" );
 		}
 	}
 }
