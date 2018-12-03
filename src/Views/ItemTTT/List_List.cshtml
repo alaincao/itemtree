@@ -1,0 +1,29 @@
+@inherits ItemTTT.Views.BaseView
+@{
+	Init( PageHelper );
+	Layout = null;
+
+	var model = (ItemTTT.Views.ItemTTTController.ListModel)Model;
+}
+
+<div>LIST LIST PARTIAL BEGIN</div>
+
+@foreach( var item in model.Items )
+{
+	<div style="border:1px solid black">
+		<div ttt-only-if="PageHelper.IsAutenticated" >
+			<label>Active: <input type="checkbox" checked="@item.Active"/></label>
+		</div>
+		<a href="@item.DetailsUrls[PageHelper.CurrentLanguage]">
+			<div>
+				<label ttt-only-if="IsEN">Name:</label>
+				<label ttt-only-if="IsFR">Nom:</label>
+				<label ttt-only-if="IsNL">Naam:</label>
+				@item.Name
+			</div>
+			<img src="@item.MainImage.Url100"/>
+		</a>
+	</div>
+}
+
+<div>LIST LIST PARTIAL END</div>

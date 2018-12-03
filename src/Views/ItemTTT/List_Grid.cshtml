@@ -1,0 +1,18 @@
+@inherits ItemTTT.Views.BaseView
+@{
+	Init( PageHelper );
+	Layout = null;
+
+	var model = (ItemTTT.Views.ItemTTTController.ListModel)Model;
+}
+
+<div>LIST GRID PARTIAL BEGIN</div>
+
+@foreach( var item in model.Items )
+{
+	<a href="@item.DetailsUrls[PageHelper.CurrentLanguage]">
+		<img src="@item.MainImage.Url260"/>
+	</a>
+}
+
+<div>LIST GRID PARTIAL END</div>

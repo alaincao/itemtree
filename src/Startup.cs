@@ -18,7 +18,8 @@ namespace ItemTTT
 {
 	public class Startup
 	{
-		internal const string 	AuthScheme 	= Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme;
+		internal const string 	AuthScheme 		= Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme;
+		internal const string	ViewsLocation	= "/src/Views/";
 
 		internal LogHelper						InitializationLog;
 		internal readonly IConfigurationRoot	Configuration;
@@ -70,9 +71,8 @@ namespace ItemTTT
 			services.Configure<RazorViewEngineOptions>( o=>
 				{
 					// {2} is area, {1} is controller,{0} is the action    
-//					o.ViewLocationFormats.Clear(); 
-					o.ViewLocationFormats.Add( "/src/Views/{1}/{0}"+RazorViewEngine.ViewExtension );
-					o.ViewLocationFormats.Add( "/src/Views/Shared/{0}"+RazorViewEngine.ViewExtension );
+					o.ViewLocationFormats.Add( ViewsLocation+"{1}/{0}"+RazorViewEngine.ViewExtension );
+					o.ViewLocationFormats.Add( ViewsLocation+"Shared/{0}"+RazorViewEngine.ViewExtension );
 				} );
 
 			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Add languages constraint" );

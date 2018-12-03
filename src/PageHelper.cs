@@ -13,17 +13,21 @@ namespace ItemTTT
 	{
 		public class PageParameters : Dictionary<string,object>
 		{
-			internal PageParameters(bool isAutenticated, Languages currentLanguage, Dictionary<Languages,string> languageUrls)
+			internal PageParameters(bool isAutenticated, Languages currentLanguage, Dictionary<Languages,string> languageUrls, object routes)
 			{
 				PageTitle		= "";
 				IsAutenticated	= isAutenticated;
 				CurrentLanguage	= ""+currentLanguage;
 				LanguageUrls	= languageUrls;
+				Routes			= routes;
+				IsDebug			= Utils.IsDebug;
 			}
 			public string						PageTitle		{ get { return (string)this["PageTitle"]; } set { this["PageTitle"] = value; } }
 			private bool						IsAutenticated	{ set { this["IsAutenticated"] = value; } }
 			private string						CurrentLanguage	{ set { this["CurrentLanguage"] = value; } }
 			public Dictionary<Languages,string>	LanguageUrls	{ get { return (Dictionary<Languages,string>)this["LanguageUrls"]; } private set { this["LanguageUrls"] = value; } }
+			private object						Routes			{ set { this["Routes"] = value; } }
+			private bool						IsDebug			{ set { this["IsDebug"] = value; } }
 		}
 
 		internal LogHelper				ScopeLogs			{ get; private set; } = new LogHelper();
@@ -50,7 +54,8 @@ namespace ItemTTT
 
 			IsAutenticated	= httpContext.User.Identity.IsAuthenticated;
 			CurrentLanguage	= InitLangage( httpContext, out var languageURLs );
-			Parameters		= new PageParameters( IsAutenticated, CurrentLanguage, languageURLs );
+			var routes		= Routes.GetPageParameterRoutes( this );
+			Parameters		= new PageParameters( IsAutenticated, CurrentLanguage, languageURLs, routes );
 		}
 
 		internal string ResolveRoute(string route)

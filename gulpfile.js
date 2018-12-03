@@ -45,9 +45,9 @@ function buildJs(fileName, releaseMode)
 			.pipe( source(fileName) )  // Destination filename
 			.pipe( buffer() )
 			.pipe( sourcemaps.init({ loadMaps: true }) );
-//	if( releaseMode )
-//		stream = stream
-//			.pipe( uglify() );  // Execute uglify		<== Fails to work with ES6 !!
+	if( releaseMode )
+		stream = stream
+			.pipe( uglify() );
 	stream = stream
 			.on( 'error', function(error){ console.error(error.toString()); } )
 			.pipe( sourcemaps.write('./') )

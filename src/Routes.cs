@@ -33,6 +33,43 @@ namespace ItemTTT
 		internal const string	ItemPictureList		= "/api/car-details/{itemCode}/pictures";
 		internal const string	ItemPictureDownload	= "/car-details/{itemCode}/pictures/{number}";
 
+		/// <summary>Set PageParameters routes for client-side</summary>
+		internal static object GetPageParameterRoutes(PageHelper pageHelper)
+		{
+			Utils.Assert( pageHelper != null, typeof(Routes), "Missing parameter 'pageHelper'" );
+
+			if( GetPageParameterRoutesCache != null )
+				// Already cached
+				return GetPageParameterRoutesCache;
+
+			var langParm = "{lang}";
+			Func<string,string> tr = (route)=>
+				{
+					route = route.Replace( Lang, langParm );  // Cleanup a little bit URLs before sending to clients ...
+					pageHelper.ResolveRoute( route );
+					return route;
+				};
+
+			var obj = new {
+					LanguageParameter = langParm,
+
+					ItemTTT = new {
+							ItemsList	= tr( ItemsList ),
+						},
+					API = new {
+							Login				= tr( LoginAPI ),
+							Logout				= tr( LogoutAPI ),
+							ChangePassword		= tr( ChangePassword ),
+							ItemsListing		= tr( ItemsListApi ),
+							ItemDetails			= tr( ItemDetailsApi ),
+							ItemDetailsPictures	= tr( ItemPictureList ),
+						},
+				};
+			GetPageParameterRoutesCache = obj;
+			return obj;
+		}
+		private static object GetPageParameterRoutesCache = null;
+
 		/// <summary>Last resort middleware: When no route matched, redirect the same URL prefixed with the language</summary>
 		internal static IApplicationBuilder UseLanguageRedirect(this IApplicationBuilder app)
 		{

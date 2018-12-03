@@ -1,9 +1,10 @@
 {
 
 	"compilerOptions": {
-		// "target": "ES5", "lib": [ "dom", "ES5", "ES2015.Promise", "ES2016.Array.Include", "ES2015.Iterable" ], // <== Would need to manually include some libraries
+		// "target": "ES5",
+		"target": "ES5", "lib": [ "es5", "dom", "es2015.promise" /*"es2016.array.include", "es2015.iterable"*/ ], // <== Need to manually include libraries !
 		// "target": "ES2016",
-		"target": "ES2017",
+		// "target": "ES2017",
 
 		"noImplicitUseStrict": true  // NB: Does not work well with browserify
 	},

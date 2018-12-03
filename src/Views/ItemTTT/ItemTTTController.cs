@@ -9,14 +9,17 @@ namespace ItemTTT.Views
 {
 	public class ItemTTTController : Controller
 	{
+		private const string	ListPartial		= Startup.ViewsLocation+"ItemTTT/List_List.cshtml";
+		private const string	GridPartial		= Startup.ViewsLocation+"ItemTTT/List_Grid.cshtml";
+
 		private readonly PageHelper				PageHelper;
 		private readonly Models.ItemTTTContext	DataContext;
 
-		internal const OrderBys		OrderByDefault		= OrderBys.name;
-		private const ViewTypes		ViewTypeDefault		= ViewTypes.grid;
+		internal const SortingFields	SortingFieldDefault	= SortingFields.name;
+		private const ViewModes			ViewModeDefault		= ViewModes.grid;
 
-		public enum ViewTypes	{ grid, list };
-		public enum OrderBys	{ price, name }
+		public enum ViewModes		{ grid, list };
+		public enum SortingFields	{ price, name }
 
 		internal static string CreateUrlDetails(Languages language, string itemCode)
 		{
@@ -34,30 +37,49 @@ namespace ItemTTT.Views
 		}
 
 		[HttpGet( Routes.ItemsList )]
-		public async Task<IActionResult> List(ViewTypes? viewType=null, OrderBys? orderBy=null, bool noLayout=false)
+		public async Task<IActionResult> List(ViewModes? viewMode=null, SortingFields? sortingField=null, bool noLayout=false)
 		{
 			var logHelper = PageHelper.ScopeLogs;
-			logHelper.AddLogMessage( $"ItemsList: START: {nameof(viewType)}:{viewType},  {nameof(orderBy)}:{orderBy},  {nameof(noLayout)}:{noLayout}" );
+			logHelper.AddLogMessage( $"ItemsList: START: {nameof(viewMode)}:{viewMode},  {nameof(sortingField)}:{sortingField},  {nameof(noLayout)}:{noLayout}" );
 
-			viewType = Utils.GetSetCookie( HttpContext, specified:viewType, fallback:ViewTypeDefault );
-			logHelper.AddLogMessage( $"ItemsList: Using {nameof(viewType)}:{viewType}" );
-			orderBy = Utils.GetSetCookie( HttpContext, specified:orderBy, fallback:OrderByDefault );
-			logHelper.AddLogMessage( $"ItemsList: Using {nameof(orderBy)}:{orderBy}" );
+			viewMode = Utils.GetSetCookie( HttpContext, specified:viewMode, fallback:ViewModeDefault );
+			logHelper.AddLogMessage( $"ItemsList: Using {nameof(viewMode)}:{viewMode}" );
+			sortingField = Utils.GetSetCookie( HttpContext, specified:sortingField, fallback:SortingFieldDefault );
+			logHelper.AddLogMessage( $"ItemsList: Using {nameof(sortingField)}:{sortingField}" );
 
-			var rv = await (new Services.ItemController(DataContext, PageHelper)).Query( itemCode:null, orderBy:orderBy.Value );
+			var rv = await (new Services.ItemController(DataContext, PageHelper)).Query( itemCode:null, sortingField:sortingField.Value );
 			if(! rv.Success )
 				throw new Utils.TTTException( rv.ErrorMessage );
 
-			var result = View( new ListModel{ ViewType=viewType.Value, OrderBy=orderBy.Value, NoLayout=noLayout, Items=rv.Result } );
-			logHelper.AddLogMessage( $"ItemsList: END" );
-			return result;
+			string view;
+			switch( viewMode.Value )
+			{
+				case ViewModes.list:	view = ListPartial;		break;
+				case ViewModes.grid:	view = GridPartial;		break;
+				default: throw new NotImplementedException( $"Invalid value '{viewMode}' for parameter '{nameof(viewMode)}'" );
+			}
+			var model = new ListModel{	View			= view,
+										ViewMode		= viewMode.Value,
+										SortingField	= sortingField.Value,
+										Items			= rv.Result };
+
+			if(! noLayout )
+			{
+				logHelper.AddLogMessage( $"ItemsList: END using default view" );
+				return View( model );
+			}
+			else
+			{
+				logHelper.AddLogMessage( $"ItemsList: END using view '{view}'" );
+				return View( view, model );
+			}
 		}
 		public struct ListModel
 		{
-			public ViewTypes	ViewType;
-			public OrderBys		OrderBy;
-			public bool			NoLayout;
-			public DTOs.Item[]	Items;
+			public string			View;
+			public ViewModes		ViewMode;
+			public SortingFields	SortingField;
+			public DTOs.Item[]		Items;
 		}
 
 		[HttpGet( Routes.ItemDetails )]
@@ -66,7 +88,7 @@ namespace ItemTTT.Views
 			var logHelper = PageHelper.ScopeLogs;
 			logHelper.AddLogMessage( $"ItemDetails: START: {nameof(itemCode)}:{itemCode}" );
 
-			var rv = await (new Services.ItemController( DataContext, PageHelper )).Query( itemCode:itemCode, orderBy:null );
+			var rv = await (new Services.ItemController( DataContext, PageHelper )).Query( itemCode:itemCode, sortingField:null );
 			if(! rv.Success )
 				throw new Utils.TTTException( rv.ErrorMessage );
 			if( rv.Result.Length == 0 )

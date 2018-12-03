@@ -2,43 +2,222 @@
 
 },{}],2:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
-const common = require("./src/Views/common");
+var common = require("./src/Views/common");
+var itemlist = require("./src/Views/ItemTTT/List");
 ///////
 // Global assignment of window.itemttt (will be available in each pages e.g. from the console):
-var itemttt = {
+var ttt = {
     common: common,
-    api: {},
+    itemttt: {
+        list: itemlist,
+    },
 };
-window.itemttt = itemttt;
+window.ttt = ttt;
 
-},{"./src/Views/common":3}],3:[function(require,module,exports){
+},{"./src/Views/ItemTTT/List":5,"./src/Views/common":6}],3:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
-const common = require("./common");
+var _a;
+var common = require("./Views/common");
+exports.Languages = (_a = common.utils.strEnum(['en', 'fr', 'nl']), _a.e), exports.allLanguages = _a.a;
+
+},{"./Views/common":6}],4:[function(require,module,exports){
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var common = require("../common");
+var list;
+(function (list) {
+    var _a, _b;
+    _a = common.utils.strEnum(['grid', 'list']), list.ViewModes = _a.e, list.allViewModes = _a.a;
+    _b = common.utils.strEnum(['price', 'name']), list.SortingFields = _b.e, list.allSortingFields = _b.a;
+    function getListContent(p) {
+        return __awaiter(this, void 0, void 0, function () {
+            var url;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        url = common.routes.itemTTT.itemsList.replace(common.routes.languageParameter, common.pageParameters.currentLanguage);
+                        return [4 /*yield*/, common.url.getRequest(url, p)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    }
+    list.getListContent = getListContent;
+    ;
+})(list = exports.list || (exports.list = {}));
+
+},{"../common":6}],5:[function(require,module,exports){
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var common = require("../common");
+var ItemTTTController_1 = require("./ItemTTTController");
+function sleep(ms) {
+    return new Promise(function (resolve) { return setTimeout(resolve, ms); });
+}
+// DELETEME
+function testPromise() {
+    return __awaiter(this, void 0, void 0, function () {
+        var task;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    common.utils.log('A', "" + new Date());
+                    task = sleep(3000);
+                    common.utils.log('B', "" + new Date());
+                    return [4 /*yield*/, task];
+                case 1:
+                    _a.sent();
+                    common.utils.log('C', "" + new Date());
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+var $divCarsList;
+function init(p) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            common.utils.log('list.init() START');
+            testPromise();
+            $divCarsList = p.$divCarsList;
+            p.$btnViewGrid.click(function () { refreshList({ viewMode: ItemTTTController_1.list.ViewModes.grid }); });
+            p.$btnViewList.click(function () { refreshList({ viewMode: ItemTTTController_1.list.ViewModes.list }); });
+            p.$btnSortName.click(function () { refreshList({ sortingField: ItemTTTController_1.list.SortingFields.name }); });
+            p.$btnSortPrice.click(function () { refreshList({ sortingField: ItemTTTController_1.list.SortingFields.price }); });
+            common.utils.log('list.init() END');
+            return [2 /*return*/];
+        });
+    });
+}
+exports.init = init;
+function refreshList(p) {
+    return __awaiter(this, void 0, void 0, function () {
+        var html;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    common.utils.log('list.refresh() START');
+                    p.noLayout = true;
+                    return [4 /*yield*/, ItemTTTController_1.list.getListContent(p)];
+                case 1:
+                    html = _a.sent();
+                    $divCarsList.html(html);
+                    common.utils.log('list.refresh() END');
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+
+},{"../common":6,"./ItemTTTController":4}],6:[function(require,module,exports){
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+var common = require("./common");
 exports.debugMessages = false; // NB: 'export' so that it can be easily changed from the browser's console
 function init(p) {
-    common.utils.log('INIT', { pageParameters: p.pageParameters });
     exports.pageParameters = p.pageParameters;
+    exports.routes = exports.pageParameters.routes;
+    utils.log('common.init()');
 }
 exports.init = init;
 var utils;
 (function (utils) {
-    function log(...optionalParams) {
-        console.log.apply(console, arguments);
+    function log() {
+        var optionalParams = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            optionalParams[_i] = arguments[_i];
+        }
+        if (exports.pageParameters.isDebug)
+            console.log.apply(console, arguments);
     }
     utils.log = log;
-    function error(...optionalParams) {
-        console.log.apply(console, arguments);
+    function error() {
+        var optionalParams = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            optionalParams[_i] = arguments[_i];
+        }
+        console.error.apply(console, arguments);
     }
     utils.error = error;
     /** Function to simulate string-valued enums
      * Based on: https://basarat.gitbooks.io/typescript/docs/types/literal-types.html
      * Returns: { e:the enum , a:the array specified as parameter } */
     function strEnum(a) {
-        const e = a.reduce((res, key) => {
+        var e = a.reduce(function (res, key) {
             res[key] = key;
             return res;
         }, Object.create(null));
-        return { e, a };
+        return { e: e, a: a };
     }
     utils.strEnum = strEnum;
     function stringIsNullOrEmpty(str) {
@@ -60,7 +239,7 @@ var utils;
     function htmlEncode(txt) {
         // TODO: Find a better way ?
         if (Array.isArray(txt))
-            return $.map(txt, v => $(document.createElement('span')).text(v).html()).join('<br/>');
+            return $.map(txt, function (v) { return $(document.createElement('span')).text(v).html(); }).join('<br/>');
         else
             return $(document.createElement('span')).text(txt).html();
     }
@@ -69,13 +248,14 @@ var utils;
         return (a.indexOf(item) >= 0);
     }
     utils.arrayContains = arrayContains;
-    function arrayUnique(a) {
-        //return a.filter( (v,i)=>( a.indexOf(v) === i ) );
-        return [...new Set(a)];
-    }
-    utils.arrayUnique = arrayUnique;
+    //ES5 incompatible ...
+    //	export function arrayUnique<T>(a:T[]) : T[]
+    //	{
+    //		//return a.filter( (v,i)=>( a.indexOf(v) === i ) );
+    //		return [ ... new Set(a) ];
+    //	}
     function arrayRemoveItem(a, item) {
-        let i = a.indexOf(item);
+        var i = a.indexOf(item);
         if (i < 0)
             return false;
         a.splice(i, 1);
@@ -83,7 +263,7 @@ var utils;
     }
     utils.arrayRemoveItem = arrayRemoveItem;
     function arraySum(a, f) {
-        let rc = 0;
+        var rc = 0;
         a.forEach(function (e) {
             rc += f(e);
         });
@@ -92,13 +272,13 @@ var utils;
     utils.arraySum = arraySum;
     function arrayMoveItem(p) {
         // NB: Does not yet work when n>1 ...
-        let n = 1;
+        var n = 1;
         if (p.direction != null)
             n = (p.direction == 'up') ? -n : n;
-        const i = p.list.indexOf(p.item); // Start position
+        var i = p.list.indexOf(p.item); // Start position
         if (i < 0)
             throw { error: 'Could not find item in list', item: p.item };
-        let j = i + n; // End position
+        var j = i + n; // End position
         if (j < 0)
             j = 0;
         else if (j >= p.list.length)
@@ -107,7 +287,7 @@ var utils;
             // NOOP
             return p.list;
         // Swap items here
-        const tmp = p.list[i];
+        var tmp = p.list[i];
         p.list[i] = p.list[j];
         p.list[j] = tmp;
         return p.list;
@@ -179,7 +359,7 @@ var html;
     html.unblock = unblock;
     function ensureVisible($e) {
         // Scroll
-        const offset = $e.offset().top - (20 + $e.height());
+        var offset = $e.offset().top - (20 + $e.height());
         $('html, body').animate({ scrollTop: offset }); // cf.: https://stackoverflow.com/questions/4884839/how-do-i-get-an-element-to-scroll-into-view-using-jquery?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
         // Blink
         $e.effect("highlight", {}, 2000); // cf.: https://stackoverflow.com/questions/5205445/jquery-blinking-highlight-effect-on-div?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
@@ -188,7 +368,7 @@ var html;
 })(html = exports.html || (exports.html = {})); // namespace html
 var url;
 (function (url_1) {
-    const onChangedEvent = 'onUrlChanged';
+    var onChangedEvent = 'onUrlChanged';
     var onChangedCallbacks = $({});
     var onChangedCallbacksRegistered = false;
     function redirect(url) {
@@ -249,7 +429,7 @@ var url;
         if (newPath == null)
             newPath = window.location.pathname;
         if (p.parameters != null) {
-            const queryString = stringifyParameters(p.parameters);
+            var queryString = stringifyParameters(p.parameters);
             if (queryString.length > 0)
                 newPath = newPath + '?' + queryString;
         }
@@ -258,37 +438,56 @@ var url;
     url_1.createUrl = createUrl;
     /** Change the browser's current URL without triggering an HTTP request (NB: Will trigger any registered 'onChanged()' callbacks) */
     function pushHistory(p) {
-        const newPath = createUrl(p);
+        var newPath = createUrl(p);
         window.history.pushState({}, p.newTitle, newPath);
         // Invoke any registered callbacks
         onChangedCallbacks.trigger(onChangedEvent);
     }
     url_1.pushHistory = pushHistory;
+    // nb: ES5 incompatible ; requires "Promise" library
     function postRequest(url, request) {
-        if (exports.debugMessages)
-            request.debug = true;
-        let requestStr = JSON.stringify(request);
-        return new Promise((resolve, reject) => {
+        var requestStr = JSON.stringify(request);
+        return new Promise(function (resolve, reject) {
             $.ajax({ type: 'POST',
                 url: url,
                 contentType: 'application/json',
                 data: requestStr,
                 dataType: 'json',
-                success: (data, textStatus, jqXHR) => resolve(data),
-                error: (jqXHR, textStatus, errorThrown) => {
+                success: function (data, textStatus, jqXHR) { return resolve(data); },
+                error: function (jqXHR, textStatus, errorThrown) {
                     reject(textStatus);
                 }
             });
         });
     }
     url_1.postRequest = postRequest;
+    // nb: ES5 incompatible ; requires "Promise" library
+    function getRequest(url, request) {
+        if (request != null) {
+            var parms = stringifyParameters(request);
+            url = url + "?" + parms;
+        }
+        return new Promise(function (resolve, reject) {
+            $.ajax({ type: 'GET',
+                url: url,
+                contentType: 'text/html',
+                success: function (data, textStatus, jqXHR) { return resolve(data); },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    reject(textStatus);
+                }
+            });
+        });
+    }
+    url_1.getRequest = getRequest;
     function downloadFile(url) {
         $(document.body).append($("<iframe/>").attr({ src: url,
             style: 'visibility:hidden;display:none' }));
     }
     url_1.downloadFile = downloadFile;
 })(url = exports.url || (exports.url = {})); // namespace url
+// nb: Exports at the end or the order of execution breaks everything (i.e. strEnum must be defined before) ...
+__export(require("../Language"));
 
-},{"./common":3}]},{},[1,2])
+},{"../Language":3,"./common":6}]},{},[1,2])
 
 //# sourceMappingURL=site.js.map

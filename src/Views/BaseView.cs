@@ -1,8 +1,14 @@
 
+using System;
+
 namespace ItemTTT.Views
 {
 	public abstract class BaseView : Microsoft.AspNetCore.Mvc.Razor.RazorPage<object>
 	{
+		/// <summary>Tag parameter to add to scripts URLs so browsers' cache get refreshed</summary>
+		protected string		ScriptsTag		{ get { return scriptsTag ?? (scriptsTag = Guid.NewGuid().ToString().Replace("-", "")); } }
+		private static string	scriptsTag		= null;
+
 		protected bool	IsEN	{ get; private set; }
 		protected bool	IsFR	{ get; private set; }
 		protected bool	IsNL	{ get; private set; }

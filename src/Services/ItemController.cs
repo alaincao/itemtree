@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ItemTTT.Services
 {
-	using OrderBys = Views.ItemTTTController.OrderBys;
+	using SortingFields = Views.ItemTTTController.SortingFields;
 
 	public class ItemController : Controller
 	{
@@ -23,18 +23,18 @@ namespace ItemTTT.Services
 
 		[HttpGet( Routes.ItemsListApi )]
 		[HttpPost( Routes.ItemsListApi )]
-		public async Task<Utils.TTTServiceResult<DTOs.Item[]>> List(OrderBys? orderBy=null)
+		public async Task<Utils.TTTServiceResult<DTOs.Item[]>> List(SortingFields? sortingField=null)
 		{
 			try
 			{
 				var logHelper = PageHelper.ScopeLogs;
-				logHelper.AddLogMessage( $"ItemsList: START: {nameof(orderBy)}:{orderBy}" );
+				logHelper.AddLogMessage( $"ItemsList: START: {nameof(sortingField)}:{sortingField}" );
 
-				if( orderBy == null )
+				if( sortingField == null )
 					// nb: APIs are using had-coded values to have consistent behaviour => Not checking cookie here
-					orderBy = Views.ItemTTTController.OrderByDefault;
+					sortingField = Views.ItemTTTController.SortingFieldDefault;
 
-				var rv = await Query( itemCode:null, orderBy:orderBy.Value );
+				var rv = await Query( itemCode:null, sortingField:sortingField.Value );
 
 				logHelper.AddLogMessage( $"ItemsList: END" );
 				return rv;
@@ -57,7 +57,7 @@ namespace ItemTTT.Services
 				if( string.IsNullOrWhiteSpace(itemCode) )
 					return new Utils.TTTServiceResult<DTOs.Item>( PageHelper, $"Missing parameter {nameof(itemCode)}" );
 
-				var rv = await Query( itemCode:itemCode, orderBy:null );
+				var rv = await Query( itemCode:itemCode, sortingField:null );
 				if(! rv.Success )
 					return new Utils.TTTServiceResult<DTOs.Item>( PageHelper, rv.ErrorMessage );
 				if( rv.Result.Length == 0 )
@@ -74,10 +74,10 @@ namespace ItemTTT.Services
 			}
 		}
 
-		internal async Task<Utils.TTTServiceResult<DTOs.Item[]>> Query(string itemCode, OrderBys? orderBy)
+		internal async Task<Utils.TTTServiceResult<DTOs.Item[]>> Query(string itemCode, SortingFields? sortingField)
 		{
 			var logHelper = PageHelper.ScopeLogs;
-			logHelper.AddLogMessage( $"ItemQuery: START: {nameof(itemCode)}:{itemCode}, {nameof(orderBy)}:{orderBy}" );
+			logHelper.AddLogMessage( $"ItemQuery: START: {nameof(itemCode)}:{itemCode}, {nameof(sortingField)}:{sortingField}" );
 
 			var dc = DataContext;
 
@@ -87,13 +87,13 @@ namespace ItemTTT.Services
 				query = query.Where( v=>v.Code == itemCode );
 			if(! PageHelper.IsAutenticated )
 				query = query.Where( v=>v.Active == true );
-			switch( orderBy )
+			switch( sortingField )
 			{
 				case null: break;
-				case OrderBys.name:		query = query.OrderBy( v=>v.Name );		break;
-				case OrderBys.price:	query = query.OrderBy( v=>v.Price );	break;
+				case SortingFields.name:	query = query.OrderBy( v=>v.Name );		break;
+				case SortingFields.price:	query = query.OrderBy( v=>v.Price );	break;
 				default:
-					throw new NotImplementedException( $"Invalid value '{orderBy}' for parameter '{nameof(orderBy)}'" );
+					throw new NotImplementedException( $"Invalid value '{sortingField}' for parameter '{nameof(sortingField)}'" );
 			}
 			var items = await query.ToAsyncEnumerable()
 										.Select( v=>new DTOs.Item(v) )

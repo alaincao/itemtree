@@ -6,12 +6,6 @@
 	var item = (ItemTTT.DTOs.Item)Model;
 	parameters.PageTitle = item.Name;
 }
-@section Scripts
-{
-	<script type="text/javascript">
-		$('#preParameters').html( JSON.stringify(itemttt.common.pageParameters, null, 2) )
-	</script>
-}
 
 <div>
 	<label ttt-only-if="IsEN">Name:</label>
@@ -49,9 +43,4 @@
 Model dump:
 <pre>
 @Html.Raw(JSON( item ))
-</pre>
-
-Page parameters:
-<hr/>
-<pre id="preParameters">
 </pre>

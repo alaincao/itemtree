@@ -69,9 +69,9 @@ namespace ItemTTT
 			// nb: The list of all cookies in the application ; This to ensure there is no conflicts
 			if( t == typeof(Languages) )
 				return "language";
-			else if( t == typeof(Views.ItemTTTController.ViewTypes) )
+			else if( t == typeof(Views.ItemTTTController.ViewModes) )
 				return "itemsview";
-			else if( t == typeof(Views.ItemTTTController.OrderBys) )
+			else if( t == typeof(Views.ItemTTTController.SortingFields) )
 				return "itemsorder";
 			else
 				throw new ArgumentException( $"Unknown cookie type '{t.FullName}'" );

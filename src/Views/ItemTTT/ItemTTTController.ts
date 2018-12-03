@@ -1,0 +1,23 @@
+
+import * as common from "../common";
+
+export namespace list
+{
+	export const { e:ViewModes, a:allViewModes } = common.utils.strEnum([ 'grid', 'list' ]);
+	export type ViewMode = keyof typeof ViewModes;
+
+	export const { e:SortingFields, a:allSortingFields } = common.utils.strEnum([ 'price', 'name' ]);
+	export type SortingField = keyof typeof SortingFields;
+
+	export async function getListContent(p:GetListContentRequest) : Promise<string>
+	{
+		var url = common.routes.itemTTT.itemsList.replace( common.routes.languageParameter, common.pageParameters.currentLanguage );
+		return await common.url.getRequest( url, p );
+	}
+	export interface GetListContentRequest
+		{
+			viewMode?		: ViewMode,
+			sortingField?	: SortingField,
+			noLayout?		: boolean,
+		};
+}

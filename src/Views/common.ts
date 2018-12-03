@@ -1,25 +1,31 @@
 
 import * as common from "./common";
+import { PageParameters } from "../PageHelper";
+import { Routes } from "../Routes";
+
 
 export const debugMessages : boolean = false;  // NB: 'export' so that it can be easily changed from the browser's console
-export var pageParameters : any;
+export var pageParameters : PageParameters;
+export var routes : Routes;
 
-export function init(p:{ pageParameters:any })
+export function init(p:{ pageParameters:PageParameters })
 {
-	common.utils.log( 'INIT', { pageParameters:p.pageParameters} );
 	pageParameters = p.pageParameters;
+	routes = pageParameters.routes;
+	utils.log( 'common.init()' );
 }
 
 export namespace utils
 {
 	export function log(...optionalParams: any[]) : void
 	{
-		console.log.apply( console, arguments );
+		if( pageParameters.isDebug )
+			console.log.apply( console, arguments );
 	}
 
 	export function error(...optionalParams: any[]) : void
 	{
-		console.log.apply( console, arguments );
+		console.error.apply( console, arguments );
 	}
 
 	/** Function to simulate string-valued enums
@@ -66,11 +72,12 @@ export namespace utils
 		return ( a.indexOf( item ) >= 0 );
 	}
 
-	export function arrayUnique<T>(a:T[]) : T[]
-	{
-		//return a.filter( (v,i)=>( a.indexOf(v) === i ) );
-		return [ ... new Set(a) ];
-	}
+//ES5 incompatible ...
+//	export function arrayUnique<T>(a:T[]) : T[]
+//	{
+//		//return a.filter( (v,i)=>( a.indexOf(v) === i ) );
+//		return [ ... new Set(a) ];
+//	}
 
 	export function arrayRemoveItem<T>(a:T[], item:T) : boolean
 	{
@@ -312,11 +319,9 @@ export namespace url
 		onChangedCallbacks.trigger( onChangedEvent );
 	}
 
+	// nb: ES5 incompatible ; requires "Promise" library
 	export function postRequest<T>(url:string, request:{[key:string]:any}) : Promise<T>
 	{
-		if( debugMessages )
-			request.debug = true;
-
 		let requestStr = JSON.stringify( request );
 		return new Promise<T>( (resolve,reject)=>
 			{
@@ -334,6 +339,29 @@ export namespace url
 			} );
 	}
 
+	// nb: ES5 incompatible ; requires "Promise" library
+	export function getRequest(url:string, request?:{[key:string]:any}) : Promise<string>
+	{
+		if( request != null )
+		{
+			const parms = stringifyParameters( request );
+			url = `${url}?${parms}`;
+		}
+
+		return new Promise<string>( (resolve,reject)=>
+			{
+				$.ajax({	type		: 'GET',
+							url			: url,
+							contentType	: 'text/html',
+							success		: (data,textStatus,jqXHR)=>resolve( data ),
+							error		: (jqXHR,textStatus,errorThrown)=>
+											{
+												reject( textStatus );
+											}
+						});
+			} );
+	}
+
 	export function downloadFile(url:string) : void
 	{
 		$(document.body).append( $("<iframe/>").attr({	src		: url,
@@ -342,3 +370,8 @@ export namespace url
 	}
 
 } // namespace url
+
+// nb: Exports at the end or the order of execution breaks everything (i.e. strEnum must be defined before) ...
+export * from "../Language";
+export * from "../PageHelper";
+export * from "../Routes";

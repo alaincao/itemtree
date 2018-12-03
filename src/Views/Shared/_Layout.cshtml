@@ -38,6 +38,9 @@
 
 	@if( useMinified )
 	{
+		<!-- Add 'Promise' support for crappy browsers (i.e. IE) ; cf. tsconfig.json -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.1.1/es6-promise.auto.min.js" integrity="sha384-kM3+BR0fKGmv8mDasMGLSHdqcbgWHUNWV1rAL+tkqnH578xS82vhlu9gR5BHhBai" crossorigin="anonymous"></script>
+
 		<!-- JQuery -->
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous"></script>
 		<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha384-YWP9O4NjmcGo4oEJFXvvYSEzuHIvey+LbXkBNJ1Kd0yfugEZN9NCQNpRYBVC1RvA" crossorigin="anonymous"></script>
@@ -46,10 +49,13 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js" integrity="sha384-/EjRuG6YTb6zCFou+DBnYCi5u9E1RjUMJanyGOL7DUYLp6wSCUuHNhd58uoGj7jh" crossorigin="anonymous"></script>
 
 		<!-- Customs -->
-		<script src="/js/site.min.js"></script>
+		<script src="/js/site.min.js?@ScriptsTag"></script>
 	}
 	else
 	{
+		<!-- Add 'Promise' support for crappy browsers (i.e. IE) ; cf. tsconfig.json -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.1.1/es6-promise.auto.js" integrity="sha384-s8Gt4ERvDZYyl6biM1HM3m5Se2TEUGgc+byqDTy71SUxtpKx+B2QjN42bgHBpF2s" crossorigin="anonymous"></script>
+
 		<!-- JQuery -->
 		<script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha384-p7RDedFtQzvcp0/3247fDud39nqze/MUmahi6MOWjyr3WKWaMOyqhXuCT1sM9Q+l" crossorigin="anonymous"></script>
 		<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js" integrity="sha384-YwCdhNQ2IwiYajqT/nGCj0FiU5SR4oIkzYP3ffzNWtu39GKBddP0M0waDU7Zwco0" crossorigin="anonymous"></script>
@@ -58,12 +64,12 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-debug.js" integrity="sha384-F/fcEO4EVmRT01RLfQkEfISacGoUZoFekRlihw1rlTibSOCSLMnrFJsj7fXgJRie" crossorigin="anonymous"></script>
 
 		<!-- Customs -->
-		<script src="/js/site.js"></script>
+		<script src="/js/site.js?@ScriptsTag"></script>
 	}
 
 	<!-- Initialize common module -->
 	<script type="text/javascript">
-		itemttt.common.init({ pageParameters:@Html.Raw(JSON(parameters)) });
+		ttt.common.init({ pageParameters:@Html.Raw(JSON(parameters)) });
 	</script>
 
 	<!-- Page's custom script -->
