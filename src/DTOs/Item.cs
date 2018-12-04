@@ -16,6 +16,7 @@ namespace ItemTTT.DTOs
 
 		public Dictionary<Languages,string>	DetailsUrls	{ get; set; }
 		public ItemPicture[]				Pictures	{ get; set; }
+		public Utils.Translation[]			Options		{ get; set; }
 
 		internal int 	MainImageNumber	= 1;  // nb: Not transmitted to client
 		public ItemPicture		FirstImage	{ get { return Pictures == null ? ItemPicture.Empty : Pictures.FirstOrDefault(); } }
@@ -28,7 +29,7 @@ namespace ItemTTT.DTOs
 			DescriptionEN	= src.DescriptionEN;
 			DescriptionFR	= src.DescriptionFR;
 			DescriptionNL	= src.DescriptionNL;
-			MainImageNumber	= src.MainImageNumber;
+			MainImageNumber	= src.MainImageNumber ?? 1;
 			Price			= src.Price;
 			Active			= src.Active;
 		}

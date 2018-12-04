@@ -36,8 +36,9 @@ namespace ItemTTT.Models
 		[Required]
 		public bool		Active			{ get; set; }
 
-		public int		MainImageNumber	{ get; set; }
+		public int?		MainImageNumber	{ get; set; }
 
 		public List<ItemPicture>	Pictures		{ get; set; }
+		public List<ItemOptionLink>	OptionLinks		{ get; set; }
 	}
 }

@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -95,10 +96,10 @@ namespace ItemTTT.Services
 				default:
 					throw new NotImplementedException( $"Invalid value '{sortingField}' for parameter '{nameof(sortingField)}'" );
 			}
-			var items = await query.ToAsyncEnumerable()
-										.Select( v=>new DTOs.Item(v) )
+			var rows = await query.ToAsyncEnumerable()
+										.Select( v=>new{ ItemID=v.ID, Item=new DTOs.Item(v) } )
 										.ToArray();
-			if( items.Length == 0 )
+			if( rows.Length == 0 )
 				// No need to continue ...
 				goto EXIT;
 
@@ -108,17 +109,34 @@ namespace ItemTTT.Services
 				return new Utils.TTTServiceResult<DTOs.Item[]>( PageHelper, picturesRv.ErrorMessage );
 			var picturesDict = picturesRv.Result.GroupBy( v=>v.ItemCode ).ToDictionary( v=>v.Key, v=>v.ToArray() );
 
-			logHelper.AddLogMessage( $"ItemQuery: Complete fields for '{items.Length}' items" );
-			var allLanguages = Enum.GetValues(typeof(Languages)).Cast<Languages>().ToArray();
-			foreach( var item in items )
+			logHelper.AddLogMessage( $"ItemQuery: Retreive options" );
+			Dictionary<int,string[]> options;
 			{
-				item.DetailsUrls	= allLanguages.ToDictionary( v=>v, l=>PageHelper.ResolveRoute(Views.ItemTTTController.CreateUrlDetails(l, item.Code)) );
-				item.Pictures	= picturesDict.TryGet( item.Code ) ?? new DTOs.ItemPicture[]{};
+				var itemIDs = rows.Select( v=>v.ItemID );
+				var array = await (	from optn in dc.ItemOptions
+									join link in dc.ItemOptionLinks on optn.ID equals link.ItemOptionID
+									where itemIDs.Contains( link.ItemID )
+									orderby optn.Order
+									select new{ link.ItemID, optn.NameEN } )
+								.ToArrayAsync();
+				options = array	.GroupBy( v=>v.ItemID )
+								.ToDictionary( v=>v.Key, v=>v.Select( w=>w.NameEN ).ToArray() );
+			}
+
+			logHelper.AddLogMessage( $"ItemQuery: Complete fields for '{rows.Length}' items" );
+			var allLanguages = Enum.GetValues(typeof(Languages)).Cast<Languages>().ToArray();
+			foreach( var row in rows )
+			{
+				row.Item.DetailsUrls	= allLanguages.ToDictionary( v=>v, l=>PageHelper.ResolveRoute(Views.ItemTTTController.CreateUrlDetails(l, row.Item.Code)) );
+				row.Item.Pictures		= picturesDict.TryGet( row.Item.Code ) ?? new DTOs.ItemPicture[]{};
+				row.Item.Options		= options.TryGet( row.ItemID )
+													.Select( nameEN=>Utils.Translations.Get(dc, Models.Translation.Types.Option, nameEN) )
+													.ToArray();
 			}
 
 		EXIT:
 			logHelper.AddLogMessage( $"ItemQuery: END" );
-			return new Utils.TTTServiceResult<DTOs.Item[]>( PageHelper ){ Result=items };
+			return new Utils.TTTServiceResult<DTOs.Item[]>( PageHelper ){ Result=rows.Select(v=>v.Item).ToArray() };
 		}
 	}
 }
