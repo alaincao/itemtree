@@ -70,9 +70,9 @@ namespace ItemTTT
 			if( t == typeof(Languages) )
 				return "language";
 			else if( t == typeof(Views.ItemTTTController.ViewModes) )
-				return "itemsview";
+				return "listing_view";
 			else if( t == typeof(Views.ItemTTTController.SortingFields) )
-				return "itemsorder";
+				return "listing_order";
 			else
 				throw new ArgumentException( $"Unknown cookie type '{t.FullName}'" );
 		}

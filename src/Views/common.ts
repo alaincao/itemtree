@@ -167,6 +167,11 @@ export namespace utils
 		};
 		return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
 	}
+
+	export function sleep(ms:number) : Promise<void>
+	{
+		return new Promise( resolve => setTimeout(resolve, ms) );
+	}
 } // namespace utils
 
 export namespace html

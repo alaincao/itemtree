@@ -91,8 +91,10 @@ namespace ItemTTT.Services
 			switch( sortingField )
 			{
 				case null: break;
-				case SortingFields.name:	query = query.OrderBy( v=>v.Name );		break;
-				case SortingFields.price:	query = query.OrderBy( v=>v.Price );	break;
+				case SortingFields.name:		query = query.OrderBy( v=>v.Name );				break;
+				case SortingFields.name_desc:	query = query.OrderByDescending( v=>v.Name );	break;
+				case SortingFields.price:		query = query.OrderBy( v=>v.Price );			break;
+				case SortingFields.price_desc:	query = query.OrderByDescending( v=>v.Price );	break;
 				default:
 					throw new NotImplementedException( $"Invalid value '{sortingField}' for parameter '{nameof(sortingField)}'" );
 			}

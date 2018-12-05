@@ -62,7 +62,7 @@ var list;
 (function (list) {
     var _a, _b;
     _a = common.utils.strEnum(['grid', 'list']), list.ViewModes = _a.e, list.allViewModes = _a.a;
-    _b = common.utils.strEnum(['price', 'name']), list.SortingFields = _b.e, list.allSortingFields = _b.a;
+    _b = common.utils.strEnum(['price', 'price_desc', 'name', 'name_desc']), list.SortingFields = _b.e, list.allSortingFields = _b.a;
     function getListContent(p) {
         return __awaiter(this, void 0, void 0, function () {
             var url;
@@ -119,34 +119,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("../common");
 var ItemTTTController_1 = require("./ItemTTTController");
-function sleep(ms) {
-    return new Promise(function (resolve) { return setTimeout(resolve, ms); });
-}
-// DELETEME
-function testPromise() {
-    return __awaiter(this, void 0, void 0, function () {
-        var task;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    common.utils.log('A', "" + new Date());
-                    task = sleep(3000);
-                    common.utils.log('B', "" + new Date());
-                    return [4 /*yield*/, task];
-                case 1:
-                    _a.sent();
-                    common.utils.log('C', "" + new Date());
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
+var currentSortingField;
 var $divCarsList;
 function init(p) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             common.utils.log('list.init() START');
-            testPromise();
+            currentSortingField = p.sortingField;
             $divCarsList = p.$divCarsList;
             p.$btnViewGrid.click(function () { refreshList({ viewMode: ItemTTTController_1.list.ViewModes.grid }); });
             p.$btnViewList.click(function () { refreshList({ viewMode: ItemTTTController_1.list.ViewModes.list }); });
@@ -164,13 +143,28 @@ function refreshList(p) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    common.utils.log('list.refresh() START');
+                    common.utils.log('list.refreshList() START', { p: p, currentSortingField: currentSortingField });
+                    // Ask for the stripped version of the page (no layout)
                     p.noLayout = true;
+                    // Switch to descending order if required
+                    if (p.sortingField != null) {
+                        if (p.sortingField == currentSortingField) {
+                            switch (currentSortingField) {
+                                case ItemTTTController_1.list.SortingFields.name:
+                                    p.sortingField = ItemTTTController_1.list.SortingFields.name_desc;
+                                    break;
+                                case ItemTTTController_1.list.SortingFields.price:
+                                    p.sortingField = ItemTTTController_1.list.SortingFields.price_desc;
+                                    break;
+                            }
+                        }
+                        currentSortingField = p.sortingField;
+                    }
                     return [4 /*yield*/, ItemTTTController_1.list.getListContent(p)];
                 case 1:
                     html = _a.sent();
                     $divCarsList.html(html);
-                    common.utils.log('list.refresh() END');
+                    common.utils.log('list.refresh() END', { currentSortingField: currentSortingField });
                     return [2 /*return*/];
             }
         });
@@ -325,6 +319,10 @@ var utils;
         return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
     }
     utils.newGuid = newGuid;
+    function sleep(ms) {
+        return new Promise(function (resolve) { return setTimeout(resolve, ms); });
+    }
+    utils.sleep = sleep;
 })(utils = exports.utils || (exports.utils = {})); // namespace utils
 var html;
 (function (html) {

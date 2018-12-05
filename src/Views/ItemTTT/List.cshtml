@@ -4,11 +4,13 @@
 
 	var model = (ItemTTT.Views.ItemTTTController.ListModel)Model;
 	var view = model.View;
+	var sortingField = model.SortingField;
 }
 @section Scripts
 {
 <script type="text/javascript">
 	ttt.itemttt.list.init( {
+			sortingField	: '@sortingField',
 			$divCarsList	: $('#d3895bed'),
 			$btnViewList	: $('#c0f0cb69'),
 			$btnViewGrid	: $('#e903ced8'),

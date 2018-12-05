@@ -19,7 +19,7 @@ namespace ItemTTT.Views
 		private const ViewModes			ViewModeDefault		= ViewModes.grid;
 
 		public enum ViewModes		{ grid, list };
-		public enum SortingFields	{ price, name }
+		public enum SortingFields	{ price, price_desc, name, name_desc }
 
 		internal static string CreateUrlDetails(Languages language, string itemCode)
 		{
