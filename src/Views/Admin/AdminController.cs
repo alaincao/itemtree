@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ItemTTT.Views
 {
-	public class AdminController : Controller
+	public class AdminController : BaseController
 	{
 		private readonly PageHelper				PageHelper;
 		private readonly Models.ItemTTTContext	DataContext;
@@ -23,7 +23,7 @@ namespace ItemTTT.Views
 		[HttpGet( Routes.Login )]
 		public IActionResult Login()
 		{
-			if( PageHelper.IsAutenticated )
+			if( PageHelper.IsAuthenticated )
 				// Already authenticated
 				return Redirect( Routes.AdminHome );
 			return View();
@@ -50,8 +50,8 @@ namespace ItemTTT.Views
 		[HttpGet( Routes.Logout )]
 		public async Task<IActionResult> Logout()
 		{
-			if(! PageHelper.IsAutenticated )
-				return NotFound();
+			if(! PageHelper.IsAuthenticated )
+				return NotAuthenticated();
 
 			var rv = await ( new Services.LoginController(DataContext, PageHelper){ ControllerContext=ControllerContext } )
 												.Logout();

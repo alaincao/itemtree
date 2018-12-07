@@ -1,0 +1,33 @@
+@inherits ItemTTT.Views.BaseView
+@{
+	Init( PageHelper );
+
+	var parameters = PageHelper.Parameters;
+	var item = (ItemTTT.DTOs.Item)Model;
+	parameters.PageTitle = $"Edit - item.Name";
+}
+@section Scripts
+{
+<script type="text/javascript">
+	ttt.itemttt.edit.init( {
+			model				: @Html.Raw(JSON( item )),
+			$blockingDiv		: $('#d4606d97'),
+			$btnSave			: $('.f373f8f9'),
+			$fieldsContainer	: $('#d4606d97'),
+		} );
+</script>
+}
+
+<div id="d4606d97">
+	<button class="f373f8f9">Save</button>
+
+	<p><label>Code: <input type="text" ttt-name="code" data-bind="value:code"/></label></p>
+	<p><label>Name: <input type="text" ttt-name="name" data-bind="value:name"/></label></p>
+	<p><label>Description EN: <textarea type="text" ttt-name="descriptionEN" data-bind="value:descriptionEN"></textarea></label></p>
+	<p><label>Description FR: <textarea type="text" ttt-name="descriptionFR" data-bind="value:descriptionFR"></textarea></label></p>
+	<p><label>Description NL: <textarea type="text" ttt-name="descriptionNL" data-bind="value:descriptionNL"></textarea></label></p>
+	<p><label>Price: <input type="text" ttt-name="price" data-bind="value:price"/></label></p>
+	<p><label>Active: <input type="checkbox" ttt-name="active" data-bind="checked:active"/></label></p>
+
+	<button class="f373f8f9">Save</button>
+</div>

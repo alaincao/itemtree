@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ItemTTT.Views
 {
-	public class HomeController : Controller
+	public class HomeController : BaseController
 	{
 		private readonly PageHelper				PageHelper;
 		private readonly Models.ItemTTTContext	DataContext;

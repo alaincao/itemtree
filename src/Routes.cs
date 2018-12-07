@@ -23,13 +23,16 @@ namespace ItemTTT
 		internal const string	Logout				= "/admin/logout";
 		internal const string	ItemsList			= "/"+Lang+"/car-listing";
 		internal const string	ItemDetails			= "/"+Lang+"/car-details/{itemCode}";
+		internal const string	ItemEdit			= "/car-edit/{itemCode}";
 
 		// APIs
+		internal const string	GetUrlCode			= "/api/geturlcode";
 		internal const string	LoginAPI			= "/api/login";
 		internal const string	LogoutAPI			= "/api/logout";
 		internal const string	ChangePassword		= "/api/change-password";
 		internal const string	ItemsListApi		= "/api/car-listing";
 		internal const string	ItemDetailsApi		= "/api/car-details/{itemCode}";
+		internal const string	ItemSave			= "/api/car-save";
 		internal const string	ItemPictureList		= "/api/car-details/{itemCode}/pictures";
 		internal const string	ItemPictureDownload	= "/car-details/{itemCode}/pictures/{number}";
 
@@ -52,16 +55,20 @@ namespace ItemTTT
 
 			var obj = new {
 					LanguageParameter = langParm,
+					ItemCodeParameter = "{itemCode}",
 
 					ItemTTT = new {
 							ItemsList	= tr( ItemsList ),
+							ItemEdit	= tr( ItemEdit ),
 						},
 					API = new {
+							GetUrlCode			= tr( GetUrlCode ),
 							Login				= tr( LoginAPI ),
 							Logout				= tr( LogoutAPI ),
 							ChangePassword		= tr( ChangePassword ),
 							ItemsListing		= tr( ItemsListApi ),
 							ItemDetails			= tr( ItemDetailsApi ),
+							ItemSave			= tr( ItemSave ),
 							ItemDetailsPictures	= tr( ItemPictureList ),
 						},
 				};

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -7,6 +9,10 @@ namespace ItemTTT.Models
 {
 	public class ItemTTTContext : DbContext
 	{
+		internal static readonly Dictionary<string,string> KnownErrorTriggers = new Dictionary<string, string>{
+																						{ "'IX_Car'", "An item with the same code already exists" },
+																					};
+
 		public DbSet<Configuration>	Configurations	{ get; set; }
 		public DbSet<Item>				Items				{ get; set; }
 		public DbSet<ItemPicture>		ItemPictures		{ get; set; }

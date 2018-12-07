@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ItemTTT.Views
 {
-	public class ItemTTTController : Controller
+	public class ItemTTTController : BaseController
 	{
 		private const string	ListPartial		= Startup.ViewsLocation+"ItemTTT/List_List.cshtml";
 		private const string	GridPartial		= Startup.ViewsLocation+"ItemTTT/List_Grid.cshtml";
@@ -49,7 +49,7 @@ namespace ItemTTT.Views
 
 			var rv = await (new Services.ItemController(DataContext, PageHelper)).Query( itemCode:null, sortingField:sortingField.Value );
 			if(! rv.Success )
-				throw new Utils.TTTException( rv.ErrorMessage );
+				throw NewUnexpectedException( rv.ErrorMessage );
 
 			string view;
 			switch( viewMode.Value )
@@ -90,15 +90,25 @@ namespace ItemTTT.Views
 
 			var rv = await (new Services.ItemController( DataContext, PageHelper )).Query( itemCode:itemCode, sortingField:null );
 			if(! rv.Success )
-				throw new Utils.TTTException( rv.ErrorMessage );
+				throw NewUnexpectedException( rv.ErrorMessage );
 			if( rv.Result.Length == 0 )
-				return NotFound();
+				return ObjectNotFound();
 			Utils.Assert( rv.Result.Length == 1, this, $"Invalid result count:{rv.Result.Length} ; expected 1" );
 			var item = rv.Result[0];
 
 			var result = View( item );
 			logHelper.AddLogMessage( $"ItemDetails: END" );
 			return result;
+		}
+
+		[HttpGet( Routes.ItemEdit )]
+		public async Task<IActionResult> Edit(string itemCode)
+		{
+			PageHelper.ScopeLogs.AddLogMessage( $"ItemEdit: START" );
+			if(! PageHelper.IsAuthenticated )
+				return NotAuthenticated();
+
+			return await Details( itemCode );
 		}
 	}
 }

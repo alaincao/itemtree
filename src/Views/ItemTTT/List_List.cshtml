@@ -11,7 +11,7 @@
 @foreach( var item in model.Items )
 {
 	<div style="border:1px solid black">
-		<div ttt-only-if="PageHelper.IsAutenticated" >
+		<div ttt-only-if="PageHelper.IsAuthenticated" >
 			<label>Active: <input type="checkbox" checked="@item.Active"/></label>
 		</div>
 		<a href="@item.DetailsUrls[PageHelper.CurrentLanguage]">

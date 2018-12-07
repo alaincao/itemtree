@@ -34,7 +34,7 @@ namespace ItemTTT
 		public readonly PageParameters	Parameters;
 		public bool						UseMinified			{ get { return Utils.IsDebug == false; } }
 		public readonly Languages		CurrentLanguage;
-		public readonly bool			IsAutenticated;
+		public readonly bool			IsAuthenticated;
 
 		private Func<string,string>	UrlHelperContent;
 
@@ -52,10 +52,10 @@ namespace ItemTTT
 					return urlHelper.Content( route );
 				};
 
-			IsAutenticated	= httpContext.User.Identity.IsAuthenticated;
+			IsAuthenticated	= httpContext.User.Identity.IsAuthenticated;
 			CurrentLanguage	= InitLangage( httpContext, out var languageURLs );
 			var routes		= Routes.GetPageParameterRoutes( this );
-			Parameters		= new PageParameters( IsAutenticated, CurrentLanguage, languageURLs, routes );
+			Parameters		= new PageParameters( IsAuthenticated, CurrentLanguage, languageURLs, routes );
 		}
 
 		internal string ResolveRoute(string route)

@@ -4,23 +4,323 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("./src/Views/common");
 var itemlist = require("./src/Views/ItemTTT/List");
+var itemedit = require("./src/Views/ItemTTT/Edit");
 ///////
 // Global assignment of window.itemttt (will be available in each pages e.g. from the console):
 var ttt = {
     common: common,
     itemttt: {
         list: itemlist,
+        edit: itemedit,
     },
 };
 window.ttt = ttt;
 
-},{"./src/Views/ItemTTT/List":5,"./src/Views/common":6}],3:[function(require,module,exports){
+},{"./src/Views/ItemTTT/Edit":7,"./src/Views/ItemTTT/List":9,"./src/Views/common":10}],3:[function(require,module,exports){
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var common = require("../Views/common");
+var BaseAutoItem_1 = require("../Utils/BaseAutoItem");
+var ItemKO = /** @class */ (function (_super) {
+    __extends(ItemKO, _super);
+    function ItemKO($container, src) {
+        var _this = _super.call(this, $container, src) || this;
+        var self = _this;
+        common.utils.ensureInteger({ observable: self.price, canBeZero: false, mustBePositive: true });
+        return _this;
+    }
+    ItemKO.prototype.toDictObj = function (dict) {
+        var rc = _super.prototype.toDictObj.call(this, dict);
+        return rc;
+    };
+    return ItemKO;
+}(BaseAutoItem_1.BaseAutoItem));
+exports.ItemKO = ItemKO;
+
+},{"../Utils/BaseAutoItem":6,"../Views/common":10}],4:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var _a;
 var common = require("./Views/common");
 exports.Languages = (_a = common.utils.strEnum(['en', 'fr', 'nl']), _a.e), exports.allLanguages = _a.a;
 
-},{"./Views/common":6}],4:[function(require,module,exports){
+},{"./Views/common":10}],5:[function(require,module,exports){
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var common = require("../Views/common");
+function getUrlCode(originalCode) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (common.utils.stringIsNullOrWhitespace(originalCode))
+                        return [2 /*return*/, null];
+                    return [4 /*yield*/, common.url.getRequest(common.routes.api.getUrlCode, { originalCode: originalCode })];
+                case 1: return [2 /*return*/, _a.sent()];
+            }
+        });
+    });
+}
+exports.getUrlCode = getUrlCode;
+function details(code) {
+    return __awaiter(this, void 0, void 0, function () {
+        var url, rc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    url = common.routes.api.itemDetails.replace(common.routes.itemCodeParameter, code);
+                    return [4 /*yield*/, common.url.postRequest(url, {})];
+                case 1:
+                    rc = _a.sent();
+                    rc.item = rc.result;
+                    delete rc.result;
+                    return [2 /*return*/, rc];
+            }
+        });
+    });
+}
+exports.details = details;
+function save(p) {
+    return __awaiter(this, void 0, void 0, function () {
+        var rc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, common.url.postRequest(common.routes.api.itemSave, p)];
+                case 1:
+                    rc = _a.sent();
+                    rc.newCode = rc.result;
+                    delete rc.result;
+                    return [2 /*return*/, rc];
+            }
+        });
+    });
+}
+exports.save = save;
+
+},{"../Views/common":10}],6:[function(require,module,exports){
+Object.defineProperty(exports, "__esModule", { value: true });
+var fieldTagAttribute = 'ttt-name';
+var BaseAutoItem = /** @class */ (function () {
+    function BaseAutoItem($container, src) {
+        this.fieldNames = [];
+        this.knockoutify($container, src);
+    }
+    BaseAutoItem.prototype.toDictObj = function (dict) {
+        var self = this;
+        var dictKO = self;
+        if (dict == null)
+            dict = {};
+        $.each(self.fieldNames, function (i, fieldName) {
+            var observable = dictKO[fieldName];
+            dict[fieldName] = observable();
+        });
+        return dict;
+    };
+    BaseAutoItem.prototype.fromDictObj = function (dict) {
+        var self = this;
+        var dictKO = self;
+        $.each(self.fieldNames, function (i, fieldName) {
+            var observable = dictKO[fieldName];
+            observable(dict[fieldName]);
+        });
+    };
+    BaseAutoItem.prototype.knockoutify = function ($container, src) {
+        var self = this;
+        var dict = this;
+        // For each tagged elements we find in '$container' ...
+        $container.find("[" + fieldTagAttribute + "]").each(function (i, e) {
+            var $e = $(e);
+            var fieldName = $e.attr(fieldTagAttribute);
+            // ... create a KO observable on 'this' and set it's value using 'src' ...
+            dict[fieldName] = ko.observable(src[fieldName]);
+            // ... and register this field to 'fieldNames'
+            self.fieldNames.push(fieldName);
+        });
+    };
+    return BaseAutoItem;
+}());
+exports.BaseAutoItem = BaseAutoItem;
+
+},{}],7:[function(require,module,exports){
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var common = require("../common");
+var dto = require("../../DTOs/Item");
+var ctrl = require("../../Services/ItemController");
+var message_saveSuccess = 'Item saved successfully';
+var message_refreshFailed = 'An error occured while refresing the data: ';
+var $blockingDiv;
+var originalCode;
+function init(p) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            common.utils.log('edit.init() START', { p: p });
+            $blockingDiv = p.$blockingDiv;
+            common.utils.log('edit.init(): Create KO item');
+            exports.item = new dto.ItemKO(p.$fieldsContainer, p.model);
+            originalCode = exports.item.code();
+            common.utils.log('edit.init(): Apply KO item');
+            ko.applyBindings(exports.item, p.$fieldsContainer[0]);
+            common.utils.log('edit.init(): Bind JQuery events');
+            p.$btnSave.click(save);
+            common.utils.log('edit.init() END');
+            return [2 /*return*/];
+        });
+    });
+}
+exports.init = init;
+function save() {
+    return __awaiter(this, void 0, void 0, function () {
+        var obj, rc, rcr;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    common.utils.log('edit.save(): START');
+                    obj = exports.item.toDictObj();
+                    common.utils.log('edit.save(): Launch save');
+                    common.html.block($blockingDiv);
+                    return [4 /*yield*/, ctrl.save({ originalCode: originalCode, item: obj })];
+                case 1:
+                    rc = _a.sent();
+                    common.html.unblock($blockingDiv);
+                    common.utils.log('edit.save()', { rc: rc });
+                    if (!!rc.success) return [3 /*break*/, 2];
+                    common.html.showMessage(rc.errorMessage);
+                    return [3 /*break*/, 4];
+                case 2: return [4 /*yield*/, refresh(rc.newCode)];
+                case 3:
+                    rcr = _a.sent();
+                    if (rcr)
+                        common.html.showMessage(message_saveSuccess);
+                    _a.label = 4;
+                case 4:
+                    common.utils.log('edit.save(): END');
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function refresh(code) {
+    return __awaiter(this, void 0, void 0, function () {
+        var newUrl, rc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    common.utils.log('edit.refresh(): START');
+                    newUrl = null;
+                    if (code == null) {
+                        code = originalCode;
+                    }
+                    else {
+                        if (originalCode != code)
+                            // URL must change!
+                            newUrl = common.routes.itemTTT.itemEdit.replace(common.routes.itemCodeParameter, code);
+                        originalCode = code;
+                    }
+                    common.utils.log('edit.refresh(): Launch request');
+                    common.html.block($blockingDiv);
+                    return [4 /*yield*/, ctrl.details(code)];
+                case 1:
+                    rc = _a.sent();
+                    common.html.unblock($blockingDiv);
+                    common.utils.log('edit.refresh()', { rc: rc });
+                    if (!rc.success) {
+                        common.html.showMessage(message_refreshFailed + rc.errorMessage);
+                        return [2 /*return*/, false];
+                    }
+                    common.utils.log('edit.refresh(): Load new item');
+                    exports.item.fromDictObj(rc.item);
+                    if (newUrl != null) {
+                        common.utils.log("edit.refresh(): Update URL to \"" + newUrl + "\"");
+                        common.url.pushHistory({ pathname: newUrl, newTitle: exports.item.name() });
+                    }
+                    common.utils.log('edit.refresh(): END');
+                    return [2 /*return*/, true];
+            }
+        });
+    });
+}
+
+},{"../../DTOs/Item":3,"../../Services/ItemController":5,"../common":10}],8:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -80,7 +380,7 @@ var list;
     ;
 })(list = exports.list || (exports.list = {}));
 
-},{"../common":6}],5:[function(require,module,exports){
+},{"../common":10}],9:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -171,7 +471,7 @@ function refreshList(p) {
     });
 }
 
-},{"../common":6,"./ItemTTTController":4}],6:[function(require,module,exports){
+},{"../common":10,"./ItemTTTController":8}],10:[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -326,6 +626,12 @@ var utils;
 })(utils = exports.utils || (exports.utils = {})); // namespace utils
 var html;
 (function (html) {
+    function showMessage(msg) {
+        var $div = $('<div/>').text(msg);
+        $('body').append($div);
+        $div.dialog();
+    }
+    html.showMessage = showMessage;
     /** Invoke jQuery.blockUI's '.block()' on the specified element but supports multiple invokation on the same element */
     function block($e) {
         // Insert/increment a block counter as jQuery 'data()'
@@ -486,6 +792,6 @@ var url;
 // nb: Exports at the end or the order of execution breaks everything (i.e. strEnum must be defined before) ...
 __export(require("../Language"));
 
-},{"../Language":3,"./common":6}]},{},[1,2])
+},{"../Language":4,"./common":10}]},{},[1,2])
 
 //# sourceMappingURL=site.js.map

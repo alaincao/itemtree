@@ -22,8 +22,11 @@ namespace ItemTTT.DTOs
 		public ItemPicture		FirstImage	{ get { return Pictures == null ? ItemPicture.Empty : Pictures.FirstOrDefault(); } }
 		public ItemPicture		MainImage	{ get { return Pictures == null ? ItemPicture.Empty : Pictures.Where(v=>v.Number == MainImageNumber).SingleOrDefault(); } }
 
-		public Item(Models.Item src)
+		public Item(Models.Item src=null)
 		{
+			if( src == null )
+				return;
+
 			Code			= src.Code;
 			Name			= src.Name;
 			DescriptionEN	= src.DescriptionEN;
@@ -32,6 +35,21 @@ namespace ItemTTT.DTOs
 			MainImageNumber	= src.MainImageNumber ?? 1;
 			Price			= src.Price;
 			Active			= src.Active;
+		}
+
+		internal void ToModel(LogHelper logHelper, Models.Item dst)
+		{
+			dst.Code = Services.ItemController.GetUrlCodeS( string.IsNullOrWhiteSpace(Code) ? Name : Code );
+			logHelper.AddLogMessage( $"Item.ToModel: Rewrote code from '{Code}' to '{dst.Code}'" );
+			if( string.IsNullOrWhiteSpace(dst.Code) )
+				throw new Utils.TTTException( "The code must be specified" );
+
+			dst.Name			= ( string.IsNullOrWhiteSpace(Name)				? "" : Name				).Trim();
+			dst.DescriptionEN	= ( string.IsNullOrWhiteSpace(DescriptionEN)	? "" : DescriptionEN	).Trim();
+			dst.DescriptionFR	= ( string.IsNullOrWhiteSpace(DescriptionFR)	? "" : DescriptionFR	).Trim();
+			dst.DescriptionNL	= ( string.IsNullOrWhiteSpace(DescriptionNL)	? "" : DescriptionNL	).Trim();
+			dst.Price			= ( Price ?? -1 ) <= 0 ? null : Price;
+			dst.Active			= Active;
 		}
 	}
 }

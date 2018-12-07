@@ -11,7 +11,7 @@ namespace ItemTTT.Services
 {
 	using SortingFields = Views.ItemTTTController.SortingFields;
 
-	public class ItemController : Controller
+	public class ItemController : Views.BaseController
 	{
 		private readonly PageHelper				PageHelper;
 		private readonly Models.ItemTTTContext	DataContext;
@@ -20,6 +20,33 @@ namespace ItemTTT.Services
 		{
 			PageHelper = pageHelper;
 			DataContext = dataContext;
+		}
+
+		[HttpGet( Routes.GetUrlCode )]
+		[HttpPost( Routes.GetUrlCode )]
+		public string GetUrlCode(string originalCode)
+		{
+			return ItemController.GetUrlCodeS( originalCode ) ?? "";
+		}
+		internal static string GetUrlCodeS(string originalCode)
+		{
+			if( string.IsNullOrWhiteSpace(originalCode) )
+				return null;
+
+			var chars = originalCode.ToLower().ToCharArray();
+			for( int i=0; i<chars.Length; ++i)
+			{
+				var c = chars[i];
+				if( ( (c >= 'a') && (c <= 'z') )
+				 || ( (c >= '0') && (c <= '9') ) )
+					{}  // OK
+				else
+					chars[i] = '-';
+			}
+			string str = new String( chars );
+			for( var newStr = str.Replace("__", "_") ; newStr.Length != str.Length; newStr = str.Replace("__", "_") )
+				str =  newStr;
+			return str;
 		}
 
 		[HttpGet( Routes.ItemsListApi )]
@@ -86,7 +113,7 @@ namespace ItemTTT.Services
 			var query = dc.Items.AsQueryable();
 			if( itemCode != null )
 				query = query.Where( v=>v.Code == itemCode );
-			if(! PageHelper.IsAutenticated )
+			if(! PageHelper.IsAuthenticated )
 				query = query.Where( v=>v.Active == true );
 			switch( sortingField )
 			{
@@ -139,6 +166,63 @@ namespace ItemTTT.Services
 		EXIT:
 			logHelper.AddLogMessage( $"ItemQuery: END" );
 			return new Utils.TTTServiceResult<DTOs.Item[]>( PageHelper ){ Result=rows.Select(v=>v.Item).ToArray() };
+		}
+
+		[HttpPost( Routes.ItemSave )]
+		/// <return>The code of the saved item</return>
+		public async Task<Utils.TTTServiceResult<string>> Save([FromBody]SaveRequest request)
+		{
+			try
+			{
+				if(! PageHelper.IsAuthenticated )
+					throw new Utils.TTTException( "Not logged-in" );
+
+				var logHelper = PageHelper.ScopeLogs;
+				logHelper.AddLogLines( $"ItemSave: START: {request.JSONStringify(indented:true)}" );
+
+				var dc = DataContext;
+
+				Models.Item item;
+				if( request.OriginalCode == null )
+				{
+					logHelper.AddLogMessage( $"ItemSave: Create new" );
+					item = new Models.Item();
+					dc.Items.Add( item );
+				}
+				else
+				{
+					logHelper.AddLogMessage( $"ItemSave: Retreive from database" );
+					item = await dc.Items.Where( v=>v.Code == request.OriginalCode ).SingleOrDefaultAsync();
+					logHelper.AddLogLines( $"ItemSave: {item.JSONStringify(indented:true)}" );
+				}
+
+				logHelper.AddLogMessage( $"ItemSave: Validate and update fields" );
+				request.Item.ToModel( logHelper, item );
+				logHelper.AddLogLines( $"ItemSave: {item.JSONStringify(indented:true)}" );
+
+				logHelper.AddLogMessage( $"ItemSave: Open transaction" );
+				using( var transaction = dc.Database.BeginTransaction() )
+				{
+					logHelper.AddLogLines( $"ItemSave: Execute SQL" );
+					var rc = await dc.SaveChangesAsync();
+					logHelper.AddLogMessage( $"ItemSave: Affected: {rc}" );
+
+					logHelper.AddLogMessage( $"ItemSave: Commit transaction" );
+					transaction.Commit();
+				}
+
+				logHelper.AddLogMessage( $"ItemSave: END" );
+				return new Utils.TTTServiceResult<string>( PageHelper ){ Result = item.Code };
+			}
+			catch( System.Exception ex )
+			{
+				return Utils.TTTServiceResult<string>.LogAndNew( PageHelper, ex );
+			}
+		}
+		public class SaveRequest
+		{
+			public string		OriginalCode	{ get; set; }
+			public DTOs.Item	Item			{ get; set; }
 		}
 	}
 }

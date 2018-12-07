@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ItemTTT.Services
 {
-	public class LoginController : Controller
+	public class LoginController : Views.BaseController
 	{
 		private readonly PageHelper				PageHelper;
 		private readonly Models.ItemTTTContext	DataContext;
@@ -34,7 +34,7 @@ namespace ItemTTT.Services
 			var logHelper = PageHelper.ScopeLogs;
 			string errorMessage;
 
-			if( PageHelper.IsAutenticated )
+			if( PageHelper.IsAuthenticated )
 			{
 				logHelper.AddLogMessage( $"Login: Already logged-in" );
 				return new Utils.TTTServiceResult( PageHelper, errorMessage:"Already logged-in" );
@@ -86,7 +86,7 @@ namespace ItemTTT.Services
 		[HttpPost( Routes.LogoutAPI )]
 		public async Task<Utils.TTTServiceResult> Logout()
 		{
-			if(! HttpContext.User.Identity.IsAuthenticated )
+			if(! PageHelper.IsAuthenticated )
 			{
 				return new Utils.TTTServiceResult( PageHelper, errorMessage:"Error: not logged-in" );
 			}
@@ -101,9 +101,9 @@ namespace ItemTTT.Services
 		[HttpPost( Routes.ChangePassword )]
 		public async Task<object> ChangePassword(string oldPassword, string newPassword)
 		{
-			if(! PageHelper.IsAutenticated )
+			if(! PageHelper.IsAuthenticated )
 				// Hacker?
-				return NotFound();
+				return NotAuthenticated();
 
 			try
 			{

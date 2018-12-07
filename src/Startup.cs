@@ -157,7 +157,7 @@ namespace ItemTTT
 	}
 
 	// GET '/initialization-log'
-	public class InitializationLog : Microsoft.AspNetCore.Mvc.Controller
+	public class InitializationLog : Views.BaseController
 	{
 		private readonly Startup	Startup;
 

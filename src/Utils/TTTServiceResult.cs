@@ -21,31 +21,44 @@ namespace ItemTTT
 					Log = pageHelper.ScopeLogs.GetLogLines();
 			}
 
-			public static TTTServiceResult LogAndNew(PageHelper pageHelper, System.Exception ex)
+			internal static TTTServiceResult LogAndNew(PageHelper pageHelper, System.Exception ex)
+			{
+				var errorMessage = LogAndReturnErrorMessage( pageHelper, ex );
+				return new TTTServiceResult( pageHelper, errorMessage:errorMessage );
+			}
+			protected static string LogAndReturnErrorMessage(PageHelper pageHelper, System.Exception ex)
 			{
 				pageHelper.ScopeLogs.AddException( ex );
-				return new TTTServiceResult( pageHelper, errorMessage:$"An unexpected error occurred ({ex.GetType().FullName}): {ex.Message}" );
+
+				if( ex is Utils.TTTException )
+					return ex.Message;
+
+				// Search exception tree's messages for known error triggers
+				for( var current=ex; current != null; current = ex.InnerException )
+				{
+					foreach( var pair in Models.ItemTTTContext.KnownErrorTriggers )
+					{
+						if( current.Message.Contains(pair.Key) )
+							// Found! return that error message
+							return pair.Value;
+					}
+				}
+				// Not found
+
+				return $"An unexpected error occurred ({ex.GetType().FullName}): {ex.Message}";
 			}
 		}
 
-		public class TTTServiceResult<T>
+		public class TTTServiceResult<T> : TTTServiceResult
 		{
-			public bool		Success			{ get { return (ErrorMessage == null); } }
 			public T		Result			{ get; set; }
-			public string	ErrorMessage	{ get; set; }
-			public string[]	Log				{ get; set; }
 
-			public TTTServiceResult(PageHelper pageHelper, string errorMessage=null)
-			{
-				ErrorMessage = errorMessage;
-				if( Utils.IsDebug )
-					Log = pageHelper.ScopeLogs.GetLogLines();
-			}
+			public TTTServiceResult(PageHelper pageHelper, string errorMessage=null) : base(pageHelper, errorMessage)  {}
 
-			public static TTTServiceResult<T> LogAndNew(PageHelper pageHelper, System.Exception ex, T result=default(T))
+			internal static TTTServiceResult<T> LogAndNew(PageHelper pageHelper, System.Exception ex, T result=default(T))
 			{
-				pageHelper.ScopeLogs.AddException( ex );
-				return new TTTServiceResult<T>( pageHelper, errorMessage:$"An unexpected error occurred ({ex.GetType().FullName}): {ex.Message}" );
+				var errorMessage = LogAndReturnErrorMessage( pageHelper, ex );
+				return new Utils.TTTServiceResult<T>( pageHelper, errorMessage:errorMessage );
 			}
 		}
 	}

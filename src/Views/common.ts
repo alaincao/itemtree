@@ -176,6 +176,13 @@ export namespace utils
 
 export namespace html
 {
+	export function showMessage(msg:string) : void
+	{
+		const $div = $('<div/>').text( msg );
+		$('body').append( $div );
+		$div.dialog();
+	}
+
 	/** Invoke jQuery.blockUI's '.block()' on the specified element but supports multiple invokation on the same element */
 	export function block($e:JQuery) : JQuery
 	{

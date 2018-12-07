@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ItemTTT.Services
 {
-	public class ItemPictureController : Controller
+	public class ItemPictureController : Views.BaseController
 	{
 		internal const double		ScaleHToW			= (double)1920/1200;  // 1.6
 		internal const double		ScaleWToH			= (double)1200/1920;  // 0.625
@@ -76,7 +76,7 @@ namespace ItemTTT.Services
 				var items = dc.Items.AsQueryable();
 				if( itemCode != null )
 					items = items.Where( v=>v.Code == itemCode );
-				if(! PageHelper.IsAutenticated )
+				if(! PageHelper.IsAuthenticated )
 					items = items.Where( v=>v.Active == true );
 				var images = await (	from item in items
 										join pict in dc.ItemPictures on item.ID equals pict.ItemID
@@ -117,19 +117,19 @@ namespace ItemTTT.Services
 			logHelper.AddLogMessage( $"ItemPicDownload: START: {nameof(itemCode)}:{itemCode} ; {nameof(number)}:{number} ; {nameof(height)}:{height} ; {nameof(forDownload)}:{forDownload}" );
 
 			if( string.IsNullOrWhiteSpace(itemCode) )
-				return NotFound();
+				return InvalidParameters();
 			if( number <= 0 )
-				return NotFound();
+				return InvalidParameters();
 			if( (height != null) && (height.Value < 10) )  // Minimum height
-				return NotFound();
+				return InvalidParameters();
 			var dc = DataContext;
 
 			logHelper.AddLogMessage( $"ItemPicDownload: Try retreive item" );
 			var item = await dc.Items.Where( v=>v.Code == itemCode ).Select( v=>new{ v.ID, v.Active } ).SingleOrDefaultAsync();
 			if( item == null )
-				return NotFound();
-			if( (item.Active == false) && (PageHelper.IsAutenticated == false) )
-				return NotFound();
+				return ObjectNotFound();
+			if( (item.Active == false) && (PageHelper.IsAuthenticated == false) )
+				return NotAuthenticated();
 
 			var askedType = (height == null) ? Models.ItemPicture.Type_Original : ( Models.ItemPicture.Type_HeightPrefix + height.Value );
 			Models.ItemPicture picture;
@@ -145,7 +145,7 @@ namespace ItemTTT.Services
 				{
 					if( tryType == Models.ItemPicture.Type_Original )
 						// Original not found
-						return NotFound();
+						return ObjectNotFound();
 					// Retry with original version
 					tryType = Models.ItemPicture.Type_Original;
 					goto TRY_RETREIVE;

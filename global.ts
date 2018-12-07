@@ -1,6 +1,7 @@
 
 import * as common		from "./src/Views/common";
 import * as itemlist	from "./src/Views/ItemTTT/List";
+import * as itemedit	from "./src/Views/ItemTTT/Edit";
 
 ///////
 
@@ -9,7 +10,8 @@ var ttt =
 {
 	common: common,
 	itemttt: {
-		list : itemlist,
+		list	: itemlist,
+		edit	: itemedit,
 	},
 }
 declare global
