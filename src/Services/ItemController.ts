@@ -39,3 +39,10 @@ export interface SaveResult extends Result
 {
 	newCode : string;
 }
+
+export async function delete_(code:string) : Promise<SaveResult>
+{
+	const url = common.routes.api.itemDelete.replace( common.routes.itemCodeParameter, code );
+	const rc = await common.url.postRequest<SaveResult>( url, {} );
+	return rc;
+}

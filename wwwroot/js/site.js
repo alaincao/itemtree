@@ -147,6 +147,22 @@ function save(p) {
     });
 }
 exports.save = save;
+function delete_(code) {
+    return __awaiter(this, void 0, void 0, function () {
+        var url, rc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    url = common.routes.api.itemDelete.replace(common.routes.itemCodeParameter, code);
+                    return [4 /*yield*/, common.url.postRequest(url, {})];
+                case 1:
+                    rc = _a.sent();
+                    return [2 /*return*/, rc];
+            }
+        });
+    });
+}
+exports.delete_ = delete_;
 
 },{"../Views/common":11}],6:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -336,6 +352,7 @@ function init(p) {
             ko.applyBindings(exports.item, p.$fieldsContainer[0]);
             common.utils.log('edit.init(): Bind JQuery events');
             p.$btnSave.click(save);
+            p.$btnDelete.click(delete_);
             common.utils.log('edit.init() END');
             return [2 /*return*/];
         });
@@ -368,6 +385,34 @@ function save() {
                     if (rcr)
                         common.html.showMessage(message_saveSuccess);
                     common.utils.log('edit.save(): END');
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function delete_() {
+    return __awaiter(this, void 0, void 0, function () {
+        var rc, url;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    common.utils.log('edit.delete(): START');
+                    common.utils.log('edit.delete(): Launch delete');
+                    common.html.block($blockingDiv);
+                    return [4 /*yield*/, ctrl.delete_(originalCode)];
+                case 1:
+                    rc = _a.sent();
+                    common.html.unblock($blockingDiv);
+                    if (!rc.success) {
+                        common.utils.error('edit.delete(): Error', { rc: rc });
+                        common.html.showMessage(rc.errorMessage);
+                        return [2 /*return*/];
+                    }
+                    common.utils.log('edit.delete(): Redirect');
+                    url = common.routes.itemTTT.itemsList.replace(common.routes.languageParameter, common.pageParameters.currentLanguage);
+                    common.utils.log('edit.delete()', { url: url });
+                    common.url.redirect(url);
+                    common.utils.log('edit.delete(): END');
                     return [2 /*return*/];
             }
         });

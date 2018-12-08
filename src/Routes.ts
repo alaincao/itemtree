@@ -16,6 +16,7 @@ export interface Routes
 			itemsListing		: string,
 			itemDetails			: string,
 			itemSave			: string,
+			itemDelete			: string,
 			itemDetailsPictures	: string,
 		},
 }

@@ -13,6 +13,7 @@ export var item : dto.ItemKO;
 export async function init(p:{	model				: dto.Item,
 								$blockingDiv		: JQuery,
 								$btnSave			: JQuery,
+								$btnDelete			: JQuery,
 								$fieldsContainer	: JQuery }) : Promise<void>
 {
 	common.utils.log( 'edit.init() START', { p } );
@@ -27,6 +28,7 @@ export async function init(p:{	model				: dto.Item,
 
 	common.utils.log( 'edit.init(): Bind JQuery events' );
 	p.$btnSave.click( save );
+	p.$btnDelete.click( delete_ );
 
 	common.utils.log( 'edit.init() END' );
 }
@@ -55,6 +57,30 @@ async function save() : Promise<void>
 		common.html.showMessage( message_saveSuccess );
 
 	common.utils.log( 'edit.save(): END' );
+}
+
+async function delete_() : Promise<void>
+{
+	common.utils.log( 'edit.delete(): START' );
+
+	common.utils.log( 'edit.delete(): Launch delete' );
+	common.html.block( $blockingDiv );
+	const rc = await ctrl.delete_( originalCode );
+	common.html.unblock( $blockingDiv );
+
+	if(! rc.success )
+	{
+		common.utils.error( 'edit.delete(): Error', { rc } );
+		common.html.showMessage( rc.errorMessage );
+		return;
+	}
+
+	common.utils.log( 'edit.delete(): Redirect' );
+	const url = common.routes.itemTTT.itemsList.replace( common.routes.languageParameter, common.pageParameters.currentLanguage );
+	common.utils.log( 'edit.delete()', { url } );
+	common.url.redirect( url );
+
+	common.utils.log( 'edit.delete(): END' );
 }
 
 async function refresh(code?:string) : Promise<boolean>

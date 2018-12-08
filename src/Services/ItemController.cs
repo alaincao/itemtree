@@ -192,7 +192,7 @@ namespace ItemTTT.Services
 				else
 				{
 					logHelper.AddLogMessage( $"ItemSave: Retreive from database" );
-					item = await dc.Items.Where( v=>v.Code == request.OriginalCode ).SingleOrDefaultAsync();
+					item = await dc.Items.Where( v=>v.Code == request.OriginalCode ).SingleAsync();
 					logHelper.AddLogLines( $"ItemSave: {item.JSONStringify(indented:true)}" );
 				}
 
@@ -223,6 +223,37 @@ namespace ItemTTT.Services
 		{
 			public string		OriginalCode	{ get; set; }
 			public DTOs.Item	Item			{ get; set; }
+		}
+
+		[HttpPost( Routes.ItemDelete )]
+		public async Task<Utils.TTTServiceResult> Delete(string itemCode)
+		{
+			try
+			{
+				if(! PageHelper.IsAuthenticated )
+					throw new Utils.TTTException( "Not logged-in" );
+
+				var logHelper = PageHelper.ScopeLogs;
+				logHelper.AddLogLines( $"ItemDelete: START: {itemCode}" );
+
+				if( string.IsNullOrWhiteSpace(itemCode) )
+					return new Utils.TTTServiceResult( PageHelper , $"Parameter {nameof(itemCode)} is missing" );
+
+				logHelper.AddLogMessage( $"ItemDelete: Retreive from database" );
+				var dc = DataContext;
+				var item = await dc.Items.Where( v=>v.Code == itemCode ).SingleAsync();
+
+				logHelper.AddLogLines( $"ItemDelete: Item: {item.JSONStringify(indented:true)}" );
+				dc.Items.Remove( item );
+				dc.SaveChanges();
+
+				logHelper.AddLogMessage( $"ItemDelete: END" );
+				return new Utils.TTTServiceResult( PageHelper );
+			}
+			catch( System.Exception ex )
+			{
+				return Utils.TTTServiceResult.LogAndNew( PageHelper, ex );
+			}
 		}
 	}
 }

@@ -34,6 +34,7 @@ namespace ItemTTT
 		internal const string	ItemsListApi		= "/api/car-listing";
 		internal const string	ItemDetailsApi		= "/api/car-details/{itemCode}";
 		internal const string	ItemSave			= "/api/car-save";
+		internal const string	ItemDelete			= "/api/car-delete/{itemCode}";
 		internal const string	ItemPictureList		= "/api/car-details/{itemCode}/pictures";
 		internal const string	ItemPictureDownload	= "/car-details/{itemCode}/pictures/{number}";
 
@@ -70,6 +71,7 @@ namespace ItemTTT
 							ItemsListing		= tr( ItemsListApi ),
 							ItemDetails			= tr( ItemDetailsApi ),
 							ItemSave			= tr( ItemSave ),
+							ItemDelete			= tr( ItemDelete ),
 							ItemDetailsPictures	= tr( ItemPictureList ),
 						},
 				};
