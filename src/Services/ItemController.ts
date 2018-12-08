@@ -32,7 +32,7 @@ export async function save(p:SaveRequest) : Promise<SaveResult>
 }
 export interface SaveRequest
 {
-	originalCode	: string;
+	originalCode?	: string;
 	item			: Item;
 }
 export interface SaveResult extends Result

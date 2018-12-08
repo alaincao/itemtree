@@ -24,6 +24,7 @@ namespace ItemTTT
 		internal const string	ItemsList			= "/"+Lang+"/car-listing";
 		internal const string	ItemDetails			= "/"+Lang+"/car-details/{itemCode}";
 		internal const string	ItemEdit			= "/car-edit/{itemCode}";
+		internal const string	ItemAdd				= "/car-add";
 
 		// APIs
 		internal const string	GetUrlCode			= "/api/geturlcode";

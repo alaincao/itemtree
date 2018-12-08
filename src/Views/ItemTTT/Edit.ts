@@ -41,18 +41,19 @@ async function save() : Promise<void>
 	common.html.block( $blockingDiv );
 	const rc = await ctrl.save({ originalCode, item:obj });
 	common.html.unblock( $blockingDiv );
-	common.utils.log( 'edit.save()', { rc } );
 
 	if(! rc.success )
 	{
+		common.utils.error( 'edit.save(): Error', { rc } );
 		common.html.showMessage( rc.errorMessage );
+		return;
 	}
-	else
-	{
-		const rcr = await refresh( rc.newCode );
-		if( rcr )
-			common.html.showMessage( message_saveSuccess );
-	}
+
+	common.utils.log( 'edit.save(): Refresh values', { rc } );
+	const rcr = await refresh( rc.newCode );
+	if( rcr )
+		common.html.showMessage( message_saveSuccess );
+
 	common.utils.log( 'edit.save(): END' );
 }
 
@@ -77,15 +78,15 @@ async function refresh(code?:string) : Promise<boolean>
 	common.html.block( $blockingDiv );
 	const rc = await ctrl.details( code );
 	common.html.unblock( $blockingDiv );
-	common.utils.log( 'edit.refresh()', { rc } );
 
 	if(! rc.success )
 	{
+		common.utils.error( 'edit.refresh(): Error', { rc } );
 		common.html.showMessage( message_refreshFailed+rc.errorMessage );
 		return false;
 	}
 
-	common.utils.log( 'edit.refresh(): Load new item' );
+	common.utils.log( 'edit.refresh(): Load from new item', { rc } );
 	item.fromDictObj( rc.item );
 
 	if( newUrl != null )

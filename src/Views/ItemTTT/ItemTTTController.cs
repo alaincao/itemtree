@@ -110,5 +110,15 @@ namespace ItemTTT.Views
 
 			return await Details( itemCode );
 		}
+
+		[HttpGet( Routes.ItemAdd )]
+		public IActionResult Add()
+		{
+			PageHelper.ScopeLogs.AddLogMessage( $"ItemAdd: START" );
+			if(! PageHelper.IsAuthenticated )
+				return NotAuthenticated();
+			PageHelper.ScopeLogs.AddLogMessage( $"ItemAdd: END" );
+			return View();
+		}
 	}
 }

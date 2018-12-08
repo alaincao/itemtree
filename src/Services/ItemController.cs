@@ -158,7 +158,7 @@ namespace ItemTTT.Services
 			{
 				row.Item.DetailsUrls	= allLanguages.ToDictionary( v=>v, l=>PageHelper.ResolveRoute(Views.ItemTTTController.CreateUrlDetails(l, row.Item.Code)) );
 				row.Item.Pictures		= picturesDict.TryGet( row.Item.Code ) ?? new DTOs.ItemPicture[]{};
-				row.Item.Options		= options.TryGet( row.ItemID )
+				row.Item.Options		= ( options.TryGet(row.ItemID) ?? new string[]{} )
 													.Select( nameEN=>Utils.Translations.Get(dc, Models.Translation.Types.Option, nameEN) )
 													.ToArray();
 			}

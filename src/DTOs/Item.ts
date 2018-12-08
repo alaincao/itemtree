@@ -13,17 +13,20 @@ export class ItemKO extends BaseAutoItem
 	public readonly name			: KnockoutObservable<string>;
 	public readonly price			: KnockoutObservable<number>;
 
-	constructor($container:JQuery, src:Item)
+	constructor($container:JQuery, src?:Item)
 	{
+		if( src == null )
+			src = { name:'' };
 		super( $container, src );
 		const self = this;
 
-		common.utils.ensureInteger({ observable:self.price, canBeZero:false, mustBePositive:true });
+		if( self.price != null )
+			common.utils.ensureInteger({ observable:self.price, canBeZero:false, mustBePositive:true });
 	}
 
 	public /*override*/ toDictObj(dict?:DictObj) : Item
 	{
 		const rc = super.toDictObj( dict );
-		return rc;
+		return <Item>rc;
 	}
 }

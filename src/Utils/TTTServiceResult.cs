@@ -17,7 +17,7 @@ namespace ItemTTT
 			public TTTServiceResult(PageHelper pageHelper, string errorMessage=null)
 			{
 				ErrorMessage = errorMessage;
-				if( Utils.IsDebug )
+				if( (! Success) || Utils.IsDebug )
 					Log = pageHelper.ScopeLogs.GetLogLines();
 			}
 
@@ -34,7 +34,7 @@ namespace ItemTTT
 					return ex.Message;
 
 				// Search exception tree's messages for known error triggers
-				for( var current=ex; current != null; current = ex.InnerException )
+				for( var current=ex; current != null; current = current.InnerException )
 				{
 					foreach( var pair in Models.ItemTTTContext.KnownErrorTriggers )
 					{

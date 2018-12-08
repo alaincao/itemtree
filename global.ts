@@ -1,6 +1,7 @@
 
 import * as common		from "./src/Views/common";
 import * as itemlist	from "./src/Views/ItemTTT/List";
+import * as itemadd		from "./src/Views/ItemTTT/Add";
 import * as itemedit	from "./src/Views/ItemTTT/Edit";
 
 ///////
@@ -11,6 +12,7 @@ var ttt =
 	common: common,
 	itemttt: {
 		list	: itemlist,
+		add		: itemadd,
 		edit	: itemedit,
 	},
 }

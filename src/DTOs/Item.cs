@@ -19,8 +19,8 @@ namespace ItemTTT.DTOs
 		public Utils.Translation[]			Options		{ get; set; }
 
 		internal int 	MainImageNumber	= 1;  // nb: Not transmitted to client
-		public ItemPicture		FirstImage	{ get { return Pictures == null ? ItemPicture.Empty : Pictures.FirstOrDefault(); } }
-		public ItemPicture		MainImage	{ get { return Pictures == null ? ItemPicture.Empty : Pictures.Where(v=>v.Number == MainImageNumber).SingleOrDefault(); } }
+		public ItemPicture		FirstImage	{ get { return ((Pictures??new ItemPicture[]{}).Length == 0) ? ItemPicture.Empty : Pictures.FirstOrDefault(); } }
+		public ItemPicture		MainImage	{ get { return ((Pictures??new ItemPicture[]{}).Length == 0) ? ItemPicture.Empty : Pictures.Where(v=>v.Number == MainImageNumber).SingleOrDefault(); } }
 
 		public Item(Models.Item src=null)
 		{
