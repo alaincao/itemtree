@@ -21,7 +21,7 @@ export class ItemKO extends BaseAutoItem
 		const self = this;
 
 		if( self.price != null )
-			common.utils.ensureInteger({ observable:self.price, canBeZero:false, mustBePositive:true });
+			common.utils.ensureInteger({ observable:self.price, canBeZero:false, canBeNull:true, mustBePositive:true });
 	}
 
 	public /*override*/ toDictObj(dict?:DictObj) : Item

@@ -110,6 +110,73 @@ namespace ItemTTT.Services
 			}
 		}
 
+		[HttpPost( Routes.ItemPictureUpload )]
+		public async Task<Utils.TTTServiceResult<int>> Upload(string itemCode, Microsoft.AspNetCore.Http.IFormFile file)
+		{
+			try
+			{
+				if(! PageHelper.IsAuthenticated )
+					throw new Utils.TTTException( "Not logged-in" );
+
+				var logHelper = PageHelper.ScopeLogs;
+				logHelper.AddLogMessage( $"ItemPicUpload: START '{itemCode}'" );
+
+				if( string.IsNullOrWhiteSpace(itemCode) )
+					throw new ArgumentNullException( $"{nameof(itemCode)}" );
+
+				logHelper.AddLogMessage( $"ItemPicUpload: Create MemoryStream" );
+				var ms = new System.IO.MemoryStream();
+				await file.CopyToAsync( ms );
+
+				logHelper.AddLogMessage( $"ItemPicUpload: Test resize ({ms.Length} bytes)" );
+				{
+					var imageFull = System.Drawing.Image.FromStream( ms );
+					var imageResized = (System.Drawing.Image)new System.Drawing.Bitmap( imageFull, 640, 480 );
+
+					ms.Position = 0;  // Rewind stram
+				}
+
+				logHelper.AddLogMessage( $"ItemPicUpload: Create base64 string" );
+				var imageString = Convert.ToBase64String( ms.GetBuffer() );
+
+				logHelper.AddLogMessage( $"ItemPicUpload: Open transaction" );
+				var dc = DataContext;
+				int imageNumber;
+				using( var transaction = dc.Database.BeginTransaction() )
+				{
+					logHelper.AddLogMessage( $"ItemPicUpload: Get ItemID" );
+					var itemID = await dc.Items.Where( v=>v.Code == itemCode ).Select( v=>(int?)v.ID ).SingleOrDefaultAsync() ?? -1;
+					if( itemID <= 0 )
+						throw new ArgumentException( $"Item code '{itemCode}' was not found" );
+
+					logHelper.AddLogMessage( $"ItemPicUpload: Get the image number" );
+					imageNumber = await dc.ItemPictures.Where( v=>v.ItemID == itemID ).Select( v=>(int?)v.Number ).MaxAsync() ?? 0;
+					++ imageNumber;
+					var isMainImage = (imageNumber == 1) ? true : false;
+
+					logHelper.AddLogMessage( $"ItemPicUpload: Create picture object ; number:{imageNumber} ; string length:{imageString.Length}" );
+					var obj = new Models.ItemPicture{	ItemID = itemID,
+														Content = imageString,
+														Number = imageNumber,
+														Type = Models.ItemPicture.Type_Original };
+					dc.ItemPictures.Add( obj );
+
+					logHelper.AddLogMessage( $"ItemPicUpload: Write to database" );
+					await dc.SaveChangesAsync();
+
+					logHelper.AddLogMessage( $"ItemPicUpload: Commit transaction" );
+					transaction.Commit();
+				}
+
+				logHelper.AddLogMessage( $"ItemPicUpload: END" );
+				return new Utils.TTTServiceResult<int>( PageHelper ){ Result=imageNumber };
+			}
+			catch( System.Exception ex )
+			{
+				return Utils.TTTServiceResult<int>.LogAndNew( PageHelper, ex );
+			}
+		}
+
 		[HttpGet( Routes.ItemPictureDownload )]
 		public async Task<IActionResult> Download(string itemCode, int number, int? height=null, bool forDownload=false)
 		{

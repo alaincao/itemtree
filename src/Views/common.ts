@@ -128,10 +128,13 @@ export namespace utils
 	export function ensureInteger(p:{	observable:KnockoutObservable<Number>,
 										fallbackValue?:number,
 										mustBePositive?:boolean,
-										canBeZero?:boolean }) : void
+										canBeZero?:boolean,
+										canBeNull?:boolean }) : void
 	{
 		if( p.canBeZero == null )
 			p.canBeZero = true;
+		if( p.canBeNull == null )
+			p.canBeNull = false;
 		if( p.fallbackValue == null )
 		{
 			if( p.canBeZero )
@@ -140,8 +143,18 @@ export namespace utils
 				p.fallbackValue = 1;
 		}
 
+		let canBeNull = p.canBeNull;
 		p.observable.subscribe( function(value:number)
 			{
+				if( canBeNull )
+				{
+					if( (<any>value == '') || (value == null) )
+					{
+						p.observable( null );
+						return;
+					}
+				}
+
 				var newValue = parseInt( <any>value );
 
 				if( isNaN(newValue) )

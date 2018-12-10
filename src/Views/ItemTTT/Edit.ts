@@ -2,6 +2,7 @@
 import * as common from "../common";
 import * as dto from "../../DTOs/Item";
 import * as ctrl from "../../Services/ItemController";
+import * as picCtrl from "../../Services/ItemPictureController";
 
 const message_saveSuccess = 'Item saved successfully';
 const message_refreshFailed = 'An error occured while refresing the data: ';
@@ -10,11 +11,16 @@ var $blockingDiv : JQuery;
 var originalCode : string;
 export var item : dto.ItemKO;
 
+export var picDropZone : { hover:KnockoutObservable<boolean> };
+
 export async function init(p:{	model				: dto.Item,
 								$blockingDiv		: JQuery,
 								$btnSave			: JQuery,
 								$btnDelete			: JQuery,
-								$fieldsContainer	: JQuery }) : Promise<void>
+								$fieldsContainer	: JQuery,
+								$picUploadDropZone	: JQuery,
+								$picUploadControl	: JQuery,
+							}) : Promise<void>
 {
 	common.utils.log( 'edit.init() START', { p } );
 	$blockingDiv = p.$blockingDiv;
@@ -23,14 +29,62 @@ export async function init(p:{	model				: dto.Item,
 	item = new dto.ItemKO( p.$fieldsContainer, p.model );
 	originalCode = item.code();
 
-	common.utils.log( 'edit.init(): Apply KO item' );
+	common.utils.log( 'edit.init(): Apply KO item bindings' );
 	ko.applyBindings( item, p.$fieldsContainer[0] );
 
 	common.utils.log( 'edit.init(): Bind JQuery events' );
 	p.$btnSave.click( save );
 	p.$btnDelete.click( delete_ );
 
+	common.utils.log( 'edit.init(): Initi picture upload' );
+	initPictureUpload( p.$picUploadDropZone, p.$picUploadControl );
+
 	common.utils.log( 'edit.init() END' );
+}
+
+function initPictureUpload($dropZone:JQuery, $upload:JQuery) : void
+{
+	common.utils.log( 'edit.initDropZone(): Create drop zone object' );
+
+	picDropZone = {
+			hover : ko.observable(false),
+		};
+
+	common.utils.log( 'edit.initDropZone(): Watch for drag-drops on "upload image drop zone"' );
+
+	$dropZone.on( 'dragenter', function(e)
+		{
+			picDropZone.hover( true );
+			e.stopPropagation();
+			e.preventDefault();
+		} );
+	$dropZone.on( 'dragover', function(e)
+		{
+			picDropZone.hover( true );
+			e.stopPropagation();
+			e.preventDefault();
+		} );
+	$dropZone.on( 'dragleave', function(e)
+		{
+			picDropZone.hover( false );
+		} );
+	$dropZone.on( 'drop', function(e)
+		{
+			picDropZone.hover( false );
+			e.preventDefault();
+
+			var files = (<any>e.originalEvent).dataTransfer.files;
+			uploadPicture( files );
+		});
+
+	$upload.on( 'change', ()=>
+		{
+			const files = (<HTMLInputElement>$upload[0]).files;
+			uploadPicture( files );
+		} );
+
+	common.utils.log( 'edit.initDropZone(): Apply KO bindings' );
+	ko.applyBindings( picDropZone, $dropZone[0] );
 }
 
 async function save() : Promise<void>
@@ -81,6 +135,42 @@ async function delete_() : Promise<void>
 	common.url.redirect( url );
 
 	common.utils.log( 'edit.delete(): END' );
+}
+
+async function uploadPicture(files:FileList) : Promise<void>
+{
+	common.utils.log( 'edit.uploadPicture(): START', {files} );
+
+	if( files.length == 0 )
+		return;
+	if( (<any>window).FormData === undefined )
+	{
+		common.utils.error( "This browser doesn't support HTML5 file uploads!" );
+		return;
+	}
+
+	common.utils.log( `edit.uploadPicture(): Create '${files.length}' upload tasks` );
+	common.html.block( $blockingDiv );
+	const tasks = $.map( files, (file:File)=>
+		{
+			return picCtrl.upload( originalCode, file );
+		} );
+
+	common.utils.log( 'edit.uploadPicture(): Wait for tasks to terminate' );
+	const rcs = await Promise.all( tasks );
+	common.html.unblock( $blockingDiv );
+	common.utils.log( 'edit.uploadPicture(): All tasks terminated' );
+
+	$.each( rcs, (i,rc)=>
+		{
+			if(! rc )
+			{
+				common.utils.error( 'edit.delete(): Upload error', { i, rc } );
+				common.html.showMessage( rc.errorMessage );
+			}
+		} );
+
+	common.utils.log( 'edit.uploadPicture(): END' );
 }
 
 async function refresh(code?:string) : Promise<boolean>

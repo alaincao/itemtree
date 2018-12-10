@@ -18,7 +18,7 @@ var ttt = {
 };
 window.ttt = ttt;
 
-},{"./src/Views/ItemTTT/Add":7,"./src/Views/ItemTTT/Edit":8,"./src/Views/ItemTTT/List":10,"./src/Views/common":11}],3:[function(require,module,exports){
+},{"./src/Views/ItemTTT/Add":8,"./src/Views/ItemTTT/Edit":9,"./src/Views/ItemTTT/List":11,"./src/Views/common":12}],3:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -44,7 +44,7 @@ var ItemKO = /** @class */ (function (_super) {
         _this = _super.call(this, $container, src) || this;
         var self = _this;
         if (self.price != null)
-            common.utils.ensureInteger({ observable: self.price, canBeZero: false, mustBePositive: true });
+            common.utils.ensureInteger({ observable: self.price, canBeZero: false, canBeNull: true, mustBePositive: true });
         return _this;
     }
     ItemKO.prototype.toDictObj = function (dict) {
@@ -55,13 +55,13 @@ var ItemKO = /** @class */ (function (_super) {
 }(BaseAutoItem_1.BaseAutoItem));
 exports.ItemKO = ItemKO;
 
-},{"../Utils/BaseAutoItem":6,"../Views/common":11}],4:[function(require,module,exports){
+},{"../Utils/BaseAutoItem":7,"../Views/common":12}],4:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var _a;
 var common = require("./Views/common");
 exports.Languages = (_a = common.utils.strEnum(['en', 'fr', 'nl']), _a.e), exports.allLanguages = _a.a;
 
-},{"./Views/common":11}],5:[function(require,module,exports){
+},{"./Views/common":12}],5:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -164,7 +164,34 @@ function delete_(code) {
 }
 exports.delete_ = delete_;
 
-},{"../Views/common":11}],6:[function(require,module,exports){
+},{"../Views/common":12}],6:[function(require,module,exports){
+Object.defineProperty(exports, "__esModule", { value: true });
+var common = require("../Views/common");
+function upload(itemCode, file) {
+    var url = common.routes.api.itemPictureUpload.replace(common.routes.itemCodeParameter, itemCode);
+    var formData = new FormData();
+    formData.append('file', file);
+    return new Promise(function (resolve, reject) {
+        $.ajax({ type: "POST",
+            url: url,
+            contentType: false,
+            processData: false,
+            data: formData,
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+                data.imageNumber = data.result;
+                delete data.result;
+                resolve(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                reject(textStatus);
+            },
+        });
+    });
+}
+exports.upload = upload;
+
+},{"../Views/common":12}],7:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var fieldTagAttribute = 'ttt-name';
 var BaseAutoItem = /** @class */ (function () {
@@ -208,7 +235,7 @@ var BaseAutoItem = /** @class */ (function () {
 }());
 exports.BaseAutoItem = BaseAutoItem;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -296,7 +323,7 @@ function save() {
     });
 }
 
-},{"../../DTOs/Item":3,"../../Services/ItemController":5,"../common":11}],8:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../Services/ItemController":5,"../common":12}],9:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -336,6 +363,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("../common");
 var dto = require("../../DTOs/Item");
 var ctrl = require("../../Services/ItemController");
+var picCtrl = require("../../Services/ItemPictureController");
 var message_saveSuccess = 'Item saved successfully';
 var message_refreshFailed = 'An error occured while refresing the data: ';
 var $blockingDiv;
@@ -348,17 +376,51 @@ function init(p) {
             common.utils.log('edit.init(): Create KO item');
             exports.item = new dto.ItemKO(p.$fieldsContainer, p.model);
             originalCode = exports.item.code();
-            common.utils.log('edit.init(): Apply KO item');
+            common.utils.log('edit.init(): Apply KO item bindings');
             ko.applyBindings(exports.item, p.$fieldsContainer[0]);
             common.utils.log('edit.init(): Bind JQuery events');
             p.$btnSave.click(save);
             p.$btnDelete.click(delete_);
+            common.utils.log('edit.init(): Initi picture upload');
+            initPictureUpload(p.$picUploadDropZone, p.$picUploadControl);
             common.utils.log('edit.init() END');
             return [2 /*return*/];
         });
     });
 }
 exports.init = init;
+function initPictureUpload($dropZone, $upload) {
+    common.utils.log('edit.initDropZone(): Create drop zone object');
+    exports.picDropZone = {
+        hover: ko.observable(false),
+    };
+    common.utils.log('edit.initDropZone(): Watch for drag-drops on "upload image drop zone"');
+    $dropZone.on('dragenter', function (e) {
+        exports.picDropZone.hover(true);
+        e.stopPropagation();
+        e.preventDefault();
+    });
+    $dropZone.on('dragover', function (e) {
+        exports.picDropZone.hover(true);
+        e.stopPropagation();
+        e.preventDefault();
+    });
+    $dropZone.on('dragleave', function (e) {
+        exports.picDropZone.hover(false);
+    });
+    $dropZone.on('drop', function (e) {
+        exports.picDropZone.hover(false);
+        e.preventDefault();
+        var files = e.originalEvent.dataTransfer.files;
+        uploadPicture(files);
+    });
+    $upload.on('change', function () {
+        var files = $upload[0].files;
+        uploadPicture(files);
+    });
+    common.utils.log('edit.initDropZone(): Apply KO bindings');
+    ko.applyBindings(exports.picDropZone, $dropZone[0]);
+}
 function save() {
     return __awaiter(this, void 0, void 0, function () {
         var obj, rc, rcr;
@@ -418,6 +480,43 @@ function delete_() {
         });
     });
 }
+function uploadPicture(files) {
+    return __awaiter(this, void 0, void 0, function () {
+        var tasks, rcs;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    common.utils.log('edit.uploadPicture(): START', { files: files });
+                    if (files.length == 0)
+                        return [2 /*return*/];
+                    if (window.FormData === undefined) {
+                        common.utils.error("This browser doesn't support HTML5 file uploads!");
+                        return [2 /*return*/];
+                    }
+                    common.utils.log("edit.uploadPicture(): Create '" + files.length + "' upload tasks");
+                    common.html.block($blockingDiv);
+                    tasks = $.map(files, function (file) {
+                        return picCtrl.upload(originalCode, file);
+                    });
+                    common.utils.log('edit.uploadPicture(): Wait for tasks to terminate');
+                    return [4 /*yield*/, Promise.all(tasks)];
+                case 1:
+                    rcs = _a.sent();
+                    common.html.unblock($blockingDiv);
+                    common.utils.log('edit.uploadPicture(): All tasks terminated');
+                    $.each(rcs, function (i, rc) {
+                        if (!rc) {
+                            common.utils.error('edit.delete(): Upload error', { i: i, rc: rc });
+                            common.html.showMessage(rc.errorMessage);
+                        }
+                    });
+                    // TODO: Refresh pictures
+                    common.utils.log('edit.uploadPicture(): END');
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
 function refresh(code) {
     return __awaiter(this, void 0, void 0, function () {
         var newUrl, rc;
@@ -459,7 +558,7 @@ function refresh(code) {
     });
 }
 
-},{"../../DTOs/Item":3,"../../Services/ItemController":5,"../common":11}],9:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../Services/ItemController":5,"../../Services/ItemPictureController":6,"../common":12}],10:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -519,7 +618,7 @@ var list;
     ;
 })(list = exports.list || (exports.list = {}));
 
-},{"../common":11}],10:[function(require,module,exports){
+},{"../common":12}],11:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -610,7 +709,7 @@ function refreshList(p) {
     });
 }
 
-},{"../common":11,"./ItemTTTController":9}],11:[function(require,module,exports){
+},{"../common":12,"./ItemTTTController":10}],12:[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -729,13 +828,22 @@ var utils;
     function ensureInteger(p) {
         if (p.canBeZero == null)
             p.canBeZero = true;
+        if (p.canBeNull == null)
+            p.canBeNull = false;
         if (p.fallbackValue == null) {
             if (p.canBeZero)
                 p.fallbackValue = 0;
             else
                 p.fallbackValue = 1;
         }
+        var canBeNull = p.canBeNull;
         p.observable.subscribe(function (value) {
+            if (canBeNull) {
+                if ((value == '') || (value == null)) {
+                    p.observable(null);
+                    return;
+                }
+            }
             var newValue = parseInt(value);
             if (isNaN(newValue))
                 newValue = p.fallbackValue;
@@ -931,6 +1039,6 @@ var url;
 // nb: Exports at the end or the order of execution breaks everything (i.e. strEnum must be defined before) ...
 __export(require("../Language"));
 
-},{"../Language":4,"./common":11}]},{},[1,2])
+},{"../Language":4,"./common":12}]},{},[1,2])
 
 //# sourceMappingURL=site.js.map

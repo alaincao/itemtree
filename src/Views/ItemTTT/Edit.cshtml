@@ -11,25 +11,42 @@
 <script type="text/javascript">
 	ttt.itemttt.edit.init( {
 			model				: @Html.Raw(JSON( item )),
-			$blockingDiv		: $('#d4606d97'),
+			$blockingDiv		: $('#d8ae6d99'),
 			$btnSave			: $('.f373f8f9'),
 			$btnDelete			: $('#f09efa4d'),
 			$fieldsContainer	: $('#d4606d97'),
+			$picUploadDropZone	: $('#b89a8429'),
+			$picUploadControl	: $('#a7606a9a'),
 		} );
 </script>
 }
 
-<div id="d4606d97">
-	<button class="f373f8f9">Save</button>
+<div id="d8ae6d99">
 
-	<p><label>Name: <input type="text" ttt-name="name" data-bind="value:name"/></label></p>
-	<p><label>Code: <input type="text" ttt-name="code" data-bind="value:code"/></label></p>
-	<p><label>Description EN: <textarea type="text" ttt-name="descriptionEN" data-bind="value:descriptionEN"></textarea></label></p>
-	<p><label>Description FR: <textarea type="text" ttt-name="descriptionFR" data-bind="value:descriptionFR"></textarea></label></p>
-	<p><label>Description NL: <textarea type="text" ttt-name="descriptionNL" data-bind="value:descriptionNL"></textarea></label></p>
-	<p><label>Price: <input type="text" ttt-name="price" data-bind="value:price"/></label></p>
-	<p><label>Active: <input type="checkbox" ttt-name="active" data-bind="checked:active"/></label></p>
+	@* Edition fields *@
+	<div id="d4606d97">
+		<button class="f373f8f9">Save</button>
 
-	<button class="f373f8f9">Save</button>
-	<button id="f09efa4d">Delete</button>
+		<p><label>Name: <input type="text" ttt-name="name" data-bind="value:name"/></label></p>
+		<p><label>Code: <input type="text" ttt-name="code" data-bind="value:code"/></label></p>
+		<p><label>Description EN: <textarea type="text" ttt-name="descriptionEN" data-bind="value:descriptionEN"></textarea></label></p>
+		<p><label>Description FR: <textarea type="text" ttt-name="descriptionFR" data-bind="value:descriptionFR"></textarea></label></p>
+		<p><label>Description NL: <textarea type="text" ttt-name="descriptionNL" data-bind="value:descriptionNL"></textarea></label></p>
+		<p><label>Price: <input type="text" ttt-name="price" data-bind="value:price"/></label></p>
+		<p><label>Active: <input type="checkbox" ttt-name="active" data-bind="checked:active"/></label></p>
+
+		<button class="f373f8f9">Save</button>
+		<button id="f09efa4d">Delete</button>
+	</div>
+
+	<hr/>
+
+	<style>.dropZoneHover{ background-color:green }</style>
+	<div id="b89a8429" style="border:3px dashed black" data-bind="css:{ dropZoneHover:hover }">
+		Upload new image:
+		<input type="file" id="a7606a9a"/><br/>
+		OR
+		<div>Drag & drop file here</div>
+	</div>
+
 </div>
