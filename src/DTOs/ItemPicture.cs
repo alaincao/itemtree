@@ -9,6 +9,7 @@ namespace ItemTTT.DTOs
 		public int				Number				{ get; set; } = 0;
 		public bool				IsMainImage			{ get; set; } = false;
 		public string			UrlOriginal			{ get; set; } = wwwroot.ImgNotFound;
+		public string			Url50				{ get; set; } = wwwroot.ImgNotFound;
 		public string			Url100				{ get; set; } = wwwroot.ImgNotFound;
 		public string			Url133				{ get; set; } = wwwroot.ImgNotFound;
 		public string			Url260				{ get; set; } = wwwroot.ImgNotFound;

@@ -95,6 +95,7 @@ namespace ItemTTT.Services
 					image.Picture.ItemCode		= code;
 					image.Picture.IsMainImage	= (image.MainImageNumber == number);
 					image.Picture.UrlOriginal	= PageHelper.ResolveRoute( CreateUrlDownload(code, number) );
+					image.Picture.Url50			= PageHelper.ResolveRoute( CreateUrlDownload(code, number, height:50) );
 					image.Picture.Url100		= PageHelper.ResolveRoute( CreateUrlDownload(code, number, height:100) );
 					image.Picture.Url133		= PageHelper.ResolveRoute( CreateUrlDownload(code, number, height:133) );
 					image.Picture.Url260		= PageHelper.ResolveRoute( CreateUrlDownload(code, number, height:260) );
@@ -329,6 +330,208 @@ namespace ItemTTT.Services
 				return File( new System.IO.MemoryStream(outputBytes), contentType, fileName );
 			else
 				return File( new System.IO.MemoryStream(outputBytes), contentType );
+		}
+
+		[HttpGet( Routes.ItemPictureDelete )]
+		[HttpPost( Routes.ItemPictureDelete )]
+		public async Task<Utils.TTTServiceResult> Delete(string itemCode, int number)
+		{
+			try
+			{
+				if(! PageHelper.IsAuthenticated )
+					throw new Utils.TTTException( "Not logged-in" );
+
+				var logHelper = PageHelper.ScopeLogs;
+				logHelper.AddLogMessage( $"ItemPicDelete: START {nameof(itemCode)}:'{itemCode}' ; {nameof(number)}:'{number}'" );
+
+				if( string.IsNullOrWhiteSpace(itemCode) )
+					throw new ArgumentNullException( $"{nameof(itemCode)}" );
+				if( number <= 0 )
+					throw new ArgumentNullException( $"{nameof(number)}" );
+
+				logHelper.AddLogMessage( $"ItemPicDelete: Open transaction" );
+				var dc = DataContext;
+				using( var transaction = dc.Database.BeginTransaction() )
+				{
+					logHelper.AddLogMessage( $"ItemPicDelete: Get item" );
+					var item = await dc.Items.Where( v=>v.Code == itemCode ).SingleAsync();
+
+					logHelper.AddLogMessage( $"ItemPicDelete: Get pictures" );
+					var images = await dc.ItemPictures.Where( v=>v.ItemID == item.ID ).OrderBy( v=>v.Number ).ToArrayAsync();
+
+					logHelper.AddLogMessage( $"ItemPicDelete: Remove selected images" );
+					dc.ItemPictures.RemoveRange( images.Where(v=>v.Number == number) );
+					await dc.SaveChangesAsync();
+
+					logHelper.AddLogMessage( $"ItemPicDelete: Decrement image number of each images with number above the removed one (in incremental order)" );
+					foreach( var image in images.Where(v=>v.Number > number) )
+					{
+						image.Number = image.Number - 1;
+						await dc.SaveChangesAsync();
+					}
+
+					logHelper.AddLogMessage( $"ItemPicDelete: Update item's 'MainImageNumber' if required" );
+					if( item.MainImageNumber == number )
+						item.MainImageNumber = null;
+					else if( item.MainImageNumber > number )
+						item.MainImageNumber = item.MainImageNumber - 1;
+					await dc.SaveChangesAsync();
+
+					logHelper.AddLogMessage( $"ItemPicDelete: Commit transaction" );
+					transaction.Commit();
+				}
+
+				logHelper.AddLogMessage( $"ItemPicDelete: END" );
+				return new Utils.TTTServiceResult( PageHelper );
+			}
+			catch( System.Exception ex )
+			{
+				return Utils.TTTServiceResult.LogAndNew( PageHelper, ex );
+			}
+		}
+
+		[HttpGet( Routes.ItemPictureReorder )]
+		[HttpPost( Routes.ItemPictureReorder )]
+		public async Task<Utils.TTTServiceResult> Reorder(string itemCode, int number, int newNumber)
+		{
+			try
+			{
+				if(! PageHelper.IsAuthenticated )
+					throw new Utils.TTTException( "Not logged-in" );
+
+				var logHelper = PageHelper.ScopeLogs;
+				logHelper.AddLogMessage( $"ItemPicReorder: START {nameof(itemCode)}:'{itemCode}' ; {nameof(number)}:'{number}' ; {nameof(newNumber)}:'{newNumber}'" );
+
+				if( string.IsNullOrWhiteSpace(itemCode) )
+					throw new ArgumentNullException( $"{nameof(itemCode)}" );
+				if( number <= 0 )
+					throw new ArgumentNullException( $"{nameof(number)}" );
+				if( newNumber <= 0 )
+					throw new ArgumentNullException( $"{nameof(newNumber)}" );
+
+				logHelper.AddLogMessage( $"ItemPicReorder: Open transaction" );
+				var dc = DataContext;
+				using( var transaction = dc.Database.BeginTransaction() )
+				{
+					logHelper.AddLogMessage( $"ItemPicReorder: Get item" );
+					var item = await dc.Items.Where( v=>v.Code == itemCode ).SingleAsync();
+					var mainImageNumber = item.MainImageNumber;
+
+					var allPictures = await dc.ItemPictures.Where( v=>v.ItemID == item.ID ).ToArrayAsync();
+
+					var maxPictureNumber = allPictures.Select( v=>v.Number ).Max();
+					if( newNumber > maxPictureNumber )
+					{
+						newNumber = maxPictureNumber;
+						logHelper.AddLogMessage( $"ItemPicReorder: Out of bound => Using {nameof(newNumber)}:'{newNumber}'" );
+					}
+					if( number == newNumber )
+					{
+						logHelper.AddLogMessage( $"ItemPicReorder: Nothing to do" );
+						goto EXIT;
+					}
+
+					var zePictures = allPictures.Where( v=>v.Number == number ).ToArray();
+
+					logHelper.AddLogMessage( $"ItemPicReorder: Move zePictures out of the way" );
+					foreach( var picture in zePictures )
+						picture.Number = 999999;
+					await dc.SaveChangesAsync();
+
+					logHelper.AddLogMessage( $"ItemPicReorder: Shift otherPictures" );
+					if( number > newNumber )
+					{
+						var otherPictures = allPictures	.Where( v=>v.Number < number )
+														.Where( v=>v.Number >= newNumber )
+														.OrderByDescending( v=>v.Number )
+														.ToArray();
+						foreach( var picture in otherPictures )
+						{
+							picture.Number = picture.Number + 1;
+							await dc.SaveChangesAsync();
+						}
+
+						if( (mainImageNumber < number) && (mainImageNumber >= newNumber) )
+							item.MainImageNumber = mainImageNumber + 1;
+					}
+					else // number < newNumber
+					{
+						var otherPictures = allPictures	.Where( v=>v.Number > number )
+														.Where( v=>v.Number <= newNumber )
+														.OrderBy( v=>v.Number )
+														.ToArray();
+						foreach( var picture in otherPictures )
+						{
+							picture.Number = picture.Number - 1;
+							await dc.SaveChangesAsync();
+						}
+
+						if( (mainImageNumber > number) && (mainImageNumber <= newNumber) )
+							item.MainImageNumber = mainImageNumber - 1;
+					}
+
+					if( mainImageNumber == number )
+						item.MainImageNumber = newNumber;
+
+					logHelper.AddLogMessage( $"ItemPicReorder: Set the new number" );
+					foreach( var picture in zePictures )
+						picture.Number = newNumber;
+					await dc.SaveChangesAsync();
+
+					logHelper.AddLogMessage( $"ItemPicReorder: Commit transaction" );
+					transaction.Commit();
+				}
+
+			EXIT:
+				logHelper.AddLogMessage( $"ItemPicReorder: END" );
+				return new Utils.TTTServiceResult( PageHelper );
+			}
+			catch( System.Exception ex )
+			{
+				return Utils.TTTServiceResult.LogAndNew( PageHelper, ex );
+			}
+		}
+
+		[HttpGet( Routes.ItemPictureSetMain )]
+		[HttpPost( Routes.ItemPictureSetMain )]
+		public async Task<Utils.TTTServiceResult> SetMain(string itemCode, int number, bool isMain)
+		{
+			try
+			{
+				if(! PageHelper.IsAuthenticated )
+					throw new Utils.TTTException( "Not logged-in" );
+
+				var logHelper = PageHelper.ScopeLogs;
+				logHelper.AddLogMessage( $"ItemPicSetMain: START {nameof(itemCode)}:'{itemCode}' ; {nameof(number)}:'{number}' ; {nameof(isMain)}:'{isMain}'" );
+
+				if( string.IsNullOrWhiteSpace(itemCode) )
+					throw new ArgumentNullException( $"{nameof(itemCode)}" );
+				if( number <= 0 )
+					throw new ArgumentNullException( $"{nameof(number)}" );
+
+				logHelper.AddLogMessage( $"ItemPicSetMain: Open transaction" );
+				var dc = DataContext;
+				using( var transaction = dc.Database.BeginTransaction() )
+				{
+					logHelper.AddLogMessage( $"ItemPicSetMain: Get item" );
+					var item = await dc.Items.Where( v=>v.Code == itemCode ).SingleAsync();
+					var mainImageNumber = item.MainImageNumber;
+
+					logHelper.AddLogMessage( $"ItemPicSetMain: Update value" );
+					item.MainImageNumber = isMain ? (int?)number : null;
+					await dc.SaveChangesAsync();
+
+					logHelper.AddLogMessage( $"ItemPicSetMain: Commit transaction" );
+					transaction.Commit();
+				}
+
+				logHelper.AddLogMessage( $"ItemPicSetMain: END" );
+				return new Utils.TTTServiceResult( PageHelper );
+			}
+			catch( System.Exception ex )
+			{
+				return Utils.TTTServiceResult.LogAndNew( PageHelper, ex );
+			}
 		}
 
 		internal static Bitmap CropResize(Bitmap image, double destinationHeight, double scaleHToW, double scaleWToH)

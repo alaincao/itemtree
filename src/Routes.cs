@@ -10,9 +10,10 @@ namespace ItemTTT
 {
 	internal static class Routes
 	{
-		private const string Lang = Language.RouteParameter;  // i.e. "{lang:lang}" => e.g. "en" or "fr"
-		private const string LangClientSide	= "{lang}";  // nb: only because it is cleaner ...
-		private const string ItemCode		= "{itemCode}";
+		private const string Lang				= Language.RouteParameter;  // i.e. "{lang:lang}" => e.g. "en" or "fr"
+		private const string ItemCode			= "{itemCode}";
+		private const string LangClientSide		= "{lang}";  // nb: only because it is cleaner ...
+		private const string ItemCodeClientSide	= "{code}";  // nb: only because it is cleaner ...
 
 		// Views
 		internal const string	InitializationLog	= "/initialization-log";
@@ -38,8 +39,11 @@ namespace ItemTTT
 		internal const string	ItemSave			= "/api/car-save";
 		internal const string	ItemDelete			= "/api/car-delete/"+ItemCode;
 		internal const string	ItemPictureList		= "/api/car-details/"+ItemCode+"/pictures";
-		internal const string	ItemPictureUpload	= "/car-details/"+ItemCode+"/pictures/upload";
+		internal const string	ItemPictureDelete	= "/api/car-details/"+ItemCode+"/pictures/delete";
+		internal const string	ItemPictureReorder	= "/api/car-details/"+ItemCode+"/pictures/reorder";
+		internal const string	ItemPictureSetMain	= "/api/car-details/"+ItemCode+"/pictures/setmain";
 		internal const string	ItemPictureDownload	= "/car-details/"+ItemCode+"/pictures/{number}";
+		internal const string	ItemPictureUpload	= "/car-details/"+ItemCode+"/pictures/upload";
 
 		/// <summary>Set PageParameters routes for client-side</summary>
 		internal static object GetPageParameterRoutes(PageHelper pageHelper)
@@ -50,17 +54,16 @@ namespace ItemTTT
 				// Already cached
 				return GetPageParameterRoutesCache;
 
-			var langParm = LangClientSide;
 			Func<string,string> tr = (route)=>
 				{
-					route = route.Replace( Lang, langParm );  // Cleanup a little bit URLs before sending to clients ...
+					route = route.Replace( Lang, LangClientSide ).Replace( ItemCode, ItemCodeClientSide );  // Cleanup a little bit URLs before sending to clients ...
 					pageHelper.ResolveRoute( route );
 					return route;
 				};
 
 			var obj = new {
-					LanguageParameter = langParm,
-					ItemCodeParameter = ItemCode,
+					LanguageParameter = LangClientSide,
+					ItemCodeParameter = ItemCodeClientSide,
 
 					ItemTTT = new {
 							ItemsList	= tr( ItemsList ),
@@ -76,6 +79,9 @@ namespace ItemTTT
 							ItemSave			= tr( ItemSave ),
 							ItemDelete			= tr( ItemDelete ),
 							ItemDetailsPictures	= tr( ItemPictureList ),
+							ItemPictureDelete	= tr( ItemPictureDelete ),
+							ItemPictureReorder	= tr( ItemPictureReorder ),
+							ItemPictureSetMain	= tr( ItemPictureSetMain ),
 							ItemPictureUpload	= tr( ItemPictureUpload ),
 						},
 				};

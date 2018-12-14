@@ -32,3 +32,24 @@ export interface UploadResult extends Result
 {
 	imageNumber : number;
 }
+
+export async function delete_(p:{ itemCode:string, number:number }) : Promise<Result>
+{
+	const url = common.routes.api.itemPictureDelete.replace( common.routes.itemCodeParameter, p.itemCode );
+	const rc = await common.url.postRequestForm<Result>( url, { number:p.number } );
+	return rc;
+}
+
+export async function reorder(p:{ itemCode:string, number:number, newNumber:number }) : Promise<Result>
+{
+	const url = common.routes.api.itemPictureReorder.replace( common.routes.itemCodeParameter, p.itemCode );
+	const rc = await common.url.postRequestForm<Result>( url, { number:p.number, newNumber:p.newNumber } );
+	return rc;
+}
+
+export async function setMain(p:{ itemCode:string, number:number, isMain:boolean }) : Promise<Result>
+{
+	const url = common.routes.api.itemPictureSetMain.replace( common.routes.itemCodeParameter, p.itemCode );
+	const rc = await common.url.postRequestForm<Result>( url, { number:p.number, isMain:p.isMain } );
+	return rc;
+}

@@ -191,9 +191,70 @@ export namespace html
 {
 	export function showMessage(msg:string) : void
 	{
-		const $div = $('<div/>').text( msg );
-		$('body').append( $div );
-		$div.dialog();
+		// Bootstrap style:
+		const html = `<div class="modal" tabindex="-1" role="dialog">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-body">
+									<!-- Text content here -->
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>`;
+		const $div = $(html);
+		$div.find( '.modal-body' ).text( msg );
+		$div.modal();
+
+		// JQuery style:
+		// var $div = $('<div/>').text('Hello world');
+		// $('body').append( $div );
+		// $div.dialog()
+	}
+
+	export function confirm(msg:string) : Promise<boolean>
+	{
+		// Bootstrap style:
+		const html = `<div class="modal" tabindex="-1" role="dialog">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-body">
+									<!-- Text content here -->
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-primary">Save changes</button>
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+								</div>
+							</div>
+						</div>
+					</div>`;
+		const $div = $(html);
+		$div.find( '.modal-body' ).text( msg );
+		return new Promise<boolean>( (resolve)=>
+			{
+				let confirmed = false;
+				$div.find( '.btn-primary' ).click( ()=>
+					{
+						confirmed = true;
+						$div.modal( 'hide' );
+						resolve( true );
+					} );
+				$div.on( 'hidden.bs.modal', (e)=>
+					{
+						if( confirmed )
+							// Clicked on 'Save' => NOOP
+							// nb: should not happen, but in case ...
+							return;
+						// Manually closed => Cancel
+						resolve( false );
+					} );
+				$div.modal();
+			} );
+
+		// JQuery style:
+		// TODO ...
 	}
 
 	/** Invoke jQuery.blockUI's '.block()' on the specified element but supports multiple invokation on the same element */
@@ -344,8 +405,25 @@ export namespace url
 		onChangedCallbacks.trigger( onChangedEvent );
 	}
 
-	// nb: ES5 incompatible ; requires "Promise" library
-	export function postRequest<T>(url:string, request:{[key:string]:any}) : Promise<T>
+	export function postRequestForm<T>(url:string, request:{[key:string]:any}) : Promise<T>
+	{
+		return new Promise<T>( (resolve,reject)=>
+			{
+				$.ajax({	type		: 'POST',
+							url			: url,
+							contentType	: 'application/x-www-form-urlencoded',
+							data		: request,
+							dataType	: 'json',
+							success		: (data,textStatus,jqXHR)=>resolve( data ),
+							error		: (jqXHR,textStatus,errorThrown)=>
+											{
+												reject( textStatus );
+											}
+						});
+			} );
+	}
+
+	export function postRequestJSON<T>(url:string, request:{[key:string]:any}) : Promise<T>
 	{
 		let requestStr = JSON.stringify( request );
 		return new Promise<T>( (resolve,reject)=>
@@ -364,7 +442,6 @@ export namespace url
 			} );
 	}
 
-	// nb: ES5 incompatible ; requires "Promise" library
 	export function getRequest(url:string, request?:{[key:string]:any}) : Promise<string>
 	{
 		if( request != null )

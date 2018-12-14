@@ -18,6 +18,9 @@ export interface Routes
 			itemSave			: string,
 			itemDelete			: string,
 			itemDetailsPictures	: string,
+			itemPictureDelete	: string,
+			itemPictureReorder	: string,
+			itemPictureSetMain	: string,
 			itemPictureUpload	: string,
 		},
 }

@@ -186,7 +186,7 @@ namespace ItemTTT.Services
 				if( request.OriginalCode == null )
 				{
 					logHelper.AddLogMessage( $"ItemSave: Create new" );
-					item = new Models.Item();
+					item = new Models.Item{ MainImageNumber=1 };
 					dc.Items.Add( item );
 				}
 				else

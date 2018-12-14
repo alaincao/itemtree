@@ -18,13 +18,14 @@
 			$picUploadDropZone	: $('#b89a8429'),
 			$picUploadControl	: $('#a7606a9a'),
 		} );
+	ko.applyBindings( ttt.itemttt.edit, $('#d8ae6d99')[0] );
 </script>
 }
 
 <div id="d8ae6d99">
 
 	@* Edition fields *@
-	<div id="d4606d97">
+	<div id="d4606d97" data-bind="with:item">
 		<button class="f373f8f9">Save</button>
 
 		<p><label>Name: <input type="text" ttt-name="name" data-bind="value:name"/></label></p>
@@ -42,11 +43,26 @@
 	<hr/>
 
 	<style>.dropZoneHover{ background-color:green }</style>
-	<div id="b89a8429" style="border:3px dashed black" data-bind="css:{ dropZoneHover:hover }">
+	<div id="b89a8429" style="border:3px dashed black" data-bind="css:{ dropZoneHover:picDropZone.hover }">
 		Upload new image:
 		<input type="file" id="a7606a9a"/><br/>
 		OR
 		<div>Drag & drop file here</div>
 	</div>
 
+	<div id="a92e8aa4" data-bind="foreach:item.pictures">
+		<div style="border:1px black solid">
+			<i data-bind="click:function(){ $root.toggleMainPicture($data); }, css:{ 'fa-dot-circle-o':isMainImage, 'fa-circle-o':(!isMainImage) }" class="fa"></i>
+			<i data-bind="click:function(){ $root.reorderPicture($data, -1); }" class="fa fa-arrow-up"></i>
+			<i data-bind="click:function(){ $root.reorderPicture($data, +1); }" class="fa fa-arrow-down"></i>
+			<img data-bind="attr:{ src:$root.scrambleUrl($data.url50) }"/>
+			<i data-bind="click:function(){ $root.deletePicture($data); }" class="fa fa-times" style="color:Red"></i>
+		</div>
+	</div>
+
 </div>
+
+Model dump:
+<pre>
+@Html.Raw(JSON( item ))
+</pre>

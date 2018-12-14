@@ -1,19 +1,22 @@
 
 import * as common from "../common";
-import * as dto from "../../DTOs/Item";
+import { Item, ItemKO } from "../../DTOs/Item";
+import { ItemPicture } from "../../DTOs/ItemPicture";
 import * as ctrl from "../../Services/ItemController";
 import * as picCtrl from "../../Services/ItemPictureController";
 
+const message_confirmDelete = 'Are you sure you want to delete that item?';
 const message_saveSuccess = 'Item saved successfully';
 const message_refreshFailed = 'An error occured while refresing the data: ';
+const message_confirmDeletePicture = 'Are you sure you want to delete that image?';
 
 var $blockingDiv : JQuery;
 var originalCode : string;
-export var item : dto.ItemKO;
 
-export var picDropZone : { hover:KnockoutObservable<boolean> };
+export var item			: ItemKO;
+export var picDropZone	: { hover:KnockoutObservable<boolean> };
 
-export async function init(p:{	model				: dto.Item,
+export async function init(p:{	model				: Item,
 								$blockingDiv		: JQuery,
 								$btnSave			: JQuery,
 								$btnDelete			: JQuery,
@@ -26,17 +29,14 @@ export async function init(p:{	model				: dto.Item,
 	$blockingDiv = p.$blockingDiv;
 
 	common.utils.log( 'edit.init(): Create KO item' );
-	item = new dto.ItemKO( p.$fieldsContainer, p.model );
+	item = new ItemKO( p.$fieldsContainer, p.model );
 	originalCode = item.code();
-
-	common.utils.log( 'edit.init(): Apply KO item bindings' );
-	ko.applyBindings( item, p.$fieldsContainer[0] );
 
 	common.utils.log( 'edit.init(): Bind JQuery events' );
 	p.$btnSave.click( save );
-	p.$btnDelete.click( delete_ );
+	p.$btnDelete.click( ()=>{ delete_(); } );
 
-	common.utils.log( 'edit.init(): Initi picture upload' );
+	common.utils.log( 'edit.init(): Init picture upload' );
 	initPictureUpload( p.$picUploadDropZone, p.$picUploadControl );
 
 	common.utils.log( 'edit.init() END' );
@@ -82,9 +82,6 @@ function initPictureUpload($dropZone:JQuery, $upload:JQuery) : void
 			const files = (<HTMLInputElement>$upload[0]).files;
 			uploadPicture( files );
 		} );
-
-	common.utils.log( 'edit.initDropZone(): Apply KO bindings' );
-	ko.applyBindings( picDropZone, $dropZone[0] );
 }
 
 async function save() : Promise<void>
@@ -113,9 +110,20 @@ async function save() : Promise<void>
 	common.utils.log( 'edit.save(): END' );
 }
 
-async function delete_() : Promise<void>
+async function delete_(confirmed?:boolean) : Promise<void>
 {
 	common.utils.log( 'edit.delete(): START' );
+
+	if( confirmed != true )
+	{
+		common.utils.log( 'edit.delete(): Ask confirmation' );
+		const rc = await common.html.confirm( message_confirmDelete );
+		if(! rc )
+		{
+			common.utils.log( 'edit.delete(): NOT CONFIRMED' );
+			return;
+		}
+	}
 
 	common.utils.log( 'edit.delete(): Launch delete' );
 	common.html.block( $blockingDiv );
@@ -170,11 +178,95 @@ async function uploadPicture(files:FileList) : Promise<void>
 			}
 		} );
 
+	await refresh();
+
 	common.utils.log( 'edit.uploadPicture(): END' );
+}
+
+export async function deletePicture(picture:ItemPicture, confirmed?:boolean) : Promise<void>
+{
+	common.utils.log( 'edit.deletePicture(): START' );
+
+	if( confirmed != true )
+	{
+		common.utils.log( 'edit.deletePicture(): Ask confirmation' );
+		const rc = await common.html.confirm( message_confirmDeletePicture );
+		if(! rc )
+		{
+			common.utils.log( 'edit.deletePicture(): NOT CONFIRMED' );
+			return;
+		}
+	}
+
+	common.utils.log( 'edit.deletePicture(): Launch delete request' );
+	common.html.block( $blockingDiv );
+	const rc = await picCtrl.delete_({ itemCode:picture.itemCode, number:picture.number });
+	common.html.unblock( $blockingDiv );
+
+	if(! rc.success )
+	{
+		common.utils.error( 'edit.deletePicture(): Error', { rc } );
+		common.html.showMessage( rc.errorMessage );
+	}
+
+	common.utils.log( 'edit.deletePicture(): Launch refresh' );
+	await refresh();
+
+	common.utils.log( 'edit.deletePicture(): END' );
+}
+
+export async function toggleMainPicture(picture:ItemPicture) : Promise<void>
+{
+	common.utils.log( 'edit.toggleMainPicture(): START' );
+
+	common.utils.log( 'edit.toggleMainPicture(): Launch toggle request' );
+	common.html.block( $blockingDiv );
+	const rc = await picCtrl.setMain({ itemCode:picture.itemCode, number:picture.number, isMain:(!picture.isMainImage) });
+	common.html.unblock( $blockingDiv );
+
+	if(! rc.success )
+	{
+		common.utils.error( 'edit.toggleMainPicture(): Error', { rc } );
+		common.html.showMessage( rc.errorMessage );
+	}
+
+	common.utils.log( 'edit.toggleMainPicture(): Launch refresh' );
+	await refresh();
+
+	common.utils.log( 'edit.toggleMainPicture(): END' );
+}
+
+export async function reorderPicture(picture:ItemPicture, offset:number) : Promise<void>
+{
+	common.utils.log( 'edit.movePicture(): START' );
+
+	let newNumber = picture.number + offset;
+	if( newNumber <= 0 )
+		newNumber = 1;
+	if( picture.number == newNumber )
+		// NOOP
+		return;
+
+	common.utils.log( 'edit.movePicture(): Launch move request' );
+	common.html.block( $blockingDiv );
+	const rc = await picCtrl.reorder({ itemCode:picture.itemCode, number:picture.number, newNumber:newNumber });
+	common.html.unblock( $blockingDiv );
+
+	if(! rc.success )
+	{
+		common.utils.error( 'edit.movePicture(): Error', { rc } );
+		common.html.showMessage( rc.errorMessage );
+	}
+
+	common.utils.log( 'edit.movePicture(): Launch refresh' );
+	await refresh();
+
+	common.utils.log( 'edit.movePicture(): END' );
 }
 
 async function refresh(code?:string) : Promise<boolean>
 {
+	// TODO: Allow refresh only images to avoid overwriting any modifications to input fields ...
 	common.utils.log( 'edit.refresh(): START' );
 
 	let newUrl : string = null;
@@ -213,4 +305,15 @@ async function refresh(code?:string) : Promise<boolean>
 
 	common.utils.log( 'edit.refresh(): END' );
 	return true;
+}
+
+/** Used to add a changing parameter to the URL to bypass browser's cache */
+export function scrambleUrl(url:string) : string
+{
+	if( url.indexOf('?') >= 0 )
+		url = url + '&';
+	else
+		url = url + '?';
+	url = url + 'p=' + common.utils.newGuid();
+	return url;
 }
