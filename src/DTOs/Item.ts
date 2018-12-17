@@ -2,11 +2,13 @@
 import * as common from "../Views/common";
 import { BaseAutoItem, DictObj } from "../Utils/BaseAutoItem";
 export { DictObj, DictKO } from "../Utils/BaseAutoItem";
+import { Translation } from "./Translation";
 import { ItemPicture } from "./ItemPicture";
 
 export interface Item extends DictObj
 {
-	pictures : ItemPicture[];
+	options		: Translation[];
+	pictures	: ItemPicture[];
 }
 
 export class ItemKO extends BaseAutoItem
@@ -18,15 +20,13 @@ export class ItemKO extends BaseAutoItem
 	public readonly descriptionNL	: KnockoutObservable<string>;
 	public readonly active			: KnockoutObservable<boolean>;
 	public readonly price			: KnockoutObservable<number>;
-	public readonly pictures		: KnockoutObservableArray<ItemPicture>;
 
 	constructor($container:JQuery, src?:Item, fieldNames?:string[])
 	{
 		if( src == null )
-			src = { name:'', pictures:[] };
+			src = { name:'', options:[], pictures:[] };
 		super( $container, src, fieldNames );
 		const self = this;
-		this.pictures = ko.observableArray( src.pictures );
 
 		if( self.price != null )
 			common.utils.ensureInteger({ observable:self.price, canBeZero:false, canBeNull:true, mustBePositive:true });
@@ -36,11 +36,5 @@ export class ItemKO extends BaseAutoItem
 	{
 		const rc = super.toDictObj( dict );
 		return <Item>rc;
-	}
-
-	public /*override*/ fromDictObj(item?:Item) : void
-	{
-		super.fromDictObj( item );
-		this.pictures( item.pictures );
 	}
 }

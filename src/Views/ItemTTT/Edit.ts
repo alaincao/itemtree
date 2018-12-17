@@ -1,9 +1,10 @@
 
 import * as common from "../common";
-import { Item, ItemKO } from "../../DTOs/Item";
+import * as dto from "../../DTOs/Item";
 import { ItemPicture } from "../../DTOs/ItemPicture";
 import * as ctrl from "../../Services/ItemController";
 import * as picCtrl from "../../Services/ItemPictureController";
+import { TranslationKO } from "../../DTOs/Translation";
 
 const message_confirmDelete = 'Are you sure you want to delete that item?';
 const message_saveSuccess = 'Item saved successfully';
@@ -16,7 +17,7 @@ var originalCode : string;
 export var item			: ItemKO;
 export var picDropZone	: { hover:KnockoutObservable<boolean> };
 
-export async function init(p:{	model				: Item,
+export async function init(p:{	model				: dto.Item,
 								$blockingDiv		: JQuery,
 								$btnSave			: JQuery,
 								$btnDelete			: JQuery,
@@ -316,4 +317,39 @@ export function scrambleUrl(url:string) : string
 		url = url + '?';
 	url = url + 'p=' + common.utils.newGuid();
 	return url;
+}
+
+class ItemKO extends dto.ItemKO
+{
+	public readonly options			: KnockoutObservableArray<TranslationKO>;
+	public readonly pictures		: KnockoutObservableArray<ItemPicture>;
+
+	constructor($container:JQuery, src:dto.Item)
+	{
+		super( $container, src );
+		this.options = ko.observableArray( src.options.map(v=>new TranslationKO(v)) );
+		this.pictures = ko.observableArray( src.pictures );
+	}
+
+	protected addNewOption() : void
+	{
+		const self = this;
+		self.options.push( new TranslationKO() );
+	}
+
+	public /*override*/ toDictObj(dict?:dto.DictObj) : dto.Item
+	{
+		const self = this;
+		const item = <dto.Item>super.toDictObj( dict );
+		item.options = self.options().map( v=>{ return { en:v.en(), fr:'', nl:'' }; } );  // nb: only EN is used server-side
+		return item;
+	}
+
+	public /*override*/ fromDictObj(item:dto.Item) : void
+	{
+		const self = this;
+		super.fromDictObj( item );
+		self.options( item.options.map( v=>{ return new TranslationKO(v); } ) );
+		self.pictures( item.pictures );
+	}
 }

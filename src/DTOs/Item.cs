@@ -16,7 +16,7 @@ namespace ItemTTT.DTOs
 
 		public Dictionary<Languages,string>	DetailsUrls	{ get; set; }
 		public ItemPicture[]				Pictures	{ get; set; }
-		public Utils.Translation[]			Options		{ get; set; }
+		public DTOs.Translation[]			Options		{ get; set; }
 
 		internal int 	MainImageNumber	= 1;  // nb: Not transmitted to client
 		public ItemPicture		FirstImage	{ get { return ((Pictures??new ItemPicture[]{}).Length == 0) ? ItemPicture.Empty : Pictures.FirstOrDefault(); } }

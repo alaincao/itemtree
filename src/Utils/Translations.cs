@@ -6,17 +6,10 @@ using System.Web;
 namespace ItemTTT
 {
 	using Types	= Models.Translation.Types;
-	using Dict	= Dictionary<string,Utils.Translation>;
+	using Dict	= Dictionary<string,DTOs.Translation>;
 
 	public static partial class Utils
 	{
-		public struct Translation
-		{
-			public string	EN;
-			public string	FR;
-			public string	NL;
-		}
-
 		internal static class Translations
 		{
 			private static readonly Types[]					AllTypes	= Enum.GetValues( typeof(Types) ).Cast<Types>().Where( v=>v != Types.Undefined ).ToArray();
@@ -40,7 +33,7 @@ namespace ItemTTT
 								{
 									return v.ToDictionary( w=>w.TranslationEN, w=>
 												{
-													return new Translation{ EN=w.TranslationEN, FR=w.TranslationFR, NL=w.TranslationNL };
+													return new DTOs.Translation{ EN=w.TranslationEN, FR=w.TranslationFR, NL=w.TranslationNL };
 												} );
 								} );
 
@@ -61,7 +54,7 @@ namespace ItemTTT
 				return cache[ type ];
 			}
 
-			internal static Translation? TryGet(Models.ItemTTTContext dc, Types type, string en)
+			internal static DTOs.Translation? TryGet(Models.ItemTTTContext dc, Types type, string en)
 			{
 				var dict = Get( dc, type );
 				if( dict.TryGetValue(en, out var tr) )
@@ -69,12 +62,12 @@ namespace ItemTTT
 				return null;
 			}
 
-			internal static Translation Get(Models.ItemTTTContext dc, Types type, string en)
+			internal static DTOs.Translation Get(Models.ItemTTTContext dc, Types type, string en)
 			{
 				var tr = TryGet( dc, type, en );
 				if( tr != null )
 					return tr.Value;
-				return new Translation{ EN=en, FR=en, NL=en };
+				return new DTOs.Translation{ EN=en, FR=en, NL=en };
 			}
 		}
 	}

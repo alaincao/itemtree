@@ -40,7 +40,8 @@ namespace ItemTTT.Views
 		{
 			if( price == null )
 				return "-";
-			return price.Value.ToString("C0");
+			var cultureInfo = System.Globalization.CultureInfo.GetCultureInfo( "fr-BE" );
+			return price.Value.ToString( "C0", cultureInfo );
 		}
 	}
 }

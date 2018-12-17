@@ -36,6 +36,16 @@
 		<p><label>Price: <input type="text" ttt-name="price" data-bind="value:price"/></label></p>
 		<p><label>Active: <input type="checkbox" ttt-name="active" data-bind="checked:active"/></label></p>
 
+		<div>
+			Options:
+			<ul data-bind="foreach:options">
+				<li>
+					EN: <input type="text" data-bind="value:en"/>
+				</li>
+			</ul>
+			<button data-bind="click:addNewOption">Add new</button>
+		</div>
+
 		<button class="f373f8f9">Save</button>
 		<button id="f09efa4d">Delete</button>
 	</div>

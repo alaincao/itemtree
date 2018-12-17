@@ -18,7 +18,7 @@ var ttt = {
 };
 window.ttt = ttt;
 
-},{"./src/Views/ItemTTT/Add":8,"./src/Views/ItemTTT/Edit":9,"./src/Views/ItemTTT/List":11,"./src/Views/common":12}],3:[function(require,module,exports){
+},{"./src/Views/ItemTTT/Add":9,"./src/Views/ItemTTT/Edit":10,"./src/Views/ItemTTT/List":12,"./src/Views/common":13}],3:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -40,10 +40,9 @@ var ItemKO = /** @class */ (function (_super) {
     function ItemKO($container, src, fieldNames) {
         var _this = this;
         if (src == null)
-            src = { name: '', pictures: [] };
+            src = { name: '', options: [], pictures: [] };
         _this = _super.call(this, $container, src, fieldNames) || this;
         var self = _this;
-        _this.pictures = ko.observableArray(src.pictures);
         if (self.price != null)
             common.utils.ensureInteger({ observable: self.price, canBeZero: false, canBeNull: true, mustBePositive: true });
         return _this;
@@ -52,21 +51,29 @@ var ItemKO = /** @class */ (function (_super) {
         var rc = _super.prototype.toDictObj.call(this, dict);
         return rc;
     };
-    ItemKO.prototype.fromDictObj = function (item) {
-        _super.prototype.fromDictObj.call(this, item);
-        this.pictures(item.pictures);
-    };
     return ItemKO;
 }(BaseAutoItem_1.BaseAutoItem));
 exports.ItemKO = ItemKO;
 
-},{"../Utils/BaseAutoItem":7,"../Views/common":12}],4:[function(require,module,exports){
+},{"../Utils/BaseAutoItem":8,"../Views/common":13}],4:[function(require,module,exports){
+Object.defineProperty(exports, "__esModule", { value: true });
+var TranslationKO = /** @class */ (function () {
+    function TranslationKO(src) {
+        if (src == null)
+            src = { en: '' };
+        this.en = ko.observable(src.en);
+    }
+    return TranslationKO;
+}());
+exports.TranslationKO = TranslationKO;
+
+},{}],5:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var _a;
 var common = require("./Views/common");
 exports.Languages = (_a = common.utils.strEnum(['en', 'fr', 'nl']), _a.e), exports.allLanguages = _a.a;
 
-},{"./Views/common":12}],5:[function(require,module,exports){
+},{"./Views/common":13}],6:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -169,7 +176,7 @@ function delete_(code) {
 }
 exports.delete_ = delete_;
 
-},{"../Views/common":12}],6:[function(require,module,exports){
+},{"../Views/common":13}],7:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -279,7 +286,7 @@ function setMain(p) {
 }
 exports.setMain = setMain;
 
-},{"../Views/common":12}],7:[function(require,module,exports){
+},{"../Views/common":13}],8:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var fieldTagAttribute = 'ttt-name';
 var BaseAutoItem = /** @class */ (function () {
@@ -331,7 +338,7 @@ var BaseAutoItem = /** @class */ (function () {
 }());
 exports.BaseAutoItem = BaseAutoItem;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -419,7 +426,20 @@ function save() {
     });
 }
 
-},{"../../DTOs/Item":3,"../../Services/ItemController":5,"../common":12}],9:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../Services/ItemController":6,"../common":13}],10:[function(require,module,exports){
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -457,9 +477,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("../common");
-var Item_1 = require("../../DTOs/Item");
+var dto = require("../../DTOs/Item");
 var ctrl = require("../../Services/ItemController");
 var picCtrl = require("../../Services/ItemPictureController");
+var Translation_1 = require("../../DTOs/Translation");
 var message_confirmDelete = 'Are you sure you want to delete that item?';
 var message_saveSuccess = 'Item saved successfully';
 var message_refreshFailed = 'An error occured while refresing the data: ';
@@ -472,7 +493,7 @@ function init(p) {
             common.utils.log('edit.init() START', { p: p });
             $blockingDiv = p.$blockingDiv;
             common.utils.log('edit.init(): Create KO item');
-            exports.item = new Item_1.ItemKO(p.$fieldsContainer, p.model);
+            exports.item = new ItemKO(p.$fieldsContainer, p.model);
             originalCode = exports.item.code();
             common.utils.log('edit.init(): Bind JQuery events');
             p.$btnSave.click(save);
@@ -776,8 +797,34 @@ function scrambleUrl(url) {
     return url;
 }
 exports.scrambleUrl = scrambleUrl;
+var ItemKO = /** @class */ (function (_super) {
+    __extends(ItemKO, _super);
+    function ItemKO($container, src) {
+        var _this = _super.call(this, $container, src) || this;
+        _this.options = ko.observableArray(src.options.map(function (v) { return new Translation_1.TranslationKO(v); }));
+        _this.pictures = ko.observableArray(src.pictures);
+        return _this;
+    }
+    ItemKO.prototype.addNewOption = function () {
+        var self = this;
+        self.options.push(new Translation_1.TranslationKO());
+    };
+    ItemKO.prototype.toDictObj = function (dict) {
+        var self = this;
+        var item = _super.prototype.toDictObj.call(this, dict);
+        item.options = self.options().map(function (v) { return { en: v.en(), fr: '', nl: '' }; }); // nb: only EN is used server-side
+        return item;
+    };
+    ItemKO.prototype.fromDictObj = function (item) {
+        var self = this;
+        _super.prototype.fromDictObj.call(this, item);
+        self.options(item.options.map(function (v) { return new Translation_1.TranslationKO(v); }));
+        self.pictures(item.pictures);
+    };
+    return ItemKO;
+}(dto.ItemKO));
 
-},{"../../DTOs/Item":3,"../../Services/ItemController":5,"../../Services/ItemPictureController":6,"../common":12}],10:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../DTOs/Translation":4,"../../Services/ItemController":6,"../../Services/ItemPictureController":7,"../common":13}],11:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -837,7 +884,7 @@ var list;
     ;
 })(list = exports.list || (exports.list = {}));
 
-},{"../common":12}],11:[function(require,module,exports){
+},{"../common":13}],12:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1051,7 +1098,7 @@ var ItemKO = /** @class */ (function (_super) {
     return ItemKO;
 }(dto.ItemKO));
 
-},{"../../DTOs/Item":3,"../../Language":4,"../common":12,"./ItemTTTController":10}],12:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../Language":5,"../common":13,"./ItemTTTController":11}],13:[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -1460,6 +1507,6 @@ var url;
 // nb: Exports at the end or the order of execution breaks everything (i.e. strEnum must be defined before) ...
 __export(require("../Language"));
 
-},{"../Language":4,"./common":12}]},{},[1,2])
+},{"../Language":5,"./common":13}]},{},[1,2])
 
 //# sourceMappingURL=site.js.map
