@@ -10,6 +10,7 @@ var currentSortingField : list.SortingField;
 var $txtSearch		: JQuery;
 var $cbShowInactive	: JQuery;
 var $divCarsList	: JQuery;
+var $divBlocking	: JQuery;
 
 export var itemsList : ItemKO[];
 
@@ -28,6 +29,7 @@ export async function init(p:{	sortingField	: list.SortingField,
 	$txtSearch			= p.$txtSearch;
 	$cbShowInactive		= p.$cbShowInactive.prop( 'checked', true );
 	$divCarsList		= p.$divCarsList;
+	$divBlocking		= $divCarsList;
 	p.$btnViewGrid	.click( ()=>{ refreshList({ viewMode:list.ViewModes.grid }) } );
 	p.$btnViewList	.click( ()=>{ refreshList({ viewMode:list.ViewModes.list }) } );
 	p.$btnSortName	.click( ()=>{ refreshList({ sortingField:list.SortingFields.name }) } );
@@ -102,7 +104,9 @@ async function refreshList(p:list.GetListContentRequest) : Promise<void>
 	}
 
 	common.utils.log( 'list.refreshList(): Request html & replace list DOM' );
+	common.html.block( $divBlocking );
 	var html = await list.getListContent( p );
+	common.html.unblock( $divBlocking );
 	$divCarsList.html( html );
 
 	reconstructItemsList();

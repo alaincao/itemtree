@@ -301,8 +301,8 @@ export namespace html
 	export function block($e:JQuery) : JQuery
 	{
 		// Insert/increment a block counter as jQuery 'data()'
-		var blockCounter = ( $e.data('common_blockCounter')|0 ) + 1;
-		$e.data( 'common_blockCounter', blockCounter );
+		var blockCounter = ( $e.data('ttt_blockCounter')|0 ) + 1;
+		$e.data( 'ttt_blockCounter', blockCounter );
 
 		if( blockCounter == 1 )
 			// This element is not blocked yet
@@ -315,8 +315,8 @@ export namespace html
 	export function unblock($e:JQuery) : JQuery
 	{
 		// Decrement the block counter in the jQuery 'data()'
-		var blockCounter = ( $e.data('common_blockCounter')|0 ) - 1;
-		$e.data( 'common_blockCounter', blockCounter );
+		var blockCounter = ( $e.data('ttt_blockCounter')|0 ) - 1;
+		$e.data( 'ttt_blockCounter', blockCounter );
 
 		if( blockCounter < 0 )
 		{
@@ -325,7 +325,7 @@ export namespace html
 
 			// Reset counter
 			blockCounter = 0;
-			$e.data( 'common_blockCounter', 0 );
+			$e.data( 'ttt_blockCounter', 0 );
 		}
 
 		if( blockCounter == 0 )

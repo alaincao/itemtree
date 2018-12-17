@@ -896,6 +896,7 @@ var currentSortingField;
 var $txtSearch;
 var $cbShowInactive;
 var $divCarsList;
+var $divBlocking;
 function init(p) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -904,6 +905,7 @@ function init(p) {
             $txtSearch = p.$txtSearch;
             $cbShowInactive = p.$cbShowInactive.prop('checked', true);
             $divCarsList = p.$divCarsList;
+            $divBlocking = $divCarsList;
             p.$btnViewGrid.click(function () { refreshList({ viewMode: ItemTTTController_1.list.ViewModes.grid }); });
             p.$btnViewList.click(function () { refreshList({ viewMode: ItemTTTController_1.list.ViewModes.list }); });
             p.$btnSortName.click(function () { refreshList({ sortingField: ItemTTTController_1.list.SortingFields.name }); });
@@ -968,9 +970,11 @@ function refreshList(p) {
                         currentSortingField = p.sortingField;
                     }
                     common.utils.log('list.refreshList(): Request html & replace list DOM');
+                    common.html.block($divBlocking);
                     return [4 /*yield*/, ItemTTTController_1.list.getListContent(p)];
                 case 1:
                     html = _a.sent();
+                    common.html.unblock($divBlocking);
                     $divCarsList.html(html);
                     reconstructItemsList();
                     common.utils.log('list.refreshList(): END', { currentSortingField: currentSortingField });
@@ -1286,8 +1290,8 @@ var html;
     /** Invoke jQuery.blockUI's '.block()' on the specified element but supports multiple invokation on the same element */
     function block($e) {
         // Insert/increment a block counter as jQuery 'data()'
-        var blockCounter = ($e.data('common_blockCounter') | 0) + 1;
-        $e.data('common_blockCounter', blockCounter);
+        var blockCounter = ($e.data('ttt_blockCounter') | 0) + 1;
+        $e.data('ttt_blockCounter', blockCounter);
         if (blockCounter == 1)
             // This element is not blocked yet
             $e.block(); // TODO: ACA: jQuery.blockUI typings ...
@@ -1297,14 +1301,14 @@ var html;
     /** Invoke jQuery.blockUI's '.unblock()' on the specified element except if it has been block()ed more than once */
     function unblock($e) {
         // Decrement the block counter in the jQuery 'data()'
-        var blockCounter = ($e.data('common_blockCounter') | 0) - 1;
-        $e.data('common_blockCounter', blockCounter);
+        var blockCounter = ($e.data('ttt_blockCounter') | 0) - 1;
+        $e.data('ttt_blockCounter', blockCounter);
         if (blockCounter < 0) {
             // There is a logic error somewhere...
             common.utils.error('INTERNAL ERROR: Unblock count > block count:', blockCounter);
             // Reset counter
             blockCounter = 0;
-            $e.data('common_blockCounter', 0);
+            $e.data('ttt_blockCounter', 0);
         }
         if (blockCounter == 0)
             // This element is no more blocked by anything else
