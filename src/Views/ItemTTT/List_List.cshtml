@@ -10,9 +10,15 @@
 
 @foreach( var item in model.Items )
 {
-	<div style="border:1px solid black">
+	<div data-bind="ttt_slideUpDownVisible:visible" style="border:1px solid black">
+
+		@* JSON model of this item ; Required for the JavaScript to reconstruct an ItemKO's class instance and bind it to the parent element of this div *@
+		<script type="ttt-model">@Html.Raw(JSON(item))</script>
+
 		<div ttt-only-if="PageHelper.IsAuthenticated" >
-			<label>Active: <input type="checkbox" checked="@item.Active"/></label>
+			<label>Active:
+				<i ttt-name="active" data-bind="click:toggleActive, css:{ 'fa-check-square-o':active, 'fa-square-o':(!active()) }" class="fa"></i>
+			</label>
 		</div>
 		<a href="@item.DetailsUrls[PageHelper.CurrentLanguage]">
 			<div>
@@ -23,6 +29,7 @@
 			</div>
 			<img src="@item.MainImage.Url100"/>
 		</a>
+
 	</div>
 }
 

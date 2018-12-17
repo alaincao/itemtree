@@ -13,6 +13,43 @@ export function init(p:{ pageParameters:PageParameters })
 	pageParameters = p.pageParameters;
 	routes = pageParameters.routes;
 	utils.log( 'common.init()' );
+
+	utils.log( 'common.init(): Add custom KnockoutHandler' );
+	// cf. https://knockoutjs.com/examples/animatedTransitions.html
+	ko.bindingHandlers.ttt_slideUpDownVisible =
+		{
+			init: (element,valueAccessor)=>
+					{
+						const value = ko.unwrap( valueAccessor() );
+						if(! value )
+							$(element).hide();
+					},
+			update: (element,valueAccessor)=>
+					{
+						const value = ko.unwrap( valueAccessor() );
+						if( value )
+							$(element).slideDown();
+						else
+							$(element).slideUp();
+					}
+		};
+	ko.bindingHandlers.ttt_slideLeftRightVisible =
+		{
+			init: (element,valueAccessor)=>
+					{
+						const value = ko.unwrap( valueAccessor() );
+						if(! value )
+							$(element).hide();
+					},
+			update: (element,valueAccessor)=>
+					{
+						const value = ko.unwrap( valueAccessor() );
+						if( value )
+							$(element).show( 'blind', { direction: 'left' } );
+						else
+							$(element).hide( 'blind', { direction: 'left' } );
+					}
+		};
 }
 
 export namespace utils
@@ -27,6 +64,9 @@ export namespace utils
 	{
 		console.error.apply( console, arguments );
 	}
+
+	/** cf. https://schneidenbach.gitbooks.io/typescript-cookbook/nameof-operator.html */
+	export const nameof = <T>(name: keyof T) => name;
 
 	/** Function to simulate string-valued enums
 	 * Based on: https://basarat.gitbooks.io/typescript/docs/types/literal-types.html

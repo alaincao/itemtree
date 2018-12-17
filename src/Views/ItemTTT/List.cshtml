@@ -11,6 +11,8 @@
 <script type="text/javascript">
 	ttt.itemttt.list.init( {
 			sortingField	: '@sortingField',
+			$txtSearch		: $('#adcd270c'),
+			$cbShowInactive	: $('#eb1740ec'),
 			$divCarsList	: $('#d3895bed'),
 			$btnViewList	: $('#c0f0cb69'),
 			$btnViewGrid	: $('#e903ced8'),
@@ -30,6 +32,13 @@
 	<li><button id="bf2c639b">Name</button></li>
 	<li><button id="bed33e38">Price</button></li>
 </ul>
+
+Search: <input type="text" id="adcd270c"/>
+
+<div ttt-only-if="PageHelper.IsAuthenticated">
+	Show inactive: <input type="checkbox" id="eb1740ec"/>
+</div>
+
 <div id="d3895bed">
 	<partial name="@view" />
 </div>

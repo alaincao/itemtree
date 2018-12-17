@@ -8,9 +8,9 @@ export abstract class BaseAutoItem
 {
 	private readonly fieldNames : string[];
 
-	constructor($container:JQuery, src:DictObj)
+	constructor($container:JQuery, src:DictObj, fieldNames?:string[])
 	{
-		this.fieldNames = [];
+		this.fieldNames = (fieldNames != null) ? fieldNames : [];
 		this.knockoutify( $container, src );
 	}
 
@@ -46,17 +46,26 @@ export abstract class BaseAutoItem
 		const self = this;
 		const dict : DictKO = <any>this;
 
-		// For each tagged elements we find in '$container' ...
+		// For each tagged elements we find in '$container'
 		$container.find( `[${fieldTagAttribute}]` ).each( (i,e)=>
 			{
+				// Extract the field name from that attribute
 				const $e = $(e);
 				const fieldName = $e.attr( fieldTagAttribute );
 
+				if( self.fieldNames.indexOf(fieldName) >= 0 )
+					// That field is already already listed
+					{/*NOOP*/}
+				else
+					// Add that field to the fields list
+					self.fieldNames.push( fieldName );
+			} );
+
+		// For each listed fields ...
+		self.fieldNames.forEach( (fieldName)=>
+			{
 				// ... create a KO observable on 'this' and set it's value using 'src' ...
 				dict[ fieldName ] = ko.observable( src[fieldName] );
-
-				// ... and register this field to 'fieldNames'
-				self.fieldNames.push( fieldName );
 			} );
 	}
 }

@@ -37,11 +37,11 @@ var common = require("../Views/common");
 var BaseAutoItem_1 = require("../Utils/BaseAutoItem");
 var ItemKO = /** @class */ (function (_super) {
     __extends(ItemKO, _super);
-    function ItemKO($container, src) {
+    function ItemKO($container, src, fieldNames) {
         var _this = this;
         if (src == null)
             src = { name: '', pictures: [] };
-        _this = _super.call(this, $container, src) || this;
+        _this = _super.call(this, $container, src, fieldNames) || this;
         var self = _this;
         _this.pictures = ko.observableArray(src.pictures);
         if (self.price != null)
@@ -283,8 +283,8 @@ exports.setMain = setMain;
 Object.defineProperty(exports, "__esModule", { value: true });
 var fieldTagAttribute = 'ttt-name';
 var BaseAutoItem = /** @class */ (function () {
-    function BaseAutoItem($container, src) {
-        this.fieldNames = [];
+    function BaseAutoItem($container, src, fieldNames) {
+        this.fieldNames = (fieldNames != null) ? fieldNames : [];
         this.knockoutify($container, src);
     }
     BaseAutoItem.prototype.toDictObj = function (dict) {
@@ -309,14 +309,22 @@ var BaseAutoItem = /** @class */ (function () {
     BaseAutoItem.prototype.knockoutify = function ($container, src) {
         var self = this;
         var dict = this;
-        // For each tagged elements we find in '$container' ...
+        // For each tagged elements we find in '$container'
         $container.find("[" + fieldTagAttribute + "]").each(function (i, e) {
+            // Extract the field name from that attribute
             var $e = $(e);
             var fieldName = $e.attr(fieldTagAttribute);
+            if (self.fieldNames.indexOf(fieldName) >= 0) 
+            // That field is already already listed
+            { /*NOOP*/ }
+            else
+                // Add that field to the fields list
+                self.fieldNames.push(fieldName);
+        });
+        // For each listed fields ...
+        self.fieldNames.forEach(function (fieldName) {
             // ... create a KO observable on 'this' and set it's value using 'src' ...
             dict[fieldName] = ko.observable(src[fieldName]);
-            // ... and register this field to 'fieldNames'
-            self.fieldNames.push(fieldName);
         });
     };
     return BaseAutoItem;
@@ -610,7 +618,6 @@ function uploadPicture(files) {
                     return [4 /*yield*/, refresh()];
                 case 2:
                     _a.sent();
-                    // HERE: Refresh only images to avoid overwriting any modifications to input fields ...
                     common.utils.log('edit.uploadPicture(): END');
                     return [2 /*return*/];
             }
@@ -724,6 +731,7 @@ function refresh(code) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    // TODO: Allow refresh only images to avoid overwriting any modifications to input fields ...
                     common.utils.log('edit.refresh(): START');
                     newUrl = null;
                     if (code == null) {
@@ -830,6 +838,19 @@ var list;
 })(list = exports.list || (exports.list = {}));
 
 },{"../common":12}],11:[function(require,module,exports){
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -868,31 +889,68 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("../common");
 var ItemTTTController_1 = require("./ItemTTTController");
+var dto = require("../../DTOs/Item");
+var Language_1 = require("../../Language");
+var modelSearchString = '[type=ttt-model]';
 var currentSortingField;
+var $txtSearch;
+var $cbShowInactive;
 var $divCarsList;
 function init(p) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            common.utils.log('list.init() START');
+            common.utils.log('list.init(): START');
             currentSortingField = p.sortingField;
+            $txtSearch = p.$txtSearch;
+            $cbShowInactive = p.$cbShowInactive.prop('checked', true);
             $divCarsList = p.$divCarsList;
             p.$btnViewGrid.click(function () { refreshList({ viewMode: ItemTTTController_1.list.ViewModes.grid }); });
             p.$btnViewList.click(function () { refreshList({ viewMode: ItemTTTController_1.list.ViewModes.list }); });
             p.$btnSortName.click(function () { refreshList({ sortingField: ItemTTTController_1.list.SortingFields.name }); });
             p.$btnSortPrice.click(function () { refreshList({ sortingField: ItemTTTController_1.list.SortingFields.price }); });
-            common.utils.log('list.init() END');
+            reconstructItemsList();
+            common.utils.log('list.init(): Bind JQuery events');
+            $txtSearch.keyup(function () { filterItemsList(); });
+            $cbShowInactive.change(function () { filterItemsList(); });
+            common.utils.log('list.init(): END');
             return [2 /*return*/];
         });
     });
 }
 exports.init = init;
+function reconstructItemsList() {
+    common.utils.log('list.reconstructItemsList(): START');
+    var $models = $divCarsList.find(modelSearchString);
+    common.utils.log("list.reconstructItemsList(): Reconstructing " + $models.length + " models");
+    var items = [];
+    $models.each(function (i, e) {
+        // Find the JSON model's tag & set its parent element as the item's container
+        var $modelElement = $(e);
+        var $container = $modelElement.parent();
+        var model = JSON.parse($modelElement.text());
+        // Remove the model tag (i.e. free memory ?)
+        $modelElement.remove();
+        // Create the ItemKO and add it to the list
+        var item = new ItemKO($container, model);
+        items.push(item);
+    });
+    common.utils.log('list.reconstructItemsList(): Replacing itemsList');
+    exports.itemsList = items;
+    common.utils.log('list.reconstructItemsList(): END');
+}
+function filterItemsList() {
+    exports.itemsList.forEach(function (item) {
+        item.visible(item.getIsVisible());
+    });
+}
+exports.filterItemsList = filterItemsList;
 function refreshList(p) {
     return __awaiter(this, void 0, void 0, function () {
         var html;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    common.utils.log('list.refreshList() START', { p: p, currentSortingField: currentSortingField });
+                    common.utils.log('list.refreshList(): START', { p: p, currentSortingField: currentSortingField });
                     // Ask for the stripped version of the page (no layout)
                     p.noLayout = true;
                     // Switch to descending order if required
@@ -909,18 +967,87 @@ function refreshList(p) {
                         }
                         currentSortingField = p.sortingField;
                     }
+                    common.utils.log('list.refreshList(): Request html & replace list DOM');
                     return [4 /*yield*/, ItemTTTController_1.list.getListContent(p)];
                 case 1:
                     html = _a.sent();
                     $divCarsList.html(html);
-                    common.utils.log('list.refresh() END', { currentSortingField: currentSortingField });
+                    reconstructItemsList();
+                    common.utils.log('list.refreshList(): END', { currentSortingField: currentSortingField });
                     return [2 /*return*/];
             }
         });
     });
 }
+var ItemKO = /** @class */ (function (_super) {
+    __extends(ItemKO, _super);
+    function ItemKO($container, model) {
+        var _this = this;
+        var required = [common.utils.nameof('name'),
+            common.utils.nameof('descriptionEN'),
+            common.utils.nameof('descriptionFR'),
+            common.utils.nameof('descriptionNL'),
+            common.utils.nameof('active')];
+        _this = _super.call(this, $container, model, required) || this;
+        var self = _this;
+        _this.$container = $container;
+        _this.visible = ko.observable(self.getIsVisible());
+        // Bind this object to its container
+        ko.applyBindings(self, $container[0]);
+        return _this;
+    }
+    ItemKO.prototype.toggleActive = function () {
+        console.warn('TODO: toggleActive', { self: this });
+    };
+    ItemKO.prototype.getIsVisible = function () {
+        var self = this;
+        // Check "show active" checkbox
+        var showInactive = $cbShowInactive.is(':checked');
+        if (!self.active())
+            if (!showInactive)
+                return false;
+        // Check "search" textbox
+        var searchString = $txtSearch.val();
+        searchString = (searchString == null ? '' : searchString).toLowerCase().trim();
+        if (searchString == '')
+            return true;
+        var searchWords = [];
+        $.each(searchString.split(' '), function (i, word) {
+            if (common.utils.stringIsNullOrWhitespace(word))
+                return;
+            searchWords.push(word.trim());
+        });
+        var searchFields = [];
+        searchFields.push(self.name());
+        switch (common.pageParameters.currentLanguage) {
+            case Language_1.Languages.en:
+                searchFields.push(self.descriptionEN());
+                break;
+            case Language_1.Languages.fr:
+                searchFields.push(self.descriptionFR());
+                break;
+            case Language_1.Languages.nl:
+                searchFields.push(self.descriptionNL());
+                break;
+        }
+        var matchCount = 0;
+        searchWords.forEach(function (word, i) {
+            for (var i_1 = 0; i_1 < searchFields.length; ++i_1) {
+                var field = searchFields[i_1].toLowerCase();
+                if (field.indexOf(word) >= 0) {
+                    ++matchCount;
+                    return;
+                }
+            }
+        });
+        if (matchCount != searchWords.length) // All words must match
+            return false;
+        return true;
+    };
+    return ItemKO;
+}(dto.ItemKO));
 
-},{"../common":12,"./ItemTTTController":10}],12:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../Language":4,"../common":12,"./ItemTTTController":10}],12:[function(require,module,exports){
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -931,6 +1058,38 @@ function init(p) {
     exports.pageParameters = p.pageParameters;
     exports.routes = exports.pageParameters.routes;
     utils.log('common.init()');
+    utils.log('common.init(): Add custom KnockoutHandler');
+    // cf. https://knockoutjs.com/examples/animatedTransitions.html
+    ko.bindingHandlers.ttt_slideUpDownVisible =
+        {
+            init: function (element, valueAccessor) {
+                var value = ko.unwrap(valueAccessor());
+                if (!value)
+                    $(element).hide();
+            },
+            update: function (element, valueAccessor) {
+                var value = ko.unwrap(valueAccessor());
+                if (value)
+                    $(element).slideDown();
+                else
+                    $(element).slideUp();
+            }
+        };
+    ko.bindingHandlers.ttt_slideLeftRightVisible =
+        {
+            init: function (element, valueAccessor) {
+                var value = ko.unwrap(valueAccessor());
+                if (!value)
+                    $(element).hide();
+            },
+            update: function (element, valueAccessor) {
+                var value = ko.unwrap(valueAccessor());
+                if (value)
+                    $(element).show('blind', { direction: 'left' });
+                else
+                    $(element).hide('blind', { direction: 'left' });
+            }
+        };
 }
 exports.init = init;
 var utils;
@@ -952,6 +1111,8 @@ var utils;
         console.error.apply(console, arguments);
     }
     utils.error = error;
+    /** cf. https://schneidenbach.gitbooks.io/typescript-cookbook/nameof-operator.html */
+    utils.nameof = function (name) { return name; };
     /** Function to simulate string-valued enums
      * Based on: https://basarat.gitbooks.io/typescript/docs/types/literal-types.html
      * Returns: { e:the enum , a:the array specified as parameter } */

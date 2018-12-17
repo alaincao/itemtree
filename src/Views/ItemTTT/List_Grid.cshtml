@@ -10,9 +10,16 @@
 
 @foreach( var item in model.Items )
 {
-	<a href="@item.DetailsUrls[PageHelper.CurrentLanguage]">
-		<img src="@item.MainImage.Url260"/>
-	</a>
+	<div data-bind="ttt_slideLeftRightVisible:visible" style="display:inline-block">
+
+		@* JSON model of this item ; Required for the JavaScript to reconstruct an ItemKO's class instance and bind it to the parent element of this div *@
+		<script type="ttt-model">@Html.Raw(JSON(item))</script>
+
+		<a href="@item.DetailsUrls[PageHelper.CurrentLanguage]">
+			<img src="@item.MainImage.Url260"/>
+		</a>
+
+	</div>
 }
 
 <div>LIST GRID PARTIAL END</div>

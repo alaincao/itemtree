@@ -11,16 +11,20 @@ export interface Item extends DictObj
 
 export class ItemKO extends BaseAutoItem
 {
-	public readonly code		: KnockoutObservable<string>;
-	public readonly name		: KnockoutObservable<string>;
-	public readonly price		: KnockoutObservable<number>;
-	public readonly pictures	: KnockoutObservableArray<ItemPicture>;
+	public readonly code			: KnockoutObservable<string>;
+	public readonly name			: KnockoutObservable<string>;
+	public readonly descriptionEN	: KnockoutObservable<string>;
+	public readonly descriptionFR	: KnockoutObservable<string>;
+	public readonly descriptionNL	: KnockoutObservable<string>;
+	public readonly active			: KnockoutObservable<boolean>;
+	public readonly price			: KnockoutObservable<number>;
+	public readonly pictures		: KnockoutObservableArray<ItemPicture>;
 
-	constructor($container:JQuery, src?:Item)
+	constructor($container:JQuery, src?:Item, fieldNames?:string[])
 	{
 		if( src == null )
 			src = { name:'', pictures:[] };
-		super( $container, src );
+		super( $container, src, fieldNames );
 		const self = this;
 		this.pictures = ko.observableArray( src.pictures );
 
