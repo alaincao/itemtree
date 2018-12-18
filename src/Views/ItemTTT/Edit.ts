@@ -4,6 +4,7 @@ import * as dto from "../../DTOs/Item";
 import { ItemPicture } from "../../DTOs/ItemPicture";
 import * as ctrl from "../../Services/ItemController";
 import * as picCtrl from "../../Services/ItemPictureController";
+import * as trnCtrl from "../../Services/TranslationController";
 import { TranslationKO } from "../../DTOs/Translation";
 
 const message_confirmDelete = 'Are you sure you want to delete that item?';
@@ -83,6 +84,17 @@ function initPictureUpload($dropZone:JQuery, $upload:JQuery) : void
 			const files = (<HTMLInputElement>$upload[0]).files;
 			uploadPicture( files );
 		} );
+}
+
+export async function autoCompleteFeature(searchTerm:string) : Promise<string[]>
+{
+	var rc = await trnCtrl.autoCompleteResolve({ type:trnCtrl.TranslationTypes.feature, searchString:searchTerm, includeTranslations:true });
+	if(! rc.success )
+	{
+		common.utils.error( 'autocmplete error', { rc } );
+		return [];
+	}
+	return rc.list;
 }
 
 async function save() : Promise<void>

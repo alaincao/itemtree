@@ -5,7 +5,7 @@ using System.Web;
 
 namespace ItemTTT
 {
-	using Types	= Models.Translation.Types;
+	using Types	= Services.TranslationController.Types;
 	using Dict	= Dictionary<string,DTOs.Translation>;
 
 	public static partial class Utils

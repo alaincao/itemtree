@@ -40,7 +40,7 @@
 			Features:
 			<ul data-bind="foreach:features">
 				<li>
-					EN: <input type="text" data-bind="value:en"/>
+					EN: <input type="text" data-bind="value:en, ttt_autocomplete:$root.autoCompleteFeature"/>
 				</li>
 			</ul>
 			<button data-bind="click:addNewFeature">Add new</button>

@@ -34,6 +34,7 @@ namespace ItemTTT
 		internal const string	LoginAPI			= "/api/login";
 		internal const string	LogoutAPI			= "/api/logout";
 		internal const string	ChangePassword		= "/api/change-password";
+		internal const string	AutoComplete		= "/api/autocomplete";
 		internal const string	ItemsListApi		= "/api/car-listing";
 		internal const string	ItemDetailsApi		= "/api/car-details/"+ItemCode;
 		internal const string	ItemSave			= "/api/car-save";
@@ -74,6 +75,7 @@ namespace ItemTTT
 							Login				= tr( LoginAPI ),
 							Logout				= tr( LogoutAPI ),
 							ChangePassword		= tr( ChangePassword ),
+							AutoComplete		= tr( AutoComplete ),
 							ItemsListing		= tr( ItemsListApi ),
 							ItemDetails			= tr( ItemDetailsApi ),
 							ItemSave			= tr( ItemSave ),

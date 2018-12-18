@@ -15,6 +15,22 @@ export function init(p:{ pageParameters:PageParameters })
 	utils.log( 'common.init()' );
 
 	utils.log( 'common.init(): Add custom KnockoutHandler' );
+
+	ko.bindingHandlers.ttt_autocomplete =
+		{
+			init: (element,valueAccessor)=>
+					{
+						const searchFunction : (term:string)=>Promise<string[]> = valueAccessor();
+						$(element).autocomplete( {	minLength	: 0,
+													source		: async (request:{term:string}, resolve:(list:string[])=>void)=>
+																	{
+																		const list = await searchFunction( request.term );
+																		resolve( list );
+																	},
+												} );
+					},
+		};
+
 	// cf. https://knockoutjs.com/examples/animatedTransitions.html
 	ko.bindingHandlers.ttt_slideUpDownVisible =
 		{

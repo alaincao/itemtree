@@ -13,6 +13,7 @@ export interface Routes
 			login				: string,
 			logout				: string,
 			changePassword		: string,
+			autoComplete		: string,
 			itemsListing		: string,
 			itemDetails			: string,
 			itemSave			: string,

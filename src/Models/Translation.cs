@@ -3,16 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ItemTTT.Models
 {
+	using Types = Services.TranslationController.Types;
+
 	[Table("Translation")]
 	public class Translation
 	{
-		public enum Types
-		{
-			Undefined			= 0,
-			Option,
-			Feature,
-		}
-
 		[Key]
 		[Column("TranslationID")]
 		public int		ID				{ get; set; }

@@ -18,7 +18,7 @@ var ttt = {
 };
 window.ttt = ttt;
 
-},{"./src/Views/ItemTTT/Add":9,"./src/Views/ItemTTT/Edit":10,"./src/Views/ItemTTT/List":12,"./src/Views/common":13}],3:[function(require,module,exports){
+},{"./src/Views/ItemTTT/Add":10,"./src/Views/ItemTTT/Edit":11,"./src/Views/ItemTTT/List":13,"./src/Views/common":14}],3:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -55,7 +55,7 @@ var ItemKO = /** @class */ (function (_super) {
 }(BaseAutoItem_1.BaseAutoItem));
 exports.ItemKO = ItemKO;
 
-},{"../Utils/BaseAutoItem":8,"../Views/common":13}],4:[function(require,module,exports){
+},{"../Utils/BaseAutoItem":9,"../Views/common":14}],4:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var TranslationKO = /** @class */ (function () {
     function TranslationKO(src) {
@@ -73,7 +73,7 @@ var _a;
 var common = require("./Views/common");
 exports.Languages = (_a = common.utils.strEnum(['en', 'fr', 'nl']), _a.e), exports.allLanguages = _a.a;
 
-},{"./Views/common":13}],6:[function(require,module,exports){
+},{"./Views/common":14}],6:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -176,7 +176,7 @@ function delete_(code) {
 }
 exports.delete_ = delete_;
 
-},{"../Views/common":13}],7:[function(require,module,exports){
+},{"../Views/common":14}],7:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -286,7 +286,66 @@ function setMain(p) {
 }
 exports.setMain = setMain;
 
-},{"../Views/common":13}],8:[function(require,module,exports){
+},{"../Views/common":14}],8:[function(require,module,exports){
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var _a;
+var common = require("../Views/common");
+exports.TranslationTypes = (_a = common.utils.strEnum(['option', 'feature']), _a.e), exports.allTranslationTypes = _a.a;
+function autoCompleteResolve(p) {
+    return __awaiter(this, void 0, void 0, function () {
+        var url, rc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    url = common.routes.api.autoComplete;
+                    return [4 /*yield*/, common.url.postRequestForm(url, p)];
+                case 1:
+                    rc = _a.sent();
+                    rc.list = rc.result;
+                    delete rc.result;
+                    return [2 /*return*/, rc];
+            }
+        });
+    });
+}
+exports.autoCompleteResolve = autoCompleteResolve;
+
+},{"../Views/common":14}],9:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var fieldTagAttribute = 'ttt-name';
 var BaseAutoItem = /** @class */ (function () {
@@ -338,7 +397,7 @@ var BaseAutoItem = /** @class */ (function () {
 }());
 exports.BaseAutoItem = BaseAutoItem;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -426,7 +485,7 @@ function save() {
     });
 }
 
-},{"../../DTOs/Item":3,"../../Services/ItemController":6,"../common":13}],10:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../Services/ItemController":6,"../common":14}],11:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -480,6 +539,7 @@ var common = require("../common");
 var dto = require("../../DTOs/Item");
 var ctrl = require("../../Services/ItemController");
 var picCtrl = require("../../Services/ItemPictureController");
+var trnCtrl = require("../../Services/TranslationController");
 var Translation_1 = require("../../DTOs/Translation");
 var message_confirmDelete = 'Are you sure you want to delete that item?';
 var message_saveSuccess = 'Item saved successfully';
@@ -536,6 +596,24 @@ function initPictureUpload($dropZone, $upload) {
         uploadPicture(files);
     });
 }
+function autoCompleteFeature(searchTerm) {
+    return __awaiter(this, void 0, void 0, function () {
+        var rc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, trnCtrl.autoCompleteResolve({ type: trnCtrl.TranslationTypes.feature, searchString: searchTerm, includeTranslations: true })];
+                case 1:
+                    rc = _a.sent();
+                    if (!rc.success) {
+                        common.utils.error('autocmplete error', { rc: rc });
+                        return [2 /*return*/, []];
+                    }
+                    return [2 /*return*/, rc.list];
+            }
+        });
+    });
+}
+exports.autoCompleteFeature = autoCompleteFeature;
 function save() {
     return __awaiter(this, void 0, void 0, function () {
         var obj, rc, rcr;
@@ -831,7 +909,7 @@ var ItemKO = /** @class */ (function (_super) {
     return ItemKO;
 }(dto.ItemKO));
 
-},{"../../DTOs/Item":3,"../../DTOs/Translation":4,"../../Services/ItemController":6,"../../Services/ItemPictureController":7,"../common":13}],11:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../DTOs/Translation":4,"../../Services/ItemController":6,"../../Services/ItemPictureController":7,"../../Services/TranslationController":8,"../common":14}],12:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -891,7 +969,7 @@ var list;
     ;
 })(list = exports.list || (exports.list = {}));
 
-},{"../common":13}],12:[function(require,module,exports){
+},{"../common":14}],13:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1105,7 +1183,42 @@ var ItemKO = /** @class */ (function (_super) {
     return ItemKO;
 }(dto.ItemKO));
 
-},{"../../DTOs/Item":3,"../../Language":5,"../common":13,"./ItemTTTController":11}],13:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../Language":5,"../common":14,"./ItemTTTController":12}],14:[function(require,module,exports){
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -1113,10 +1226,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("./common");
 exports.debugMessages = false; // NB: 'export' so that it can be easily changed from the browser's console
 function init(p) {
+    var _this = this;
     exports.pageParameters = p.pageParameters;
     exports.routes = exports.pageParameters.routes;
     utils.log('common.init()');
     utils.log('common.init(): Add custom KnockoutHandler');
+    ko.bindingHandlers.ttt_autocomplete =
+        {
+            init: function (element, valueAccessor) {
+                var searchFunction = valueAccessor();
+                $(element).autocomplete({ minLength: 0,
+                    source: function (request, resolve) { return __awaiter(_this, void 0, void 0, function () {
+                        var list;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, searchFunction(request.term)];
+                                case 1:
+                                    list = _a.sent();
+                                    resolve(list);
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); },
+                });
+            },
+        };
     // cf. https://knockoutjs.com/examples/animatedTransitions.html
     ko.bindingHandlers.ttt_slideUpDownVisible =
         {
@@ -1514,6 +1648,6 @@ var url;
 // nb: Exports at the end or the order of execution breaks everything (i.e. strEnum must be defined before) ...
 __export(require("../Language"));
 
-},{"../Language":5,"./common":13}]},{},[1,2])
+},{"../Language":5,"./common":14}]},{},[1,2])
 
 //# sourceMappingURL=site.js.map
