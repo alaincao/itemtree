@@ -37,6 +37,16 @@
 		<p><label>Active: <input type="checkbox" ttt-name="active" data-bind="checked:active"/></label></p>
 
 		<div>
+			Features:
+			<ul data-bind="foreach:features">
+				<li>
+					EN: <input type="text" data-bind="value:en"/>
+				</li>
+			</ul>
+			<button data-bind="click:addNewFeature">Add new</button>
+		</div>
+
+		<div>
 			Options:
 			<ul data-bind="foreach:options">
 				<li>

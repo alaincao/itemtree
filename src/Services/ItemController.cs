@@ -126,7 +126,7 @@ namespace ItemTTT.Services
 					throw new NotImplementedException( $"Invalid value '{sortingField}' for parameter '{nameof(sortingField)}'" );
 			}
 			var rows = await query.ToAsyncEnumerable()
-										.Select( v=>new{ ItemID=v.ID, Item=new DTOs.Item(v) } )
+										.Select( v=>new{ ItemID=v.ID, v.Features, Item=new DTOs.Item(v) } )
 										.ToArray();
 			if( rows.Length == 0 )
 				// No need to continue ...
@@ -154,6 +154,7 @@ namespace ItemTTT.Services
 
 			logHelper.AddLogMessage( $"ItemQuery: Complete fields for '{rows.Length}' items" );
 			var allLanguages = Enum.GetValues(typeof(Languages)).Cast<Languages>().ToArray();
+			var allFeatures = new HashSet<string>();
 			foreach( var row in rows )
 			{
 				row.Item.DetailsUrls	= allLanguages.ToDictionary( v=>v, l=>PageHelper.ResolveRoute(Views.ItemTTTController.CreateUrlDetails(l, row.Item.Code)) );
@@ -161,6 +162,44 @@ namespace ItemTTT.Services
 				row.Item.Options		= ( options.TryGet(row.ItemID) ?? new string[]{} )
 													.Select( nameEN=>Utils.Translations.Get(dc, Models.Translation.Types.Option, nameEN) )
 													.ToArray();
+
+				if( row.Features == null )
+				{
+					row.Item.Features = new DTOs.Translation[]{};
+				}
+				else
+				{
+					var strList = row.Features.JSONDeserialize<string[]>();
+					row.Item.Features = strList.Select( v=>new DTOs.Translation{ EN=v } ).ToArray();
+					allFeatures.UnionWith( strList );
+				}
+			}
+
+			if( allFeatures.Count > 0 )
+			{
+				logHelper.AddLogMessage( $"ItemQuery: Retreive features translations" );
+				var translations = await dc.Translations.Where( v=>v.TypeString == ""+Models.Translation.Types.Feature )
+														.Where( v=>allFeatures.Contains(v.TranslationEN) )
+														.ToDictionaryAsync( v=>v.TranslationEN, v=>v );
+				logHelper.AddLogMessage( $"ItemQuery: Translate features using {translations.Count} translations" );
+				foreach( var row in rows )
+				{
+					for( var i=0; i<row.Item.Features.Length; ++i )
+					{
+						if( translations.TryGetValue(row.Item.Features[i].EN, out var translation) )
+						{
+							// Translation available
+							row.Item.Features[i].FR = translation.TranslationFR;
+							row.Item.Features[i].NL = translation.TranslationNL;
+						}
+						else
+						{
+							// Translation not available => Use EN for all
+							row.Item.Features[i].FR = row.Item.Features[i].EN;
+							row.Item.Features[i].NL = row.Item.Features[i].EN;
+						}
+					}
+				}
 			}
 
 		EXIT:
@@ -247,7 +286,7 @@ namespace ItemTTT.Services
 						await dc.SaveChangesAsync();
 					}
 
-					logHelper.AddLogLines( $"ItemSave: (Re)create links" );
+					logHelper.AddLogLines( $"ItemSave: (Re)create options links" );
 					var newLinks = requestedOptions.Select( v=>new Models.ItemOptionLink{ ItemID=item.ID, ItemOptionID=existingOptions[v.ToUpper()] } ).ToList();
 					dc.ItemOptionLinks.AddRange( newLinks );
 					await dc.SaveChangesAsync();

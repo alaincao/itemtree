@@ -7,6 +7,7 @@ import { ItemPicture } from "./ItemPicture";
 
 export interface Item extends DictObj
 {
+	features	: Translation[];
 	options		: Translation[];
 	pictures	: ItemPicture[];
 }
@@ -24,7 +25,7 @@ export class ItemKO extends BaseAutoItem
 	constructor($container:JQuery, src?:Item, fieldNames?:string[])
 	{
 		if( src == null )
-			src = { name:'', options:[], pictures:[] };
+			src = { name:'', features:[], options:[], pictures:[] };
 		super( $container, src, fieldNames );
 		const self = this;
 

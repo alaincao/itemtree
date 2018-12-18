@@ -321,14 +321,22 @@ export function scrambleUrl(url:string) : string
 
 class ItemKO extends dto.ItemKO
 {
+	public readonly features		: KnockoutObservableArray<TranslationKO>;
 	public readonly options			: KnockoutObservableArray<TranslationKO>;
 	public readonly pictures		: KnockoutObservableArray<ItemPicture>;
 
 	constructor($container:JQuery, src:dto.Item)
 	{
 		super( $container, src );
-		this.options = ko.observableArray( src.options.map(v=>new TranslationKO(v)) );
-		this.pictures = ko.observableArray( src.pictures );
+		this.features	= ko.observableArray( src.features.map(v=>new TranslationKO(v)) );
+		this.options	= ko.observableArray( src.options.map(v=>new TranslationKO(v)) );
+		this.pictures	= ko.observableArray( src.pictures );
+	}
+
+	protected addNewFeature() : void
+	{
+		const self = this;
+		self.features.push( new TranslationKO() );
 	}
 
 	protected addNewOption() : void
@@ -341,7 +349,8 @@ class ItemKO extends dto.ItemKO
 	{
 		const self = this;
 		const item = <dto.Item>super.toDictObj( dict );
-		item.options = self.options().map( v=>{ return { en:v.en(), fr:'', nl:'' }; } );  // nb: only EN is used server-side
+		item.features	= self.features().map( v=>{ return { en:v.en(), fr:'', nl:'' }; } );  // nb: only EN is used server-side
+		item.options	= self.options().map( v=>{ return { en:v.en(), fr:'', nl:'' }; } );  // nb: only EN is used server-side
 		return item;
 	}
 
@@ -349,6 +358,7 @@ class ItemKO extends dto.ItemKO
 	{
 		const self = this;
 		super.fromDictObj( item );
+		self.features( item.features.map( v=>{ return new TranslationKO(v); } ) );
 		self.options( item.options.map( v=>{ return new TranslationKO(v); } ) );
 		self.pictures( item.pictures );
 	}

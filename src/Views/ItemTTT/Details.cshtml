@@ -25,6 +25,15 @@
 	@FormatPrice(item.Price)
 </div>
 <div>
+	<label>Features:</label>
+	@foreach( var feature in item.Features )
+	{
+		<div ttt-only-if="IsEN" style="display:inline-block;border:1px solid black">@feature.EN</div>
+		<div ttt-only-if="IsFR" style="display:inline-block;border:1px solid black">@feature.FR</div>
+		<div ttt-only-if="IsNL" style="display:inline-block;border:1px solid black">@feature.NL</div>
+	}
+</div>
+<div>
 	<label>Options:</label>
 	@foreach( var option in item.Options )
 	{

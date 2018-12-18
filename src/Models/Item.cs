@@ -33,6 +33,9 @@ namespace ItemTTT.Models
 
 		public int?		Price			{ get; set; }
 
+		[Column(TypeName = "varchar(max)")]
+		public string	Features		{ get; set; }
+
 		[Required]
 		public bool		Active			{ get; set; }
 

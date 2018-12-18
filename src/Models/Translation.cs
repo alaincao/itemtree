@@ -6,10 +6,11 @@ namespace ItemTTT.Models
 	[Table("Translation")]
 	public class Translation
 	{
-		internal enum Types
+		public enum Types
 		{
 			Undefined			= 0,
 			Option,
+			Feature,
 		}
 
 		[Key]
