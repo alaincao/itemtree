@@ -40,7 +40,9 @@
 			Features:
 			<ul data-bind="foreach:features">
 				<li>
-					EN: <input type="text" data-bind="value:en, ttt_autocomplete:$root.autoCompleteFeature"/>
+					EN: <input type="text" data-bind="value:en, valueUpdate:'blur', ttt_autocomplete:$root.autoCompleteFeature"/>
+					@* nb: changed 'valueUpdate' to cope with JQuery's auto-complete
+					   cf. https://stackoverflow.com/questions/17676045/knockout-and-jquery-autocomplete# *@
 				</li>
 			</ul>
 			<button data-bind="click:addNewFeature">Add new</button>
