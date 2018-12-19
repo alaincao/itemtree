@@ -417,7 +417,19 @@ namespace ItemTTT.Services
 					var item = await dc.Items.Where( v=>v.Code == itemCode ).SingleAsync();
 					var mainImageNumber = item.MainImageNumber;
 
-					var allPictures = await dc.ItemPictures.Where( v=>v.ItemID == item.ID ).ToArrayAsync();
+					var allPictures = await dc.ItemPictures.Where( v=>v.ItemID == item.ID )
+													// Performance: Retreive all fields except 'Content' (i.e. too heavy)
+													.Select( v=>new Models.ItemPicture(){	ID		= v.ID,
+																							ItemID	= v.ItemID,
+																							Number	= v.Number,
+																							Type	= v.Type,
+																							Content	= null } )
+													.ToArrayAsync();
+					foreach( var pic in allPictures )
+						// nb: since the picture objects were not retreived as entities, they're not attached to the DataContext
+						// => attach them as if they were retreived entities from the database
+						// only updated fields should be updated to the database => since 'Content' is not updated (i.e. only 'Number' will), it will be left untouched
+						dc.Entry( pic ).State = EntityState.Unchanged;
 
 					var maxPictureNumber = allPictures.Select( v=>v.Number ).Max();
 					if( newNumber > maxPictureNumber )
