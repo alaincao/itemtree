@@ -138,20 +138,6 @@ namespace ItemTTT.Services
 				return new Utils.TTTServiceResult<DTOs.Item[]>( PageHelper, picturesRv.ErrorMessage );
 			var picturesDict = picturesRv.Result.GroupBy( v=>v.ItemCode ).ToDictionary( v=>v.Key, v=>v.ToArray() );
 
-			logHelper.AddLogMessage( $"ItemQuery: Retreive options" );
-			Dictionary<int,string[]> options;
-			{
-				var itemIDs = rows.Select( v=>v.ItemID );
-				var array = await (	from optn in dc.ItemOptions
-									join link in dc.ItemOptionLinks on optn.ID equals link.ItemOptionID
-									where itemIDs.Contains( link.ItemID )
-									orderby optn.Order
-									select new{ link.ItemID, optn.NameEN } )
-								.ToArrayAsync();
-				options = array	.GroupBy( v=>v.ItemID )
-								.ToDictionary( v=>v.Key, v=>v.Select( w=>w.NameEN ).ToArray() );
-			}
-
 			logHelper.AddLogMessage( $"ItemQuery: Complete fields for '{rows.Length}' items" );
 			var allLanguages = Enum.GetValues(typeof(Languages)).Cast<Languages>().ToArray();
 			var allFeatures = new HashSet<string>();
@@ -159,9 +145,6 @@ namespace ItemTTT.Services
 			{
 				row.Item.DetailsUrls	= allLanguages.ToDictionary( v=>v, l=>PageHelper.ResolveRoute(Views.ItemTTTController.CreateUrlDetails(l, row.Item.Code)) );
 				row.Item.Pictures		= picturesDict.TryGet( row.Item.Code ) ?? new DTOs.ItemPicture[]{};
-				row.Item.Options		= ( options.TryGet(row.ItemID) ?? new string[]{} )
-													.Select( nameEN=>Utils.Translations.Get(dc, Services.TranslationController.Types.Option, nameEN) )
-													.ToArray();
 
 				if( row.Features == null )
 				{
@@ -224,18 +207,15 @@ namespace ItemTTT.Services
 				Models.Item item;
 				using( var transaction = dc.Database.BeginTransaction() )
 				{
-					bool isAdding;
 					if( request.OriginalCode == null )
 					{
 						logHelper.AddLogMessage( $"ItemSave: Create new" );
-						isAdding = true;
 						item = new Models.Item{ MainImageNumber=1 };
 						dc.Items.Add( item );
 					}
 					else
 					{
 						logHelper.AddLogMessage( $"ItemSave: Retreive from database" );
-						isAdding = false;
 						item = await dc.Items.Where( v=>v.Code == request.OriginalCode ).SingleAsync();
 						logHelper.AddLogLines( $"ItemSave: {item.JSONStringify(indented:true)}" );
 					}
@@ -248,50 +228,6 @@ namespace ItemTTT.Services
 					var rc = await dc.SaveChangesAsync();
 					logHelper.AddLogMessage( $"ItemSave: Affected: {rc}" );
 					Utils.Assert( item.ID > 0, this, "'SaveChangesAsync()' did not set the 'item.ID'" );
-
-					if( request.Item.Options == null )
-						goto DONT_TOUCH_OPTIONS;
-
-					logHelper.AddLogLines( $"ItemSave: Get all existing & requested options" );
-					var requestedOptions = request.Item.Options	.Select( v=>v.EN )  // Check only EN
-																.Where( v=>!string.IsNullOrWhiteSpace(v) ).Select( v=>v.Trim() )  // Remove empties & trim
-																.GroupBy( v=>v.ToUpper() ).Select( v=>v.First() )  // Remove duplicates (case-insensitive)
-																.ToList();
-					int maxOptionOrder = 0;
-					var existingOptions = dc.ItemOptions.Select( v=>new{ v.ID, v.NameEN, v.Order })
-														.AsEnumerable()  // NB: Execute SQL here
-														.Select( v=>{	if( v.Order > maxOptionOrder )
-																			maxOptionOrder= v.Order;
-																		return v; } )
-														.ToDictionary( v=>v.NameEN.ToUpper(), v=>v.ID );
-
-					logHelper.AddLogLines( $"ItemSave: Add missing options" );
-					var missingOptions = requestedOptions.Where( v=>!existingOptions.ContainsKey(v.ToUpper()) ).ToList();
-					foreach( var missingOption in missingOptions )
-					{
-						var newOption = new Models.ItemOption{	Order = ++maxOptionOrder,
-																NameEN = missingOption };
-						dc.ItemOptions.Add( newOption );
-						await dc.SaveChangesAsync();
-						Utils.Assert( newOption.ID > 0, this, "'SaveChangesAsync()' did not set 'newOption.ID'" );
-
-						existingOptions.Add( missingOption.ToUpper(), newOption.ID );
-						await dc.SaveChangesAsync();
-					}
-
-					logHelper.AddLogLines( $"ItemSave: Remove all current options link" );
-					if(! isAdding )
-					{
-						dc.ItemOptionLinks.RemoveRange( dc.ItemOptionLinks.Where(v=>v.ItemID == item.ID) );
-						await dc.SaveChangesAsync();
-					}
-
-					logHelper.AddLogLines( $"ItemSave: (Re)create options links" );
-					var newLinks = requestedOptions.Select( v=>new Models.ItemOptionLink{ ItemID=item.ID, ItemOptionID=existingOptions[v.ToUpper()] } ).ToList();
-					dc.ItemOptionLinks.AddRange( newLinks );
-					await dc.SaveChangesAsync();
-
-				DONT_TOUCH_OPTIONS:
 
 					logHelper.AddLogMessage( $"ItemSave: Commit transaction" );
 					transaction.Commit();

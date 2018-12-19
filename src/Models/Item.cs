@@ -42,6 +42,5 @@ namespace ItemTTT.Models
 		public int?		MainImageNumber	{ get; set; }
 
 		public List<ItemPicture>	Pictures		{ get; set; }
-		public List<ItemOptionLink>	OptionLinks		{ get; set; }
 	}
 }

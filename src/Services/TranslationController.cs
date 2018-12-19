@@ -14,7 +14,6 @@ namespace ItemTTT.Services
 		public enum Types
 		{
 			Undefined			= 0,
-			Option,
 			Feature,
 		}
 
@@ -45,9 +44,6 @@ namespace ItemTTT.Services
 				IEnumerable<string> jsonLists = null;
 				switch( type )
 				{
-					case Types.Option:
-						stringsList = await dc.ItemOptions.Select( v=>v.NameEN ).ToArrayAsync();
-						break;
 					case Types.Feature:
 						jsonLists = await dc.Items.Select( v=>v.Features ).ToArrayAsync();
 						break;

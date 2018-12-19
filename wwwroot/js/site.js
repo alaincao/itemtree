@@ -40,7 +40,7 @@ var ItemKO = /** @class */ (function (_super) {
     function ItemKO($container, src, fieldNames) {
         var _this = this;
         if (src == null)
-            src = { name: '', features: [], options: [], pictures: [] };
+            src = { name: '', features: [], pictures: [] };
         _this = _super.call(this, $container, src, fieldNames) || this;
         var self = _this;
         if (self.price != null)
@@ -880,7 +880,6 @@ var ItemKO = /** @class */ (function (_super) {
     function ItemKO($container, src) {
         var _this = _super.call(this, $container, src) || this;
         _this.features = ko.observableArray(src.features.map(function (v) { return new Translation_1.TranslationKO(v); }));
-        _this.options = ko.observableArray(src.options.map(function (v) { return new Translation_1.TranslationKO(v); }));
         _this.pictures = ko.observableArray(src.pictures);
         return _this;
     }
@@ -888,22 +887,16 @@ var ItemKO = /** @class */ (function (_super) {
         var self = this;
         self.features.push(new Translation_1.TranslationKO());
     };
-    ItemKO.prototype.addNewOption = function () {
-        var self = this;
-        self.options.push(new Translation_1.TranslationKO());
-    };
     ItemKO.prototype.toDictObj = function (dict) {
         var self = this;
         var item = _super.prototype.toDictObj.call(this, dict);
         item.features = self.features().map(function (v) { return { en: v.en(), fr: '', nl: '' }; }); // nb: only EN is used server-side
-        item.options = self.options().map(function (v) { return { en: v.en(), fr: '', nl: '' }; }); // nb: only EN is used server-side
         return item;
     };
     ItemKO.prototype.fromDictObj = function (item) {
         var self = this;
         _super.prototype.fromDictObj.call(this, item);
         self.features(item.features.map(function (v) { return new Translation_1.TranslationKO(v); }));
-        self.options(item.options.map(function (v) { return new Translation_1.TranslationKO(v); }));
         self.pictures(item.pictures);
     };
     return ItemKO;

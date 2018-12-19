@@ -34,15 +34,6 @@
 	}
 </div>
 <div>
-	<label>Options:</label>
-	@foreach( var option in item.Options )
-	{
-		<div ttt-only-if="IsEN" style="display:inline-block;border:1px solid black">@option.EN</div>
-		<div ttt-only-if="IsFR" style="display:inline-block;border:1px solid black">@option.FR</div>
-		<div ttt-only-if="IsNL" style="display:inline-block;border:1px solid black">@option.NL</div>
-	}
-</div>
-<div>
 	<label>First image:</label>
 	<div style="background-image:url(&quot;@item.FirstImage.UrlOriginal&quot;);background-size:contain;width:300px;height:100px"></div>
 </div>
