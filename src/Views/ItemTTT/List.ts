@@ -1,5 +1,6 @@
 
 import * as common from "../common";
+import * as itemCtrl from "../../Services/ItemController";
 import { list } from "./ItemTTTController";
 import * as dto from "../../DTOs/Item";
 import { Languages } from "../../Language";
@@ -121,7 +122,8 @@ class ItemKO extends dto.ItemKO
 
 	constructor($container:JQuery, model:dto.Item)
 	{
-		const required = [	common.utils.nameof<dto.ItemKO>('name'),
+		const required = [	common.utils.nameof<dto.ItemKO>('code'),
+							common.utils.nameof<dto.ItemKO>('name'),
 							common.utils.nameof<dto.ItemKO>('descriptionEN'),
 							common.utils.nameof<dto.ItemKO>('descriptionFR'),
 							common.utils.nameof<dto.ItemKO>('descriptionNL'),
@@ -135,9 +137,37 @@ class ItemKO extends dto.ItemKO
 		ko.applyBindings( self, $container[0] );
 	}
 
-	public toggleActive() : void
+	public async toggleActive() : Promise<void>
 	{
-		console.warn( 'TODO: toggleActive', { self:this } );
+		common.utils.log( 'list.ItemKO.toggleActive(): START' );
+		const self = this;
+
+		common.utils.log( 'list.ItemKO.toggleActive(): Retreive original model' );
+		common.html.block( $divBlocking );
+		{
+			const rc = await itemCtrl.details( self.code() );
+			if(! rc.success )
+			{
+				common.html.unblock( $divBlocking );
+				common.utils.error( 'Item retreive error', { rc } );
+				return;
+			}
+			var model = rc.item;
+		}
+
+		common.utils.log( 'list.ItemKO.toggleActive(): Toggle active flag & save' );
+		{
+			model.active = (! model.active);
+			const rc = await itemCtrl.save({ originalCode:model.code, item:model });
+			if(! rc.success )
+				common.utils.error( 'Item save error', { rc } );
+		}
+
+		common.utils.log( 'list.ItemKO.toggleActive(): Refresh' );
+		await refreshList({});
+
+		common.html.unblock( $divBlocking );
+		common.utils.log( 'list.ItemKO.toggleActive(): END' );
 	}
 
 	public getIsVisible() : boolean

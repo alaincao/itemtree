@@ -40,7 +40,7 @@ var ItemKO = /** @class */ (function (_super) {
     function ItemKO($container, src, fieldNames) {
         var _this = this;
         if (src == null)
-            src = { name: '', features: [], pictures: [] };
+            src = { code: null, active: false, features: [], pictures: [] };
         _this = _super.call(this, $container, src, fieldNames) || this;
         var self = _this;
         if (self.price != null)
@@ -1013,6 +1013,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("../common");
+var itemCtrl = require("../../Services/ItemController");
 var ItemTTTController_1 = require("./ItemTTTController");
 var dto = require("../../DTOs/Item");
 var Language_1 = require("../../Language");
@@ -1112,7 +1113,8 @@ var ItemKO = /** @class */ (function (_super) {
     __extends(ItemKO, _super);
     function ItemKO($container, model) {
         var _this = this;
-        var required = [common.utils.nameof('name'),
+        var required = [common.utils.nameof('code'),
+            common.utils.nameof('name'),
             common.utils.nameof('descriptionEN'),
             common.utils.nameof('descriptionFR'),
             common.utils.nameof('descriptionNL'),
@@ -1126,7 +1128,41 @@ var ItemKO = /** @class */ (function (_super) {
         return _this;
     }
     ItemKO.prototype.toggleActive = function () {
-        console.warn('TODO: toggleActive', { self: this });
+        return __awaiter(this, void 0, void 0, function () {
+            var self, rc, model, rc;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        common.utils.log('list.ItemKO.toggleActive(): START');
+                        self = this;
+                        common.utils.log('list.ItemKO.toggleActive(): Retreive original model');
+                        common.html.block($divBlocking);
+                        return [4 /*yield*/, itemCtrl.details(self.code())];
+                    case 1:
+                        rc = _a.sent();
+                        if (!rc.success) {
+                            common.html.unblock($divBlocking);
+                            common.utils.error('Item retreive error', { rc: rc });
+                            return [2 /*return*/];
+                        }
+                        model = rc.item;
+                        common.utils.log('list.ItemKO.toggleActive(): Toggle active flag & save');
+                        model.active = (!model.active);
+                        return [4 /*yield*/, itemCtrl.save({ originalCode: model.code, item: model })];
+                    case 2:
+                        rc = _a.sent();
+                        if (!rc.success)
+                            common.utils.error('Item save error', { rc: rc });
+                        common.utils.log('list.ItemKO.toggleActive(): Refresh');
+                        return [4 /*yield*/, refreshList({})];
+                    case 3:
+                        _a.sent();
+                        common.html.unblock($divBlocking);
+                        common.utils.log('list.ItemKO.toggleActive(): END');
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     ItemKO.prototype.getIsVisible = function () {
         var self = this;
@@ -1176,7 +1212,7 @@ var ItemKO = /** @class */ (function (_super) {
     return ItemKO;
 }(dto.ItemKO));
 
-},{"../../DTOs/Item":3,"../../Language":5,"../common":14,"./ItemTTTController":12}],14:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../Language":5,"../../Services/ItemController":6,"../common":14,"./ItemTTTController":12}],14:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
