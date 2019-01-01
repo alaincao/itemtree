@@ -21,7 +21,7 @@ namespace ItemTTT
 		internal const string	Home2				= "/"+Lang;
 		internal const string	Error				= "/error";
 		internal const string	ErrorStatus			= "/error/{status}";
-		internal const string	AdminHome			= Home1;  // TODO
+		internal const string	AdminHome			= "/admin";
 		internal const string	Login				= "/admin/login";
 		internal const string	Logout				= "/admin/logout";
 		internal const string	ItemsList			= "/"+Lang+"/car-listing";

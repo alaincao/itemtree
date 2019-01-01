@@ -1,0 +1,22 @@
+@inherits ItemTTT.Views.BaseView
+@{
+	Init( PageHelper );
+}
+@section Scripts
+{
+<script type="text/javascript">
+	ttt.admin.home.init( {
+		} );
+	ko.applyBindings( ttt.admin.home, $('#f32ddc64')[0] );
+</script>
+}
+
+<div id="f32ddc64">
+	<div data-bind="with:changePassword">
+		Changer le mot de passe 'admin'<br/>
+		<label>Mot de passe Originel :			<input type="password" data-bind="value:original"/></label><br/>
+		<label>Nouveau mot de passe :			<input type="password" data-bind="value:newPassword"/></label><br/>
+		<label>Nouveau mot de passe (encore) :	<input type="password" data-bind="value:newPasswordAgain"/></label><br/>
+		<button data-bind="click:change">Changer</button>
+	</div>
+</div>

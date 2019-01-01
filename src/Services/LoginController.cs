@@ -99,11 +99,10 @@ namespace ItemTTT.Services
 
 		[HttpGet( Routes.ChangePassword )]
 		[HttpPost( Routes.ChangePassword )]
-		public async Task<object> ChangePassword(string oldPassword, string newPassword)
+		public async Task<Utils.TTTServiceResult> ChangePassword(string oldPassword, string newPassword)
 		{
 			if(! PageHelper.IsAuthenticated )
-				// Hacker?
-				return NotAuthenticated();
+				return new Utils.TTTServiceResult( PageHelper, errorMessage:"Error: not logged-in" );
 
 			try
 			{
@@ -119,13 +118,11 @@ namespace ItemTTT.Services
 				entry.Value = newPasswordHash;
 				await DataContext.SaveChangesAsync();
 
-				return new{ success = true };
+				return new Utils.TTTServiceResult( PageHelper );
 			}
 			catch( Utils.TTTException ex )
 			{
-				// Don't send the whole exception; Just the error message
-				return new{	succes	= false,
-							error	= ex.Message };
+				return Utils.TTTServiceResult.LogAndNew( PageHelper, ex );
 			}
 		}
 

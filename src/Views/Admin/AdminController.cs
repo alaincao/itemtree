@@ -20,6 +20,14 @@ namespace ItemTTT.Views
 			DataContext = dataContext;
 		}
 
+		[HttpGet( Routes.AdminHome )]
+		public IActionResult Home()
+		{
+			if(! PageHelper.IsAuthenticated )
+				return NotAuthenticated();
+			return View();
+		}
+
 		[HttpGet( Routes.Login )]
 		public IActionResult Login()
 		{

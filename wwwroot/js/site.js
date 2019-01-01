@@ -3,6 +3,7 @@
 },{}],2:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("./src/Views/common");
+var adminhome = require("./src/Views/Admin/Home");
 var itemlist = require("./src/Views/ItemTTT/List");
 var itemadd = require("./src/Views/ItemTTT/Add");
 var itemedit = require("./src/Views/ItemTTT/Edit");
@@ -10,6 +11,9 @@ var itemedit = require("./src/Views/ItemTTT/Edit");
 // Global assignment of window.itemttt (will be available in each pages e.g. from the console):
 var ttt = {
     common: common,
+    admin: {
+        home: adminhome,
+    },
     itemttt: {
         list: itemlist,
         add: itemadd,
@@ -18,7 +22,7 @@ var ttt = {
 };
 window.ttt = ttt;
 
-},{"./src/Views/ItemTTT/Add":10,"./src/Views/ItemTTT/Edit":11,"./src/Views/ItemTTT/List":13,"./src/Views/common":14}],3:[function(require,module,exports){
+},{"./src/Views/Admin/Home":11,"./src/Views/ItemTTT/Add":12,"./src/Views/ItemTTT/Edit":13,"./src/Views/ItemTTT/List":15,"./src/Views/common":16}],3:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -55,7 +59,7 @@ var ItemKO = /** @class */ (function (_super) {
 }(BaseAutoItem_1.BaseAutoItem));
 exports.ItemKO = ItemKO;
 
-},{"../Utils/BaseAutoItem":9,"../Views/common":14}],4:[function(require,module,exports){
+},{"../Utils/BaseAutoItem":10,"../Views/common":16}],4:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var TranslationKO = /** @class */ (function () {
     function TranslationKO(src) {
@@ -73,7 +77,7 @@ var _a;
 var common = require("./Views/common");
 exports.Languages = (_a = common.utils.strEnum(['en', 'fr', 'nl']), _a.e), exports.allLanguages = _a.a;
 
-},{"./Views/common":14}],6:[function(require,module,exports){
+},{"./Views/common":16}],6:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -176,7 +180,7 @@ function delete_(code) {
 }
 exports.delete_ = delete_;
 
-},{"../Views/common":14}],7:[function(require,module,exports){
+},{"../Views/common":16}],7:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -286,7 +290,62 @@ function setMain(p) {
 }
 exports.setMain = setMain;
 
-},{"../Views/common":14}],8:[function(require,module,exports){
+},{"../Views/common":16}],8:[function(require,module,exports){
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var common = require("../Views/common");
+function changePassword(p) {
+    return __awaiter(this, void 0, void 0, function () {
+        var url, rc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    url = common.routes.api.changePassword;
+                    return [4 /*yield*/, common.url.postRequestForm(url, p)];
+                case 1:
+                    rc = _a.sent();
+                    return [2 /*return*/, rc];
+            }
+        });
+    });
+}
+exports.changePassword = changePassword;
+
+},{"../Views/common":16}],9:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -345,7 +404,7 @@ function autoCompleteResolve(p) {
 }
 exports.autoCompleteResolve = autoCompleteResolve;
 
-},{"../Views/common":14}],9:[function(require,module,exports){
+},{"../Views/common":16}],10:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var fieldTagAttribute = 'ttt-name';
 var BaseAutoItem = /** @class */ (function () {
@@ -397,7 +456,98 @@ var BaseAutoItem = /** @class */ (function () {
 }());
 exports.BaseAutoItem = BaseAutoItem;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var common = require("../common");
+var loginCtrl = require("../../Services/LoginController");
+var passwordsDontMatchMessage = 'Les 2 mots de passe ne concordent pas';
+var passwordChangedMessage = 'Password changed successfully';
+function init(p) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            exports.changePassword = new ChangePassword();
+            return [2 /*return*/];
+        });
+    });
+}
+exports.init = init;
+var ChangePassword = /** @class */ (function () {
+    function ChangePassword() {
+        this.original = ko.observable('');
+        this.newPassword = ko.observable('');
+        this.newPasswordAgain = ko.observable('');
+    }
+    ChangePassword.prototype.change = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var self, oldPassword, newPassword, newPasswordAgain, rc;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        self = this;
+                        oldPassword = self.original();
+                        newPassword = self.newPassword();
+                        newPasswordAgain = self.newPasswordAgain();
+                        if (common.utils.stringIsNullOrWhitespace(newPassword))
+                            return [2 /*return*/];
+                        if (common.utils.stringIsNullOrWhitespace(oldPassword))
+                            return [2 /*return*/];
+                        if (newPassword != newPasswordAgain) {
+                            common.html.showMessage(passwordsDontMatchMessage);
+                            return [2 /*return*/];
+                        }
+                        return [4 /*yield*/, loginCtrl.changePassword({ oldPassword: oldPassword, newPassword: newPassword })];
+                    case 1:
+                        rc = _a.sent();
+                        if (!rc.success) {
+                            common.utils.error('change password error', { rc: rc });
+                            common.html.showMessage(rc.errorMessage);
+                            return [2 /*return*/];
+                        }
+                        common.html.showMessage(passwordChangedMessage);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return ChangePassword;
+}());
+
+},{"../../Services/LoginController":8,"../common":16}],12:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -485,7 +635,7 @@ function save() {
     });
 }
 
-},{"../../DTOs/Item":3,"../../Services/ItemController":6,"../common":14}],11:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../Services/ItemController":6,"../common":16}],13:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -605,7 +755,7 @@ function autoCompleteFeature(searchTerm) {
                 case 1:
                     rc = _a.sent();
                     if (!rc.success) {
-                        common.utils.error('autocmplete error', { rc: rc });
+                        common.utils.error('autocomplete error', { rc: rc });
                         return [2 /*return*/, []];
                     }
                     return [2 /*return*/, rc.list];
@@ -902,7 +1052,7 @@ var ItemKO = /** @class */ (function (_super) {
     return ItemKO;
 }(dto.ItemKO));
 
-},{"../../DTOs/Item":3,"../../DTOs/Translation":4,"../../Services/ItemController":6,"../../Services/ItemPictureController":7,"../../Services/TranslationController":8,"../common":14}],12:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../DTOs/Translation":4,"../../Services/ItemController":6,"../../Services/ItemPictureController":7,"../../Services/TranslationController":9,"../common":16}],14:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -962,7 +1112,7 @@ var list;
     ;
 })(list = exports.list || (exports.list = {}));
 
-},{"../common":14}],13:[function(require,module,exports){
+},{"../common":16}],15:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1212,7 +1362,7 @@ var ItemKO = /** @class */ (function (_super) {
     return ItemKO;
 }(dto.ItemKO));
 
-},{"../../DTOs/Item":3,"../../Language":5,"../../Services/ItemController":6,"../common":14,"./ItemTTTController":12}],14:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../Language":5,"../../Services/ItemController":6,"../common":16,"./ItemTTTController":14}],16:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1677,6 +1827,6 @@ var url;
 // nb: Exports at the end or the order of execution breaks everything (i.e. strEnum must be defined before) ...
 __export(require("../Language"));
 
-},{"../Language":5,"./common":14}]},{},[1,2])
+},{"../Language":5,"./common":16}]},{},[1,2])
 
 //# sourceMappingURL=site.js.map

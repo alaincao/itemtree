@@ -91,7 +91,7 @@ export async function autoCompleteFeature(searchTerm:string) : Promise<string[]>
 	var rc = await trnCtrl.autoCompleteResolve({ type:trnCtrl.TranslationTypes.feature, searchString:searchTerm, includeTranslations:true });
 	if(! rc.success )
 	{
-		common.utils.error( 'autocmplete error', { rc } );
+		common.utils.error( 'autocomplete error', { rc } );
 		return [];
 	}
 	return rc.list;
