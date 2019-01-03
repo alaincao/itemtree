@@ -44,7 +44,7 @@ async function save() : Promise<void>
 	}
 
 	common.utils.log( 'add.save(): Redirect', { rc } );
-	const url = common.routes.itemTTT.itemEdit.replace( common.routes.itemCodeParameter, rc.newCode );
+	const url = common.routes.itemTTT.edit.replace( common.routes.itemCodeParameter, rc.newCode );
 	common.utils.log( `add.save(): url="${url}"` );
 	common.url.redirect( url );
 

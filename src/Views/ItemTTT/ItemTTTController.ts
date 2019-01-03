@@ -11,7 +11,7 @@ export namespace list
 
 	export async function getListContent(p:GetListContentRequest) : Promise<string>
 	{
-		var url = common.routes.itemTTT.itemsList.replace( common.routes.languageParameter, common.pageParameters.currentLanguage );
+		var url = common.routes.itemTTT.list.replace( common.routes.languageParameter, common.pageParameters.currentLanguage );
 		return await common.url.getRequest( url, p );
 	}
 	export interface GetListContentRequest

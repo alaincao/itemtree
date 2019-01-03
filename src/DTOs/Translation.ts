@@ -5,6 +5,11 @@ export interface Translation
 	fr : string;
 	nl : string;
 }
+export interface TranslationItem
+{
+	inOriginal		: boolean;
+	inTranslation	: boolean;
+}
 
 export class TranslationKO
 {

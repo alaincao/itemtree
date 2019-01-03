@@ -35,6 +35,8 @@ namespace ItemTTT
 		internal const string	LogoutAPI			= "/api/logout";
 		internal const string	ChangePassword		= "/api/change-password";
 		internal const string	AutoComplete		= "/api/autocomplete";
+		internal const string	GetTranslations		= "/api/translations";
+		internal const string	SaveTranslations	= "/api/translations/save";
 		internal const string	ItemsListApi		= "/api/car-listing";
 		internal const string	ItemDetailsApi		= "/api/car-details/"+ItemCode;
 		internal const string	ItemSave			= "/api/car-save";
@@ -67,8 +69,8 @@ namespace ItemTTT
 					ItemCodeParameter = ItemCodeClientSide,
 
 					ItemTTT = new {
-							ItemsList	= tr( ItemsList ),
-							ItemEdit	= tr( ItemEdit ),
+							List	= tr( ItemsList ),
+							Edit	= tr( ItemEdit ),
 						},
 					API = new {
 							GetUrlCode			= tr( GetUrlCode ),
@@ -76,15 +78,23 @@ namespace ItemTTT
 							Logout				= tr( LogoutAPI ),
 							ChangePassword		= tr( ChangePassword ),
 							AutoComplete		= tr( AutoComplete ),
-							ItemsListing		= tr( ItemsListApi ),
-							ItemDetails			= tr( ItemDetailsApi ),
-							ItemSave			= tr( ItemSave ),
-							ItemDelete			= tr( ItemDelete ),
-							ItemDetailsPictures	= tr( ItemPictureList ),
-							ItemPictureDelete	= tr( ItemPictureDelete ),
-							ItemPictureReorder	= tr( ItemPictureReorder ),
-							ItemPictureSetMain	= tr( ItemPictureSetMain ),
-							ItemPictureUpload	= tr( ItemPictureUpload ),
+							Translations = new {
+									List	= tr( GetTranslations ),
+									Save	= tr( SaveTranslations ),
+								},
+							Items = new {
+									List			= tr( ItemsListApi ),
+									Details			= tr( ItemDetailsApi ),
+									Save			= tr( ItemSave ),
+									Delete			= tr( ItemDelete ),
+									DetailsPictures	= tr( ItemPictureList ),
+									Pictures = new {
+											Delete	= tr( ItemPictureDelete ),
+											Reorder	= tr( ItemPictureReorder ),
+											SetMain	= tr( ItemPictureSetMain ),
+											Upload	= tr( ItemPictureUpload ),
+										},
+								},
 						},
 				};
 			GetPageParameterRoutesCache = obj;

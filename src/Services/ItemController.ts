@@ -12,7 +12,7 @@ export async function getUrlCode(originalCode:string) : Promise<string>
 
 export async function details(code:string) : Promise<DetailsResult>
 {
-	const url = common.routes.api.itemDetails.replace( common.routes.itemCodeParameter, code );
+	const url = common.routes.api.items.details.replace( common.routes.itemCodeParameter, code );
 	const rc = await common.url.postRequestJSON<DetailsResult>( url, {} );
 	rc.item = rc.result;
 	delete rc.result;
@@ -25,7 +25,7 @@ export interface DetailsResult extends Result
 
 export async function save(p:SaveRequest) : Promise<SaveResult>
 {
-	const rc = await common.url.postRequestJSON<SaveResult>( common.routes.api.itemSave, p );
+	const rc = await common.url.postRequestJSON<SaveResult>( common.routes.api.items.save, p );
 	rc.newCode = rc.result;
 	delete rc.result;
 	return rc;
@@ -42,7 +42,7 @@ export interface SaveResult extends Result
 
 export async function delete_(code:string) : Promise<SaveResult>
 {
-	const url = common.routes.api.itemDelete.replace( common.routes.itemCodeParameter, code );
+	const url = common.routes.api.items.delete.replace( common.routes.itemCodeParameter, code );
 	const rc = await common.url.postRequestJSON<SaveResult>( url, {} );
 	return rc;
 }

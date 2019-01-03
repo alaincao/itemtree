@@ -151,7 +151,7 @@ async function delete_(confirmed?:boolean) : Promise<void>
 	}
 
 	common.utils.log( 'edit.delete(): Redirect' );
-	const url = common.routes.itemTTT.itemsList.replace( common.routes.languageParameter, common.pageParameters.currentLanguage );
+	const url = common.routes.itemTTT.list.replace( common.routes.languageParameter, common.pageParameters.currentLanguage );
 	common.utils.log( 'edit.delete()', { url } );
 	common.url.redirect( url );
 
@@ -291,7 +291,7 @@ async function refresh(code?:string) : Promise<boolean>
 	{
 		if( originalCode != code )
 			// URL must change!
-			newUrl = common.routes.itemTTT.itemEdit.replace( common.routes.itemCodeParameter, code );
+			newUrl = common.routes.itemTTT.edit.replace( common.routes.itemCodeParameter, code );
 		originalCode = code;
 	}
 
