@@ -60,18 +60,81 @@ var ItemKO = /** @class */ (function (_super) {
 exports.ItemKO = ItemKO;
 
 },{"../Utils/BaseAutoItem":10,"../Views/common":16}],4:[function(require,module,exports){
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
+var common = require("../Views/common");
 var TranslationKO = /** @class */ (function () {
     function TranslationKO(src) {
         if (src == null)
-            src = { en: '' };
+            src = { en: '', fr: '', nl: '' };
         this.en = ko.observable(src.en);
+        this.fr = ko.observable(src.fr);
+        this.nl = ko.observable(src.nl);
     }
     return TranslationKO;
 }());
 exports.TranslationKO = TranslationKO;
+var TranslationItemKO = /** @class */ (function (_super) {
+    __extends(TranslationItemKO, _super);
+    function TranslationItemKO(src) {
+        var _this = this;
+        if (src == null)
+            src = { en: '', fr: '', nl: '', inOriginal: false, inTranslation: false };
+        _this = _super.call(this, src) || this;
+        var self = _this;
+        _this.inOriginal = ko.observable(src.inOriginal);
+        _this.inTranslation = ko.observable(src.inTranslation);
+        _this.enOriginal = ko.observable(self.en());
+        _this.frOriginal = ko.observable(self.fr());
+        _this.nlOriginal = ko.observable(self.nl());
+        _this.modified = ko.computed(function () {
+            if (self.en() != self.enOriginal())
+                return true;
+            if (self.fr() != self.frOriginal())
+                return true;
+            if (self.nl() != self.nlOriginal())
+                return true;
+            return false;
+        });
+        return _this;
+    }
+    TranslationItemKO.prototype.toDTO = function () {
+        return {
+            en: this.en(),
+            fr: this.fr(),
+            nl: this.nl(),
+        };
+    };
+    TranslationItemKO.prototype.setAllLanguagesTo = function (str) {
+        this.en(str);
+        this.fr(str);
+        this.nl(str);
+    };
+    TranslationItemKO.prototype.copyEnToBlanks = function () {
+        var self = this;
+        var en = self.en();
+        if (common.utils.stringIsNullOrWhitespace(self.fr()))
+            self.fr(en);
+        if (common.utils.stringIsNullOrWhitespace(self.nl()))
+            self.nl(en);
+    };
+    return TranslationItemKO;
+}(TranslationKO));
+exports.TranslationItemKO = TranslationItemKO;
 
-},{}],5:[function(require,module,exports){
+},{"../Views/common":16}],5:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var _a;
 var common = require("./Views/common");
@@ -135,7 +198,7 @@ function details(code) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    url = common.routes.api.itemDetails.replace(common.routes.itemCodeParameter, code);
+                    url = common.routes.api.items.details.replace(common.routes.itemCodeParameter, code);
                     return [4 /*yield*/, common.url.postRequestJSON(url, {})];
                 case 1:
                     rc = _a.sent();
@@ -152,7 +215,7 @@ function save(p) {
         var rc;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, common.url.postRequestJSON(common.routes.api.itemSave, p)];
+                case 0: return [4 /*yield*/, common.url.postRequestJSON(common.routes.api.items.save, p)];
                 case 1:
                     rc = _a.sent();
                     rc.newCode = rc.result;
@@ -169,7 +232,7 @@ function delete_(code) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    url = common.routes.api.itemDelete.replace(common.routes.itemCodeParameter, code);
+                    url = common.routes.api.items.delete.replace(common.routes.itemCodeParameter, code);
                     return [4 /*yield*/, common.url.postRequestJSON(url, {})];
                 case 1:
                     rc = _a.sent();
@@ -219,7 +282,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("../Views/common");
 function upload(itemCode, file) {
-    var url = common.routes.api.itemPictureUpload.replace(common.routes.itemCodeParameter, itemCode);
+    var url = common.routes.api.items.pictures.upload.replace(common.routes.itemCodeParameter, itemCode);
     var formData = new FormData();
     formData.append('file', file);
     return new Promise(function (resolve, reject) {
@@ -247,7 +310,7 @@ function delete_(p) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    url = common.routes.api.itemPictureDelete.replace(common.routes.itemCodeParameter, p.itemCode);
+                    url = common.routes.api.items.pictures.delete.replace(common.routes.itemCodeParameter, p.itemCode);
                     return [4 /*yield*/, common.url.postRequestForm(url, { number: p.number })];
                 case 1:
                     rc = _a.sent();
@@ -263,7 +326,7 @@ function reorder(p) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    url = common.routes.api.itemPictureReorder.replace(common.routes.itemCodeParameter, p.itemCode);
+                    url = common.routes.api.items.pictures.reorder.replace(common.routes.itemCodeParameter, p.itemCode);
                     return [4 /*yield*/, common.url.postRequestForm(url, { number: p.number, newNumber: p.newNumber })];
                 case 1:
                     rc = _a.sent();
@@ -279,7 +342,7 @@ function setMain(p) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    url = common.routes.api.itemPictureSetMain.replace(common.routes.itemCodeParameter, p.itemCode);
+                    url = common.routes.api.items.pictures.setMain.replace(common.routes.itemCodeParameter, p.itemCode);
                     return [4 /*yield*/, common.url.postRequestForm(url, { number: p.number, isMain: p.isMain })];
                 case 1:
                     rc = _a.sent();
@@ -384,7 +447,34 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var _a;
 var common = require("../Views/common");
-exports.TranslationTypes = (_a = common.utils.strEnum(['option', 'feature']), _a.e), exports.allTranslationTypes = _a.a;
+exports.TranslationTypes = (_a = common.utils.strEnum(['feature']), _a.e), exports.allTranslationTypes = _a.a;
+function list(p) {
+    return __awaiter(this, void 0, void 0, function () {
+        var rc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, common.url.postRequestForm(common.routes.api.translations.list, p)];
+                case 1:
+                    rc = _a.sent();
+                    rc.translations = rc.result;
+                    delete rc.result;
+                    return [2 /*return*/, rc];
+            }
+        });
+    });
+}
+exports.list = list;
+function save(p) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, common.url.postRequestJSON(common.routes.api.translations.save, p)];
+                case 1: return [2 /*return*/, _a.sent()];
+            }
+        });
+    });
+}
+exports.save = save;
 function autoCompleteResolve(p) {
     return __awaiter(this, void 0, void 0, function () {
         var url, rc;
@@ -457,6 +547,19 @@ var BaseAutoItem = /** @class */ (function () {
 exports.BaseAutoItem = BaseAutoItem;
 
 },{}],11:[function(require,module,exports){
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -495,19 +598,23 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("../common");
 var loginCtrl = require("../../Services/LoginController");
+var trnCtrl = require("../../Services/TranslationController");
+var trnDto = require("../../DTOs/Translation");
 var passwordsDontMatchMessage = 'Les 2 mots de passe ne concordent pas';
 var passwordChangedMessage = 'Password changed successfully';
 function init(p) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            exports.changePassword = new ChangePassword();
+            exports.changePassword = new ChangePassword(p.$passwordBlockingDiv);
+            exports.features = new Features(p.$featuresBlockingDiv);
             return [2 /*return*/];
         });
     });
 }
 exports.init = init;
 var ChangePassword = /** @class */ (function () {
-    function ChangePassword() {
+    function ChangePassword($blockingDiv) {
+        this.$blockingDiv = $blockingDiv;
         this.original = ko.observable('');
         this.newPassword = ko.observable('');
         this.newPasswordAgain = ko.observable('');
@@ -530,9 +637,11 @@ var ChangePassword = /** @class */ (function () {
                             common.html.showMessage(passwordsDontMatchMessage);
                             return [2 /*return*/];
                         }
+                        common.html.block(self.$blockingDiv);
                         return [4 /*yield*/, loginCtrl.changePassword({ oldPassword: oldPassword, newPassword: newPassword })];
                     case 1:
                         rc = _a.sent();
+                        common.html.unblock(self.$blockingDiv);
                         if (!rc.success) {
                             common.utils.error('change password error', { rc: rc });
                             common.html.showMessage(rc.errorMessage);
@@ -546,8 +655,117 @@ var ChangePassword = /** @class */ (function () {
     };
     return ChangePassword;
 }());
+var TranslationsBase = /** @class */ (function () {
+    function TranslationsBase(type, $blockingDiv) {
+        var self = this;
+        this.$blockingDiv = $blockingDiv;
+        this.type = type;
+        this.items = ko.observableArray();
+        this.hasChanges = ko.computed(function () {
+            var items = self.items();
+            for (var i = 0; i < items.length; ++i) {
+                if (items[i].modified())
+                    return true;
+            }
+            return false;
+        });
+        this.refresh();
+    }
+    TranslationsBase.prototype.refresh = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var self, rc, items;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        self = this;
+                        common.html.block(self.$blockingDiv);
+                        return [4 /*yield*/, trnCtrl.list({ type: self.type })];
+                    case 1:
+                        rc = _a.sent();
+                        common.html.unblock(self.$blockingDiv);
+                        if (!rc.success) {
+                            common.utils.error('refresh translations error', { rc: rc });
+                            common.html.showMessage(rc.errorMessage);
+                            return [2 /*return*/];
+                        }
+                        items = rc.translations.map(function (v) { return new TranslationItem(v); });
+                        self.items(items);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    TranslationsBase.prototype.clearLine = function (index) {
+        var self = this;
+        var item = self.items()[index()];
+        item.setAllLanguagesTo('');
+    };
+    TranslationsBase.prototype.addLine = function () {
+        this.items.push(new TranslationItem());
+    };
+    TranslationsBase.prototype.save = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var self, toSave, rc;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        self = this;
+                        toSave = self.items()
+                            .map(function (item) {
+                            if (!item.modified())
+                                return null;
+                            var dto = item.toDTO();
+                            dto.enOriginal = item.enOriginal();
+                            return dto;
+                        })
+                            .filter(function (item) { return (item != null); });
+                        if (!(toSave.length == 0)) return [3 /*break*/, 2];
+                        // NOOP => Simply refresh
+                        return [4 /*yield*/, self.refresh()];
+                    case 1:
+                        // NOOP => Simply refresh
+                        _a.sent();
+                        return [2 /*return*/];
+                    case 2:
+                        common.html.block(self.$blockingDiv);
+                        return [4 /*yield*/, trnCtrl.save({ type: self.type, translations: toSave })];
+                    case 3:
+                        rc = _a.sent();
+                        common.html.unblock(self.$blockingDiv);
+                        if (!rc.success) {
+                            common.utils.error('save translations error', { rc: rc });
+                            common.html.showMessage(rc.errorMessage);
+                            return [2 /*return*/];
+                        }
+                        return [4 /*yield*/, self.refresh()];
+                    case 4:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return TranslationsBase;
+}());
+var TranslationItem = /** @class */ (function (_super) {
+    __extends(TranslationItem, _super);
+    function TranslationItem(src) {
+        var _this = _super.call(this, src) || this;
+        var self = _this;
+        _this.showReset = ko.computed(function () { return self.inTranslation(); });
+        return _this;
+    }
+    return TranslationItem;
+}(trnDto.TranslationItemKO));
+var Features = /** @class */ (function (_super) {
+    __extends(Features, _super);
+    function Features($blockingDiv) {
+        return _super.call(this, trnCtrl.TranslationTypes.feature, $blockingDiv) || this;
+    }
+    return Features;
+}(TranslationsBase));
 
-},{"../../Services/LoginController":8,"../common":16}],12:[function(require,module,exports){
+},{"../../DTOs/Translation":4,"../../Services/LoginController":8,"../../Services/TranslationController":9,"../common":16}],12:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -625,7 +843,7 @@ function save() {
                         return [2 /*return*/];
                     }
                     common.utils.log('add.save(): Redirect', { rc: rc });
-                    url = common.routes.itemTTT.itemEdit.replace(common.routes.itemCodeParameter, rc.newCode);
+                    url = common.routes.itemTTT.edit.replace(common.routes.itemCodeParameter, rc.newCode);
                     common.utils.log("add.save(): url=\"" + url + "\"");
                     common.url.redirect(url);
                     common.utils.log('add.save(): END');
@@ -825,7 +1043,7 @@ function delete_(confirmed) {
                         return [2 /*return*/];
                     }
                     common.utils.log('edit.delete(): Redirect');
-                    url = common.routes.itemTTT.itemsList.replace(common.routes.languageParameter, common.pageParameters.currentLanguage);
+                    url = common.routes.itemTTT.list.replace(common.routes.languageParameter, common.pageParameters.currentLanguage);
                     common.utils.log('edit.delete()', { url: url });
                     common.url.redirect(url);
                     common.utils.log('edit.delete(): END');
@@ -989,7 +1207,7 @@ function refresh(code) {
                     else {
                         if (originalCode != code)
                             // URL must change!
-                            newUrl = common.routes.itemTTT.itemEdit.replace(common.routes.itemCodeParameter, code);
+                            newUrl = common.routes.itemTTT.edit.replace(common.routes.itemCodeParameter, code);
                         originalCode = code;
                     }
                     common.utils.log('edit.refresh(): Launch request');
@@ -1101,7 +1319,7 @@ var list;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        url = common.routes.itemTTT.itemsList.replace(common.routes.languageParameter, common.pageParameters.currentLanguage);
+                        url = common.routes.itemTTT.list.replace(common.routes.languageParameter, common.pageParameters.currentLanguage);
                         return [4 /*yield*/, common.url.getRequest(url, p)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
@@ -1771,14 +1989,19 @@ var url;
     }
     url_1.pushHistory = pushHistory;
     function postRequestForm(url, request) {
+        utils.log('postRequestForm', { url: url, request: request });
         return new Promise(function (resolve, reject) {
             $.ajax({ type: 'POST',
                 url: url,
                 contentType: 'application/x-www-form-urlencoded',
                 data: request,
                 dataType: 'json',
-                success: function (data, textStatus, jqXHR) { return resolve(data); },
+                success: function (data, textStatus, jqXHR) {
+                    utils.log('postRequestForm', { response: data });
+                    resolve(data);
+                },
                 error: function (jqXHR, textStatus, errorThrown) {
+                    utils.error('postRequestForm rejected', { jqXHR: jqXHR, textStatus: textStatus, errorThrown: errorThrown });
                     reject(textStatus);
                 }
             });
@@ -1786,6 +2009,7 @@ var url;
     }
     url_1.postRequestForm = postRequestForm;
     function postRequestJSON(url, request) {
+        utils.log('postRequestJSON', { url: url, request: request });
         var requestStr = JSON.stringify(request);
         return new Promise(function (resolve, reject) {
             $.ajax({ type: 'POST',
@@ -1793,8 +2017,12 @@ var url;
                 contentType: 'application/json',
                 data: requestStr,
                 dataType: 'json',
-                success: function (data, textStatus, jqXHR) { return resolve(data); },
+                success: function (data, textStatus, jqXHR) {
+                    utils.log('postRequestJSON', { response: data });
+                    resolve(data);
+                },
                 error: function (jqXHR, textStatus, errorThrown) {
+                    utils.error('postRequestJSON rejected', { jqXHR: jqXHR, textStatus: textStatus, errorThrown: errorThrown });
                     reject(textStatus);
                 }
             });
@@ -1806,12 +2034,17 @@ var url;
             var parms = stringifyParameters(request);
             url = url + "?" + parms;
         }
+        utils.log('getRequest', { url: url, request: request });
         return new Promise(function (resolve, reject) {
             $.ajax({ type: 'GET',
                 url: url,
                 contentType: 'text/html',
-                success: function (data, textStatus, jqXHR) { return resolve(data); },
+                success: function (data, textStatus, jqXHR) {
+                    utils.log('getRequest', { response: data });
+                    resolve(data);
+                },
                 error: function (jqXHR, textStatus, errorThrown) {
+                    utils.error('getRequest rejected', { jqXHR: jqXHR, textStatus: textStatus, errorThrown: errorThrown });
                     reject(textStatus);
                 }
             });

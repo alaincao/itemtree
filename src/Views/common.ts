@@ -463,6 +463,7 @@ export namespace url
 
 	export function postRequestForm<T>(url:string, request:{[key:string]:any}) : Promise<T>
 	{
+		utils.log( 'postRequestForm', { url, request } );
 		return new Promise<T>( (resolve,reject)=>
 			{
 				$.ajax({	type		: 'POST',
@@ -470,9 +471,14 @@ export namespace url
 							contentType	: 'application/x-www-form-urlencoded',
 							data		: request,
 							dataType	: 'json',
-							success		: (data,textStatus,jqXHR)=>resolve( data ),
+							success		: (data,textStatus,jqXHR)=>
+											{
+												utils.log( 'postRequestForm', { response:data } );
+												resolve( data );
+											},
 							error		: (jqXHR,textStatus,errorThrown)=>
 											{
+												utils.error( 'postRequestForm rejected', { jqXHR, textStatus, errorThrown } );
 												reject( textStatus );
 											}
 						});
@@ -481,6 +487,7 @@ export namespace url
 
 	export function postRequestJSON<T>(url:string, request:{[key:string]:any}) : Promise<T>
 	{
+		utils.log( 'postRequestJSON', { url, request } );
 		let requestStr = JSON.stringify( request );
 		return new Promise<T>( (resolve,reject)=>
 			{
@@ -489,9 +496,14 @@ export namespace url
 							contentType	: 'application/json',
 							data		: requestStr,
 							dataType	: 'json',
-							success		: (data,textStatus,jqXHR)=>resolve( data ),
+							success		: (data,textStatus,jqXHR)=>
+											{
+												utils.log( 'postRequestJSON', { response:data } );
+												resolve( data );
+											},
 							error		: (jqXHR,textStatus,errorThrown)=>
 											{
+												utils.error( 'postRequestJSON rejected', { jqXHR, textStatus, errorThrown } );
 												reject( textStatus );
 											}
 						});
@@ -505,15 +517,21 @@ export namespace url
 			const parms = stringifyParameters( request );
 			url = `${url}?${parms}`;
 		}
+		utils.log( 'getRequest', { url, request } );
 
 		return new Promise<string>( (resolve,reject)=>
 			{
 				$.ajax({	type		: 'GET',
 							url			: url,
 							contentType	: 'text/html',
-							success		: (data,textStatus,jqXHR)=>resolve( data ),
+							success		: (data,textStatus,jqXHR)=>
+											{
+												utils.log( 'getRequest', { response:data } );
+												resolve( data );
+											},
 							error		: (jqXHR,textStatus,errorThrown)=>
 											{
+												utils.error( 'getRequest rejected', { jqXHR, textStatus, errorThrown } );
 												reject( textStatus );
 											}
 						});

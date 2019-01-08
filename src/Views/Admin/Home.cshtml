@@ -6,17 +6,49 @@
 {
 <script type="text/javascript">
 	ttt.admin.home.init( {
+			$passwordBlockingDiv : $('#e25dc6e6'),
+			$featuresBlockingDiv : $('#ae59c24d'),
 		} );
 	ko.applyBindings( ttt.admin.home, $('#f32ddc64')[0] );
 </script>
 }
 
 <div id="f32ddc64">
-	<div data-bind="with:changePassword">
+	<div id="e25dc6e6" data-bind="with:changePassword">
 		Changer le mot de passe 'admin'<br/>
-		<label>Mot de passe Originel :			<input type="password" data-bind="value:original"/></label><br/>
+		<label>Mot de passe originel :			<input type="password" data-bind="value:original"/></label><br/>
 		<label>Nouveau mot de passe :			<input type="password" data-bind="value:newPassword"/></label><br/>
 		<label>Nouveau mot de passe (encore) :	<input type="password" data-bind="value:newPasswordAgain"/></label><br/>
 		<button data-bind="click:change">Changer</button>
+	</div>
+
+	<hr/>
+
+	<div id="ae59c24d" data-bind="with:features">
+		FEATURES:
+		<table>
+			<thead>
+				<tr>
+					<td>EN</td>
+					<td>FR</td>
+					<td>NL</td>
+					<td></td>
+				</tr>
+			</thead>
+			<tbody data-bind="foreach:items">
+				<tr>
+					<td><input type="text" data-bind="value:en"/></td>
+					<td><input type="text" data-bind="value:fr"/></td>
+					<td><input type="text" data-bind="value:nl"/></td>
+					<td>
+						<button data-bind="visible:showReset, click:function(){ $parent.clearLine($index); }">Clear</button>
+						<span data-bind="visible:inOriginal">In use</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<button data-bind="click:refresh">Refresh</button>
+		<button data-bind="click:save, visible:hasChanges">Save</button>
+		<button data-bind="click:addLine">Add line</button>
 	</div>
 </div>
