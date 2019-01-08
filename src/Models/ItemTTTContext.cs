@@ -13,10 +13,11 @@ namespace ItemTTT.Models
 																						{ "'IX_Car'", "An item with the same code already exists" },
 																					};
 
-		public DbSet<Configuration>	Configurations	{ get; set; }
+		public DbSet<Configuration>		Configurations		{ get; set; }
+		public DbSet<Translation>		Translations		{ get; set; }
 		public DbSet<Item>				Items				{ get; set; }
 		public DbSet<ItemPicture>		ItemPictures		{ get; set; }
-		public DbSet<Translation>		Translations		{ get; set; }
+		public DbSet<BlogPost>			BlogPosts			{ get; set; }
 
 		public ItemTTTContext(DbContextOptions options) : base(options)  {}
 
