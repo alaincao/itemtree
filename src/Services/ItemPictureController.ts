@@ -2,31 +2,17 @@
 import * as common from "../Views/common";
 import Result from "../Utils/TTTServiceResult";
 
-export function upload(itemCode:string, file:File) : Promise<UploadResult>
+export async function upload(itemCode:string, file:File) : Promise<UploadResult>
 {
 	const url = common.routes.api.items.pictures.upload.replace( common.routes.itemCodeParameter, itemCode );
 	const formData = new FormData();
 	formData.append( 'file', file );
-	return new Promise<UploadResult>( (resolve,reject)=>
-		{
-			$.ajax( {	type		: "POST",
-						url			: url,
-						contentType	: false,
-						processData	: false,
-						data		: formData,
-						dataType	: 'json',
-						success		: (data:UploadResult,textStatus,jqXHR)=>
-										{
-											data.imageNumber = data.result;
-											delete data.result;
-											resolve( data );
-										},
-						error		: (jqXHR,textStatus,errorThrown)=>
-										{
-											reject( textStatus );
-										},
-					} );
-		} );
+
+	const response = await common.url.postRequestFormData<UploadResult>( url, formData );
+	response.imageNumber = response.result;
+	delete response.result;
+	
+	return response;
 }
 export interface UploadResult extends Result
 {

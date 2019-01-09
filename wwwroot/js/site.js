@@ -7,6 +7,7 @@ var adminhome = require("./src/Views/Admin/Home");
 var itemlist = require("./src/Views/ItemTTT/List");
 var itemadd = require("./src/Views/ItemTTT/Add");
 var itemedit = require("./src/Views/ItemTTT/Edit");
+var blogedit = require("./src/Views/Blog/Edit");
 ///////
 // Global assignment of window.itemttt (will be available in each pages e.g. from the console):
 var ttt = {
@@ -19,10 +20,13 @@ var ttt = {
         add: itemadd,
         edit: itemedit,
     },
+    blog: {
+        edit: blogedit,
+    },
 };
 window.ttt = ttt;
 
-},{"./src/Views/Admin/Home":11,"./src/Views/ItemTTT/Add":12,"./src/Views/ItemTTT/Edit":13,"./src/Views/ItemTTT/List":15,"./src/Views/common":16}],3:[function(require,module,exports){
+},{"./src/Views/Admin/Home":12,"./src/Views/Blog/Edit":13,"./src/Views/ItemTTT/Add":14,"./src/Views/ItemTTT/Edit":15,"./src/Views/ItemTTT/List":17,"./src/Views/common":18}],3:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -59,7 +63,7 @@ var ItemKO = /** @class */ (function (_super) {
 }(BaseAutoItem_1.BaseAutoItem));
 exports.ItemKO = ItemKO;
 
-},{"../Utils/BaseAutoItem":10,"../Views/common":16}],4:[function(require,module,exports){
+},{"../Utils/BaseAutoItem":11,"../Views/common":18}],4:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -134,13 +138,72 @@ var TranslationItemKO = /** @class */ (function (_super) {
 }(TranslationKO));
 exports.TranslationItemKO = TranslationItemKO;
 
-},{"../Views/common":16}],5:[function(require,module,exports){
+},{"../Views/common":18}],5:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var _a;
 var common = require("./Views/common");
 exports.Languages = (_a = common.utils.strEnum(['en', 'fr', 'nl']), _a.e), exports.allLanguages = _a.a;
 
-},{"./Views/common":16}],6:[function(require,module,exports){
+},{"./Views/common":18}],6:[function(require,module,exports){
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var common = require("../Views/common");
+function uploadPicture(file) {
+    return __awaiter(this, void 0, void 0, function () {
+        var url, formData, response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    url = common.routes.api.blog.pictureUpload;
+                    formData = new FormData();
+                    formData.append('file', file);
+                    return [4 /*yield*/, common.url.postRequestFormData(url, formData)];
+                case 1:
+                    response = _a.sent();
+                    response.imageTagContent = response.result;
+                    delete response.result;
+                    return [2 /*return*/, response];
+            }
+        });
+    });
+}
+exports.uploadPicture = uploadPicture;
+
+},{"../Views/common":18}],7:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -243,7 +306,7 @@ function delete_(code) {
 }
 exports.delete_ = delete_;
 
-},{"../Views/common":16}],7:[function(require,module,exports){
+},{"../Views/common":18}],8:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -282,24 +345,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("../Views/common");
 function upload(itemCode, file) {
-    var url = common.routes.api.items.pictures.upload.replace(common.routes.itemCodeParameter, itemCode);
-    var formData = new FormData();
-    formData.append('file', file);
-    return new Promise(function (resolve, reject) {
-        $.ajax({ type: "POST",
-            url: url,
-            contentType: false,
-            processData: false,
-            data: formData,
-            dataType: 'json',
-            success: function (data, textStatus, jqXHR) {
-                data.imageNumber = data.result;
-                delete data.result;
-                resolve(data);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                reject(textStatus);
-            },
+    return __awaiter(this, void 0, void 0, function () {
+        var url, formData, response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    url = common.routes.api.items.pictures.upload.replace(common.routes.itemCodeParameter, itemCode);
+                    formData = new FormData();
+                    formData.append('file', file);
+                    return [4 /*yield*/, common.url.postRequestFormData(url, formData)];
+                case 1:
+                    response = _a.sent();
+                    response.imageNumber = response.result;
+                    delete response.result;
+                    return [2 /*return*/, response];
+            }
         });
     });
 }
@@ -353,7 +413,7 @@ function setMain(p) {
 }
 exports.setMain = setMain;
 
-},{"../Views/common":16}],8:[function(require,module,exports){
+},{"../Views/common":18}],9:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -408,7 +468,7 @@ function changePassword(p) {
 }
 exports.changePassword = changePassword;
 
-},{"../Views/common":16}],9:[function(require,module,exports){
+},{"../Views/common":18}],10:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -494,7 +554,7 @@ function autoCompleteResolve(p) {
 }
 exports.autoCompleteResolve = autoCompleteResolve;
 
-},{"../Views/common":16}],10:[function(require,module,exports){
+},{"../Views/common":18}],11:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var fieldTagAttribute = 'ttt-name';
 var BaseAutoItem = /** @class */ (function () {
@@ -546,7 +606,7 @@ var BaseAutoItem = /** @class */ (function () {
 }());
 exports.BaseAutoItem = BaseAutoItem;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -765,7 +825,90 @@ var Features = /** @class */ (function (_super) {
     return Features;
 }(TranslationsBase));
 
-},{"../../DTOs/Translation":4,"../../Services/LoginController":8,"../../Services/TranslationController":9,"../common":16}],12:[function(require,module,exports){
+},{"../../DTOs/Translation":4,"../../Services/LoginController":9,"../../Services/TranslationController":10,"../common":18}],13:[function(require,module,exports){
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var common = require("../common");
+var ctrl = require("../../Services/BlogController");
+function init(p) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            common.utils.log('edit.init() START', { p: p });
+            common.utils.log('edit.init(): Init picture upload');
+            p.$picUploadControl.on('change', function () {
+                var files = p.$picUploadControl[0].files;
+                uploadPicture(files);
+            });
+            common.utils.log('edit.init() END');
+            return [2 /*return*/];
+        });
+    });
+}
+exports.init = init;
+function uploadPicture(files) {
+    return __awaiter(this, void 0, void 0, function () {
+        var rc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    common.utils.log('edit.uploadPicture(): START', { files: files });
+                    if (files.length == 0)
+                        return [2 /*return*/];
+                    if (window.FormData === undefined) {
+                        common.utils.error("This browser doesn't support HTML5 file uploads!");
+                        return [2 /*return*/];
+                    }
+                    return [4 /*yield*/, ctrl.uploadPicture(files[0])];
+                case 1:
+                    rc = _a.sent();
+                    if (!rc.success) {
+                        common.utils.error('edit.uploadPicture(): Error', { rc: rc });
+                        common.html.showMessage(rc.errorMessage);
+                        return [2 /*return*/];
+                    }
+                    $('#foobar').html(rc.imageTagContent);
+                    common.utils.log('edit.uploadPicture(): END');
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+
+},{"../../Services/BlogController":6,"../common":18}],14:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -853,7 +996,7 @@ function save() {
     });
 }
 
-},{"../../DTOs/Item":3,"../../Services/ItemController":6,"../common":16}],13:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../Services/ItemController":7,"../common":18}],15:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1270,7 +1413,7 @@ var ItemKO = /** @class */ (function (_super) {
     return ItemKO;
 }(dto.ItemKO));
 
-},{"../../DTOs/Item":3,"../../DTOs/Translation":4,"../../Services/ItemController":6,"../../Services/ItemPictureController":7,"../../Services/TranslationController":9,"../common":16}],14:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../DTOs/Translation":4,"../../Services/ItemController":7,"../../Services/ItemPictureController":8,"../../Services/TranslationController":10,"../common":18}],16:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1330,7 +1473,7 @@ var list;
     ;
 })(list = exports.list || (exports.list = {}));
 
-},{"../common":16}],15:[function(require,module,exports){
+},{"../common":18}],17:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1580,7 +1723,7 @@ var ItemKO = /** @class */ (function (_super) {
     return ItemKO;
 }(dto.ItemKO));
 
-},{"../../DTOs/Item":3,"../../Language":5,"../../Services/ItemController":6,"../common":16,"./ItemTTTController":14}],16:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../Language":5,"../../Services/ItemController":7,"../common":18,"./ItemTTTController":16}],18:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -2008,6 +2151,27 @@ var url;
         });
     }
     url_1.postRequestForm = postRequestForm;
+    function postRequestFormData(url, formData) {
+        utils.log('postRequestFormData', { url: url, formData: formData });
+        return new Promise(function (resolve, reject) {
+            $.ajax({ type: "POST",
+                url: url,
+                contentType: false,
+                processData: false,
+                data: formData,
+                dataType: 'json',
+                success: function (data, textStatus, jqXHR) {
+                    utils.log('postRequestFormData', { response: data });
+                    resolve(data);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    utils.error('postRequestFormData rejected', { jqXHR: jqXHR, textStatus: textStatus, errorThrown: errorThrown });
+                    reject(textStatus);
+                },
+            });
+        });
+    }
+    url_1.postRequestFormData = postRequestFormData;
     function postRequestJSON(url, request) {
         utils.log('postRequestJSON', { url: url, request: request });
         var requestStr = JSON.stringify(request);
@@ -2060,6 +2224,6 @@ var url;
 // nb: Exports at the end or the order of execution breaks everything (i.e. strEnum must be defined before) ...
 __export(require("../Language"));
 
-},{"../Language":5,"./common":16}]},{},[1,2])
+},{"../Language":5,"./common":18}]},{},[1,2])
 
 //# sourceMappingURL=site.js.map

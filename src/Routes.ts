@@ -31,5 +31,8 @@ export interface Routes
 							upload	: string,
 						},
 				},
+			blog : {
+					pictureUpload	: string,
+				},
 		},
 }

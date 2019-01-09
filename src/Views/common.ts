@@ -485,6 +485,31 @@ export namespace url
 			} );
 	}
 
+	export function postRequestFormData<T>(url:string, formData:FormData) : Promise<T>
+	{
+		utils.log( 'postRequestFormData', { url, formData } );
+		return new Promise<T>( (resolve,reject)=>
+			{
+				$.ajax( {	type		: "POST",
+							url			: url,
+							contentType	: false,
+							processData	: false,
+							data		: formData,
+							dataType	: 'json',
+							success		: (data:T,textStatus,jqXHR)=>
+											{
+												utils.log( 'postRequestFormData', { response:data } );
+												resolve( data );
+											},
+							error		: (jqXHR,textStatus,errorThrown)=>
+											{
+												utils.error( 'postRequestFormData rejected', { jqXHR, textStatus, errorThrown } );
+												reject( textStatus );
+											},
+						} );
+			} );
+	}
+
 	export function postRequestJSON<T>(url:string, request:{[key:string]:any}) : Promise<T>
 	{
 		utils.log( 'postRequestJSON', { url, request } );
