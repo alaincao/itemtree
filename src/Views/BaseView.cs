@@ -43,5 +43,13 @@ namespace ItemTTT.Views
 			var cultureInfo = System.Globalization.CultureInfo.GetCultureInfo( "fr-BE" );
 			return price.Value.ToString( "C0", cultureInfo );
 		}
+
+		protected string FormatDate(string isoDate)
+		{
+			var dt = isoDate.FromIsoDate();
+			if( dt == null )
+				return "";
+			return dt.Value.ToString( "dd/MM/yyyy" );
+		}
 	}
 }

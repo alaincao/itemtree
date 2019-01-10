@@ -28,6 +28,7 @@ namespace ItemTTT
 		internal const string	ItemDetails			= "/"+Lang+"/car-details/"+ItemCode;
 		internal const string	ItemEdit			= "/car-edit/"+ItemCode;
 		internal const string	ItemAdd				= "/car-add";
+		internal const string	BlogDetails			= "/"+Lang+"/blog/{id}";
 		internal const string	BlogEdit			= "/blog/edit";
 
 		// APIs
@@ -48,6 +49,7 @@ namespace ItemTTT
 		internal const string	ItemPictureSetMain	= "/api/car-details/"+ItemCode+"/pictures/setmain";
 		internal const string	ItemPictureDownload	= "/car-details/"+ItemCode+"/pictures/{number}";
 		internal const string	ItemPictureUpload	= "/car-details/"+ItemCode+"/pictures/upload";
+		internal const string	BlogListApi			= "/api/blog";
 		internal const string	BlogPictureUpload	= "/blog/picture/upload";
 
 		/// <summary>Set PageParameters routes for client-side</summary>
@@ -98,6 +100,7 @@ namespace ItemTTT
 										},
 								},
 							Blog = new {
+									List			= tr( BlogListApi ),
 									PictureUpload	= tr( BlogPictureUpload ),
 								},
 						},

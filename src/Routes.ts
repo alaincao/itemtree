@@ -32,6 +32,7 @@ export interface Routes
 						},
 				},
 			blog : {
+					list			: string,
 					pictureUpload	: string,
 				},
 		},

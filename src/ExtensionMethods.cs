@@ -47,5 +47,23 @@ namespace ItemTTT
 				return null;
 			return rv;
 		}
+
+		internal static string ToIsoDate(this DateTime? dt)
+		{
+			if( dt == null )
+				return null;
+			return ToIsoDate( dt.Value );
+		}
+		internal static string ToIsoDate(this DateTime dt)
+		{
+			return dt.ToString( "yyyy-MM-dd" );
+		}
+
+		internal static DateTime? FromIsoDate(this string isoDate)
+		{
+			if( string.IsNullOrWhiteSpace(isoDate) )
+				return null;
+			return DateTime.Parse( isoDate );  // nb: the .Net framework should able to parse
+		}
 	}
 }

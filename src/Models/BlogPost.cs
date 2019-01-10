@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace ItemTTT.Models
 {
@@ -12,8 +13,8 @@ namespace ItemTTT.Models
 		[Column("BlogPostID")]
 		public int		ID				{ get; set; }
 
-		[Column(TypeName = "date")]
-		public DateTime	PostDate		{ get; set; }
+		[Column("PostDate", TypeName = "date")]
+		public DateTime	Date			{ get; set; }
 
 		[Required]
 		[Column(TypeName = "varchar(max)")]
@@ -44,5 +45,21 @@ namespace ItemTTT.Models
 		public string	TextHtmlNL		{ get; set; }
 
 		public bool		Active			{ get; set; }
+
+		internal static IQueryable<BlogPost> UnselectImage(IQueryable<BlogPost> query)
+		{
+			return query.Select( v=>new BlogPost{
+											ID			= v.ID,
+											Date		= v.Date,
+											ImageHtml	= null,
+											TitleHtmlEN	= v.TitleHtmlEN,
+											TitleHtmlFR	= v.TitleHtmlFR,
+											TitleHtmlNL	= v.TitleHtmlNL,
+											TextHtmlEN	= v.TextHtmlEN,
+											TextHtmlFR	= v.TextHtmlFR,
+											TextHtmlNL	= v.TextHtmlNL,
+											Active		= v.Active,
+										} );
+		}
 	}
 }
