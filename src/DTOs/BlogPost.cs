@@ -20,6 +20,7 @@ namespace ItemTTT.DTOs
 		public string	TextHtmlNL		{ get; set; }
 		public bool		Active			{ get; set; }
 
+		public string	Url				{ get; set; }
 		public string	UrlPrevious		{ get; set; }
 		public string	UrlNext			{ get; set; }
 

@@ -7,6 +7,10 @@ namespace ItemTTT.Views
 {
 	public class BlogController : BaseController
 	{
+		private const string	ListPartial				= Startup.ViewsLocation+"Blog/List_Partial.cshtml";
+		private const int		PostsNumberInitial		= 10;
+		private const int		PostsNumberIncrement	= 5;
+
 		private readonly PageHelper				PageHelper;
 		private readonly Models.ItemTTTContext	DataContext;
 
@@ -22,6 +26,36 @@ namespace ItemTTT.Views
 		{
 			PageHelper = pageHelper;
 			DataContext = dataContext;
+		}
+
+		[HttpGet( Routes.BlogList )]
+		public async Task<IActionResult> List(bool noLayout=false, bool includeImages=false, bool includeInactives=false, int? fromID=null, int? take=null)
+		{
+			if( take == null )
+				take = PostsNumberInitial;
+
+			var logHelper = PageHelper.ScopeLogs;
+			logHelper.AddLogMessage( $"BlogList: START: {nameof(noLayout)}:{noLayout} ; {nameof(includeImages)}:{includeImages} ; {nameof(includeInactives)}:{includeInactives} ; {nameof(fromID)}:{fromID} ; {nameof(take)}:{take}" );
+
+			var rv = await (new Services.BlogController( DataContext, PageHelper )).List( includeImages:includeImages, includeInactives:includeInactives, fromID:fromID, take:take );
+
+			var model = new ListModel{	BlogPosts				= rv.Result ?? (new DTOs.BlogPost[]{}),
+										PartialView				= ListPartial,
+										PostsNumberIncrement	= PostsNumberIncrement };
+
+			ViewResult result;
+			if( noLayout )
+				result = View( ListPartial, model );
+			else
+				result = View( model );
+			logHelper.AddLogMessage( $"BlogList: END" );
+			return result;
+		}
+		public struct ListModel
+		{
+			public DTOs.BlogPost[]	BlogPosts;
+			public string			PartialView;
+			public int				PostsNumberIncrement;
 		}
 
 		[HttpGet( Routes.BlogDetails )]

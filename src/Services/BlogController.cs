@@ -82,6 +82,7 @@ namespace ItemTTT.Services
 						var url = Views.BlogController.CreateUrlDetails( PageHelper.CurrentLanguage, allIds[idx] );
 						return PageHelper.ResolveRoute( url );
 					};
+				var imgNotFound = $"<img src=\"{PageHelper.ResolveRoute(wwwroot.ImgNotFound)}\"/>";
 				var dtos = models.Select( model=>
 									{
 										var idx = Array.IndexOf( allIds, model.ID );
@@ -89,9 +90,12 @@ namespace ItemTTT.Services
 										var idxNext = idx - 1;
 										var dto = new DTOs.BlogPost( model )
 											{
+												Url			= mkUrl( idx ),
 												UrlPrevious	= mkUrl( idxPrevious ),
 												UrlNext		= mkUrl( idxNext ),
 											};
+										if( dto.ImageHtml == null )
+											dto.ImageHtml = imgNotFound;
 										return dto;
 									} )
 								.ToArray();

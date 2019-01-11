@@ -1,0 +1,25 @@
+@inherits ItemTTT.Views.BaseView
+@{
+	Init( PageHelper );
+
+	var parameters = PageHelper.Parameters;
+	var model = (ItemTTT.Views.BlogController.ListModel)Model;
+	var view = model.PartialView;
+}
+@section Scripts
+{
+<script type="text/javascript">
+	ttt.blog.list.init( {	$postsContainer	: $('#a7e30919'),
+							$endPostElement	: $('f5ebd741'),
+							$spinner		: $('b52f763c'),
+						} );
+</script>
+}
+
+<ul id="a7e30919">
+	<partial name="@view" />
+
+	<li id="f5ebd741"></li>
+</ul>
+
+<i id="b52f763c" class="fa fa-spinner fa-spin"></i>

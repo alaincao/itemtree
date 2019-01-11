@@ -4,6 +4,7 @@ import * as adminhome	from "./src/Views/Admin/Home";
 import * as itemlist	from "./src/Views/ItemTTT/List";
 import * as itemadd		from "./src/Views/ItemTTT/Add";
 import * as itemedit	from "./src/Views/ItemTTT/Edit";
+import * as bloglist	from "./src/Views/Blog/List";
 import * as blogedit	from "./src/Views/Blog/Edit";
 
 ///////
@@ -21,6 +22,7 @@ var ttt =
 		edit	: itemedit,
 	},
 	blog: {
+		list	: bloglist,
 		edit	: blogedit,
 	},
 }
