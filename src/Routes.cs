@@ -77,6 +77,9 @@ namespace ItemTTT
 							List	= tr( ItemsList ),
 							Edit	= tr( ItemEdit ),
 						},
+					Blog = new {
+							List	= tr( BlogList ),
+						},
 					API = new {
 							GetUrlCode			= tr( GetUrlCode ),
 							Login				= tr( LoginAPI ),

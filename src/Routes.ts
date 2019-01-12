@@ -8,6 +8,9 @@ export interface Routes
 			list	: string,
 			edit	: string,
 		},
+	blog : {
+			list	: string,
+		},
 	api	: {
 			getUrlCode		: string,
 			login			: string,

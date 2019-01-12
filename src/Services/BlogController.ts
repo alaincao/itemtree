@@ -15,7 +15,7 @@ export interface ListRequest
 	includeImages?		: boolean;
 	includeInactives?	: boolean;
 	id?					: number;
-	fromID?				: number;
+	skipToID?			: number;
 	skip?				: number;
 	take?				: number;
 }

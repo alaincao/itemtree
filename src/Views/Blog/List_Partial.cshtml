@@ -1,9 +1,10 @@
 @inherits ItemTTT.Views.BaseView
 @{
 	Init( PageHelper );
+	Layout = null;
 
 	var parameters = PageHelper.Parameters;
-	var model = (ItemTTT.Views.BlogController.ListModel)Model;
+	var model = (ItemTTT.Views.Blog.BlogController.ListModel)Model;
 	var posts = model.BlogPosts;
 }
 @foreach( var post in posts )

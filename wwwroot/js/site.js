@@ -28,7 +28,7 @@ var ttt = {
 };
 window.ttt = ttt;
 
-},{"./src/Views/Admin/Home":12,"./src/Views/Blog/Edit":13,"./src/Views/Blog/List":14,"./src/Views/ItemTTT/Add":15,"./src/Views/ItemTTT/Edit":16,"./src/Views/ItemTTT/List":18,"./src/Views/common":19}],3:[function(require,module,exports){
+},{"./src/Views/Admin/Home":12,"./src/Views/Blog/Edit":14,"./src/Views/Blog/List":15,"./src/Views/ItemTTT/Add":16,"./src/Views/ItemTTT/Edit":17,"./src/Views/ItemTTT/List":19,"./src/Views/common":20}],3:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -65,7 +65,7 @@ var ItemKO = /** @class */ (function (_super) {
 }(BaseAutoItem_1.BaseAutoItem));
 exports.ItemKO = ItemKO;
 
-},{"../Utils/BaseAutoItem":11,"../Views/common":19}],4:[function(require,module,exports){
+},{"../Utils/BaseAutoItem":11,"../Views/common":20}],4:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -140,13 +140,13 @@ var TranslationItemKO = /** @class */ (function (_super) {
 }(TranslationKO));
 exports.TranslationItemKO = TranslationItemKO;
 
-},{"../Views/common":19}],5:[function(require,module,exports){
+},{"../Views/common":20}],5:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var _a;
 var common = require("./Views/common");
 exports.Languages = (_a = common.utils.strEnum(['en', 'fr', 'nl']), _a.e), exports.allLanguages = _a.a;
 
-},{"./Views/common":19}],6:[function(require,module,exports){
+},{"./Views/common":20}],6:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -221,7 +221,7 @@ function uploadPicture(file) {
 }
 exports.uploadPicture = uploadPicture;
 
-},{"../Views/common":19}],7:[function(require,module,exports){
+},{"../Views/common":20}],7:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -324,7 +324,7 @@ function delete_(code) {
 }
 exports.delete_ = delete_;
 
-},{"../Views/common":19}],8:[function(require,module,exports){
+},{"../Views/common":20}],8:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -431,7 +431,7 @@ function setMain(p) {
 }
 exports.setMain = setMain;
 
-},{"../Views/common":19}],9:[function(require,module,exports){
+},{"../Views/common":20}],9:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -486,7 +486,7 @@ function changePassword(p) {
 }
 exports.changePassword = changePassword;
 
-},{"../Views/common":19}],10:[function(require,module,exports){
+},{"../Views/common":20}],10:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -572,7 +572,7 @@ function autoCompleteResolve(p) {
 }
 exports.autoCompleteResolve = autoCompleteResolve;
 
-},{"../Views/common":19}],11:[function(require,module,exports){
+},{"../Views/common":20}],11:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var fieldTagAttribute = 'ttt-name';
 var BaseAutoItem = /** @class */ (function () {
@@ -843,7 +843,63 @@ var Features = /** @class */ (function (_super) {
     return Features;
 }(TranslationsBase));
 
-},{"../../DTOs/Translation":4,"../../Services/LoginController":9,"../../Services/TranslationController":10,"../common":19}],13:[function(require,module,exports){
+},{"../../DTOs/Translation":4,"../../Services/LoginController":9,"../../Services/TranslationController":10,"../common":20}],13:[function(require,module,exports){
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var common = require("../common");
+var list;
+(function (list_1) {
+    function list(p) {
+        return __awaiter(this, void 0, void 0, function () {
+            var url;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        url = common.routes.blog.list.replace(common.routes.languageParameter, common.pageParameters.currentLanguage);
+                        return [4 /*yield*/, common.url.getRequest(url, p)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    }
+    list_1.list = list;
+})(list = exports.list || (exports.list = {}));
+
+},{"../common":20}],14:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -926,7 +982,7 @@ function uploadPicture(files) {
     });
 }
 
-},{"../../Services/BlogController":6,"../common":19}],14:[function(require,module,exports){
+},{"../../Services/BlogController":6,"../common":20}],15:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -964,17 +1020,26 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("../common");
-var ctrl = require("../../Services/BlogController");
+var apiCtrl = require("../../Services/BlogController");
+var htmlCtrl = require("./BlogController");
 var blogIdAttribute = 'ttt-blog-id';
 function init(p) {
     return __awaiter(this, void 0, void 0, function () {
+        var lastPost;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     common.utils.log('list.init() START', { p: p });
                     return [4 /*yield*/, loadImages()];
                 case 1:
+                    lastPost = _a.sent();
+                    common.utils.log('list.init(): Wait for document.load');
+                    return [4 /*yield*/, new Promise(function (resolve) { return $(window).on('load', function () { return resolve(); }); })];
+                case 2:
                     _a.sent();
+                    common.utils.log('list.init(): Loaded!');
+                    // Start "scroll-triggered" retreives loop
+                    /*await*/ loopLoadNextPosts({ $endPostElement: p.$endPostElement, $spinner: p.$spinner, lastPost: lastPost, postsIncrement: p.postsIncrement });
                     common.utils.log('list.init() END');
                     return [2 /*return*/];
             }
@@ -982,55 +1047,86 @@ function init(p) {
     });
 }
 exports.init = init;
-function loadImages() {
+function loopLoadNextPosts(p) {
     return __awaiter(this, void 0, void 0, function () {
-        var posts, tasks;
-        var _this = this;
+        var lastPost, html;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    common.utils.log('loadImages(): START');
-                    posts = [];
-                    $("[" + blogIdAttribute + "]").each(function (i, e) {
-                        var $container = $(e);
-                        var id = parseInt($container.attr(blogIdAttribute));
-                        $container.removeAttr(blogIdAttribute); // Remove the "tag attribute" from the DOM so that next call to this method does not re-find this item
-                        posts.push({ id: id, $container: $container, model: null });
-                    });
-                    common.utils.log('loadImages()', { posts: posts });
-                    tasks = posts.map(function (item) { return __awaiter(_this, void 0, void 0, function () {
-                        var rc;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    common.html.block(item.$container);
-                                    return [4 /*yield*/, ctrl.list({ id: item.id })];
-                                case 1:
-                                    rc = _a.sent();
-                                    common.html.unblock(item.$container);
-                                    if (!rc.success) {
-                                        common.utils.error('retreive post error', { rc: rc });
-                                        common.html.showMessage(rc.errorMessage);
-                                        return [2 /*return*/];
-                                    }
-                                    item.model = rc.posts[0];
-                                    ko.applyBindings(item.model, item.$container[0]);
-                                    return [2 /*return*/];
-                            }
-                        });
-                    }); });
-                    common.utils.log('loadImages(): Wait for all tasks to terminate');
-                    return [4 /*yield*/, Promise.all(tasks)];
+                    common.utils.log('loopLoadNextPosts(): START', { p: p });
+                    lastPost = p.lastPost;
+                    _a.label = 1;
                 case 1:
+                    if (!(lastPost != null)) return [3 /*break*/, 5];
+                    common.utils.log('loopLoadNextPosts(): Wait for $endPostElement to be visible');
+                    return [4 /*yield*/, common.html.waitForScrolledVisible(p.$endPostElement)];
+                case 2:
                     _a.sent();
-                    common.utils.log('loadImages(): END');
+                    common.utils.log("loopLoadNextPosts(): Request next '" + p.postsIncrement + "' posts");
+                    p.$spinner.show();
+                    return [4 /*yield*/, htmlCtrl.list.list({ noLayout: true, includeImages: false, skipToID: lastPost.id, take: p.postsIncrement })];
+                case 3:
+                    html = _a.sent();
+                    p.$spinner.hide();
+                    common.utils.log('loopLoadNextPosts(): Append received posts');
+                    p.$endPostElement.before(html);
+                    common.utils.log("loopLoadNextPosts(): Launch 'loadImages()'", { lastPost: lastPost });
+                    return [4 /*yield*/, loadImages()];
+                case 4:
+                    lastPost = _a.sent();
+                    common.utils.log('loopLoadNextPosts()', { lastPost: lastPost });
+                    return [3 /*break*/, 1];
+                case 5:
+                    common.utils.log('loopLoadNextPosts(): END');
                     return [2 /*return*/];
             }
         });
     });
 }
+function loadImages() {
+    return __awaiter(this, void 0, void 0, function () {
+        var posts, lastPostItem;
+        var _this = this;
+        return __generator(this, function (_a) {
+            common.utils.log('loadImages(): START');
+            posts = [];
+            $("[" + blogIdAttribute + "]").each(function (i, e) {
+                var $container = $(e);
+                var id = parseInt($container.attr(blogIdAttribute));
+                $container.removeAttr(blogIdAttribute); // Remove the "tag attribute" from the DOM so that next call to this method does not re-find this item
+                posts.push({ id: id, $container: $container, model: null });
+            });
+            common.utils.log('loadImages(): Asynchroneously retreive posts (full) DTOs', { posts: posts });
+            posts.forEach(function (item) { return __awaiter(_this, void 0, void 0, function () {
+                var rc;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            common.html.block(item.$container);
+                            return [4 /*yield*/, apiCtrl.list({ id: item.id })];
+                        case 1:
+                            rc = _a.sent();
+                            common.html.unblock(item.$container);
+                            if (!rc.success) {
+                                common.utils.error('retreive post error', { rc: rc });
+                                // common.html.showMessage( rc.errorMessage ); <== publicly-accessible page => Don't show internal errors ...
+                                return [2 /*return*/];
+                            }
+                            item.model = rc.posts[0];
+                            common.utils.log('loadImages(): Bind model', { /*model:item.model,*/ $element: item.$container, id: item.id });
+                            ko.applyBindings(item.model, item.$container[0]);
+                            return [2 /*return*/];
+                    }
+                });
+            }); });
+            lastPostItem = (posts.length > 0) ? posts[posts.length - 1] : null;
+            common.utils.log('loadImages(): END', { lastPostItem: lastPostItem });
+            return [2 /*return*/, lastPostItem];
+        });
+    });
+}
 
-},{"../../Services/BlogController":6,"../common":19}],15:[function(require,module,exports){
+},{"../../Services/BlogController":6,"../common":20,"./BlogController":13}],16:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1118,7 +1214,7 @@ function save() {
     });
 }
 
-},{"../../DTOs/Item":3,"../../Services/ItemController":7,"../common":19}],16:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../Services/ItemController":7,"../common":20}],17:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1535,7 +1631,7 @@ var ItemKO = /** @class */ (function (_super) {
     return ItemKO;
 }(dto.ItemKO));
 
-},{"../../DTOs/Item":3,"../../DTOs/Translation":4,"../../Services/ItemController":7,"../../Services/ItemPictureController":8,"../../Services/TranslationController":10,"../common":19}],17:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../DTOs/Translation":4,"../../Services/ItemController":7,"../../Services/ItemPictureController":8,"../../Services/TranslationController":10,"../common":20}],18:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1595,7 +1691,7 @@ var list;
     ;
 })(list = exports.list || (exports.list = {}));
 
-},{"../common":19}],18:[function(require,module,exports){
+},{"../common":20}],19:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1845,7 +1941,7 @@ var ItemKO = /** @class */ (function (_super) {
     return ItemKO;
 }(dto.ItemKO));
 
-},{"../../DTOs/Item":3,"../../Language":5,"../../Services/ItemController":7,"../common":19,"./ItemTTTController":17}],19:[function(require,module,exports){
+},{"../../DTOs/Item":3,"../../Language":5,"../../Services/ItemController":7,"../common":20,"./ItemTTTController":18}],20:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -2174,6 +2270,32 @@ var html;
         $e.effect("highlight", {}, 2000); // cf.: https://stackoverflow.com/questions/5205445/jquery-blinking-highlight-effect-on-div?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     }
     html_1.ensureVisible = ensureVisible;
+    function waitForScrolledVisible($elem) {
+        var $window = $(window);
+        function isScrolledVisible() {
+            var docViewTop = $window.scrollTop();
+            var docViewBottom = docViewTop + $window.height();
+            var elemTop = $elem.offset().top;
+            var elemBottom = elemTop + $elem.height();
+            return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+        }
+        return new Promise(function (resolve) {
+            var scrollHandler;
+            scrollHandler = function () {
+                if (!isScrolledVisible())
+                    return;
+                // This is a one-shot only => unbind myself
+                $window.unbind('scroll', scrollHandler);
+                resolve();
+            };
+            if (isScrolledVisible())
+                // Element is visible right now => no need to bind to scroll event
+                resolve();
+            else // Bind to scroll event & wait for $elem to be visible
+                $window.bind('scroll', scrollHandler);
+        });
+    }
+    html_1.waitForScrolledVisible = waitForScrolledVisible;
 })(html = exports.html || (exports.html = {})); // namespace html
 var url;
 (function (url_1) {
@@ -2346,6 +2468,6 @@ var url;
 // nb: Exports at the end or the order of execution breaks everything (i.e. strEnum must be defined before) ...
 __export(require("../Language"));
 
-},{"../Language":5,"./common":19}]},{},[1,2])
+},{"../Language":5,"./common":20}]},{},[1,2])
 
 //# sourceMappingURL=site.js.map

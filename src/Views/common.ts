@@ -360,6 +360,42 @@ export namespace html
 		// Blink
 		$e.effect( "highlight", {}, 2000 );  // cf.: https://stackoverflow.com/questions/5205445/jquery-blinking-highlight-effect-on-div?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 	}
+
+	export function waitForScrolledVisible($elem:JQuery) : Promise<void>
+	{
+		const $window = $(window);
+
+		function isScrolledVisible()
+		{
+			const docViewTop = $window.scrollTop();
+			const docViewBottom = docViewTop + $window.height();
+
+			const elemTop = $elem.offset().top;
+			const elemBottom = elemTop + $elem.height();
+			return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+		}
+
+		return new Promise( (resolve)=>
+			{
+				let scrollHandler : ()=>void;
+				scrollHandler = function()
+				{
+					if(! isScrolledVisible() )
+						return;
+
+					// This is a one-shot only => unbind myself
+					$window.unbind( 'scroll', scrollHandler );
+
+					resolve();
+				}
+
+				if( isScrolledVisible() )
+					// Element is visible right now => no need to bind to scroll event
+					resolve();
+				else  // Bind to scroll event & wait for $elem to be visible
+					$window.bind( 'scroll', scrollHandler );
+			} );
+	}
 } // namespace html
 
 export namespace url

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace ItemTTT.Views
+namespace ItemTTT.Views.Blog
 {
 	public class BlogController : BaseController
 	{
@@ -29,18 +29,18 @@ namespace ItemTTT.Views
 		}
 
 		[HttpGet( Routes.BlogList )]
-		public async Task<IActionResult> List(bool noLayout=false, bool includeImages=false, bool includeInactives=false, int? fromID=null, int? take=null)
+		public async Task<IActionResult> List(bool noLayout=false, bool includeImages=false, bool includeInactives=false, int? skipToID=null, int? take=null)
 		{
 			if( take == null )
 				take = PostsNumberInitial;
 
 			var logHelper = PageHelper.ScopeLogs;
-			logHelper.AddLogMessage( $"BlogList: START: {nameof(noLayout)}:{noLayout} ; {nameof(includeImages)}:{includeImages} ; {nameof(includeInactives)}:{includeInactives} ; {nameof(fromID)}:{fromID} ; {nameof(take)}:{take}" );
+			logHelper.AddLogMessage( $"BlogList: START: {nameof(noLayout)}:{noLayout} ; {nameof(includeImages)}:{includeImages} ; {nameof(includeInactives)}:{includeInactives} ; {nameof(skipToID)}:{skipToID} ; {nameof(take)}:{take}" );
 
-			var rv = await (new Services.BlogController( DataContext, PageHelper )).List( includeImages:includeImages, includeInactives:includeInactives, fromID:fromID, take:take );
+			var rv = await (new Services.BlogController( DataContext, PageHelper )).List( includeImages:includeImages, includeInactives:includeInactives, skipToID:skipToID, take:take );
 
-			var model = new ListModel{	BlogPosts				= rv.Result ?? (new DTOs.BlogPost[]{}),
-										PartialView				= ListPartial,
+			var model = new ListModel{	PartialView				= ListPartial,
+										BlogPosts				= rv.Result ?? (new DTOs.BlogPost[]{}),
 										PostsNumberIncrement	= PostsNumberIncrement };
 
 			ViewResult result;
@@ -53,8 +53,8 @@ namespace ItemTTT.Views
 		}
 		public struct ListModel
 		{
-			public DTOs.BlogPost[]	BlogPosts;
 			public string			PartialView;
+			public DTOs.BlogPost[]	BlogPosts;
 			public int				PostsNumberIncrement;
 		}
 

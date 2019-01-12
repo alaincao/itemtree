@@ -27,12 +27,12 @@ namespace ItemTTT.Services
 
 		[HttpGet( Routes.BlogListApi )]
 		[HttpPost( Routes.BlogListApi )]
-		public async Task<Utils.TTTServiceResult<DTOs.BlogPost[]>> List(bool includeImages=true, bool includeInactives=false, int? id=null, int? fromID=null, int? skip=null, int? take=null)
+		public async Task<Utils.TTTServiceResult<DTOs.BlogPost[]>> List(bool includeImages=true, bool includeInactives=false, int? id=null, int? skipToID=null, int? skip=null, int? take=null)
 		{
 			try
 			{
 				var logHelper = PageHelper.ScopeLogs;
-				logHelper.AddLogMessage( $"BlogList: START: {nameof(includeImages)}:{includeImages} ; {nameof(id)}:'{id}' ; {nameof(skip)}:'{skip}' ; {nameof(take)}:'{take}'" );
+				logHelper.AddLogMessage( $"BlogList: START: {nameof(includeImages)}:{includeImages} ; {nameof(includeInactives)}:{includeInactives} ; {nameof(id)}:'{id}' ; {nameof(skip)}:'{skip}' ; {nameof(take)}:'{take}'" );
 				var dc = DataContext;
 
 				var queryAllOrdered = dc.BlogPosts.AsQueryable();
@@ -57,12 +57,12 @@ namespace ItemTTT.Services
 					var rowsQuery = queryAllOrdered;
 					if( id != null )
 						rowsQuery = rowsQuery.Where( v=>v.ID == id.Value );
-					if( fromID != null )
+					if( skipToID != null )
 					{
-						var idx = Array.IndexOf( allIds, fromID.Value );
+						var idx = Array.IndexOf( allIds, skipToID.Value );
 						if( idx < 0 )
-							throw new Utils.TTTException( $"Invalid value '{fromID}' for parameter {nameof(fromID)}" );
-						rowsQuery = rowsQuery.Skip( idx );
+							throw new Utils.TTTException( $"Invalid value '{skipToID}' for parameter {nameof(skipToID)}" );
+						rowsQuery = rowsQuery.Skip( idx + 1 );
 					}
 					if( skip != null )
 						rowsQuery = rowsQuery.Skip( skip.Value );
@@ -79,7 +79,7 @@ namespace ItemTTT.Services
 							return null;
 						if( idx >= allIds.Length )
 							return null;
-						var url = Views.BlogController.CreateUrlDetails( PageHelper.CurrentLanguage, allIds[idx] );
+						var url = Views.Blog.BlogController.CreateUrlDetails( PageHelper.CurrentLanguage, allIds[idx] );
 						return PageHelper.ResolveRoute( url );
 					};
 				var imgNotFound = $"<img src=\"{PageHelper.ResolveRoute(wwwroot.ImgNotFound)}\"/>";
