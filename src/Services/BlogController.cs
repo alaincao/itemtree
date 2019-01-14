@@ -82,6 +82,11 @@ namespace ItemTTT.Services
 						var url = Views.Blog.BlogController.CreateUrlDetails( PageHelper.CurrentLanguage, allIds[idx] );
 						return PageHelper.ResolveRoute( url );
 					};
+				Func<int,string> mkEditUrl = (idx)=>
+					{
+						var url = Views.Blog.BlogController.CreateUrlEdit( allIds[idx] );
+						return PageHelper.ResolveRoute( url );
+					};
 				var imgNotFound = $"<img src=\"{PageHelper.ResolveRoute(wwwroot.ImgNotFound)}\"/>";
 				var dtos = models.Select( model=>
 									{
@@ -91,6 +96,7 @@ namespace ItemTTT.Services
 										var dto = new DTOs.BlogPost( model )
 											{
 												Url			= mkUrl( idx ),
+												UrlEdit		= mkEditUrl( idx ),
 												UrlPrevious	= mkUrl( idxPrevious ),
 												UrlNext		= mkUrl( idxNext ),
 											};
@@ -106,6 +112,81 @@ namespace ItemTTT.Services
 			catch( System.Exception ex )
 			{
 				return Utils.TTTServiceResult<DTOs.BlogPost[]>.LogAndNew( PageHelper, ex );
+			}
+		}
+
+		[HttpPost( Routes.BlogSaveApi )]
+		/// <return>The id of the saved blog post</return>
+		public async Task<Utils.TTTServiceResult<int>> Save([FromBody]DTOs.BlogPost post)
+		{
+			try
+			{
+				if(! PageHelper.IsAuthenticated )
+					throw new Utils.TTTException( "Not logged-in" );
+				if( post == null )
+					throw new ArgumentException( $"Missing parameter '{nameof(post)}" );
+
+				var logHelper = PageHelper.ScopeLogs;
+				logHelper.AddLogMessage( $"BlogSave: START: {nameof(post.ID)}:'{post.ID}'" );
+
+				var dc = DataContext;
+				var isAdding = (post.ID == null);
+
+				Models.BlogPost model;
+				if( isAdding )
+				{
+					logHelper.AddLogMessage( $"BlogSave: Adding a new one" );
+					model = new Models.BlogPost();
+					dc.BlogPosts.Add( model );
+				}
+				else
+				{
+					logHelper.AddLogMessage( $"BlogSave: Retreive post from database" );
+					model = await dc.BlogPosts.Where( v=>v.ID == post.ID.Value ).SingleAsync();
+				}
+				logHelper.AddLogMessage( $"BlogSave: Copy fields" );
+				post.ToModel( model );
+
+				logHelper.AddLogMessage( $"BlogSave: Save changes to database" );
+				await dc.SaveChangesAsync();
+
+				logHelper.AddLogMessage( $"BlogSave: END: {nameof(model.ID)}:'{model.ID}'" );
+				return new Utils.TTTServiceResult<int>( PageHelper ){ Result=model.ID };
+			}
+			catch( System.Exception ex )
+			{
+				return Utils.TTTServiceResult<int>.LogAndNew( PageHelper, ex );
+			}
+		}
+
+		[HttpPost( Routes.BlogDeleteApi )]
+		public async Task<Utils.TTTServiceResult> Delete(int id)
+		{
+			try
+			{
+				if(! PageHelper.IsAuthenticated )
+					throw new Utils.TTTException( "Not logged-in" );
+
+				var logHelper = PageHelper.ScopeLogs;
+				logHelper.AddLogMessage( $"BlogDelete: START: {nameof(id)}:'{id}'" );
+
+				if( id <= 0 )
+					throw new ArgumentException( $"Missing parameter '{nameof(id)}'" );
+
+				var post = new Models.BlogPost{ ID=id };
+				var dc = DataContext;
+				dc.BlogPosts.Attach( post );
+				dc.BlogPosts.Remove( post );
+
+				logHelper.AddLogMessage( $"BlogDelete: Save to database" );
+				await dc.SaveChangesAsync();
+
+				logHelper.AddLogMessage( $"BlogDelete: END" );
+				return new Utils.TTTServiceResult( PageHelper );
+			}
+			catch( System.Exception ex )
+			{
+				return Utils.TTTServiceResult.LogAndNew( PageHelper, ex );
 			}
 		}
 

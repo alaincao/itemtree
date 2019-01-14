@@ -28,7 +28,57 @@ var ttt = {
 };
 window.ttt = ttt;
 
-},{"./src/Views/Admin/Home":12,"./src/Views/Blog/Edit":14,"./src/Views/Blog/List":15,"./src/Views/ItemTTT/Add":16,"./src/Views/ItemTTT/Edit":17,"./src/Views/ItemTTT/List":19,"./src/Views/common":20}],3:[function(require,module,exports){
+},{"./src/Views/Admin/Home":13,"./src/Views/Blog/Edit":15,"./src/Views/Blog/List":16,"./src/Views/ItemTTT/Add":17,"./src/Views/ItemTTT/Edit":18,"./src/Views/ItemTTT/List":20,"./src/Views/common":21}],3:[function(require,module,exports){
+Object.defineProperty(exports, "__esModule", { value: true });
+var BlogPostKO = /** @class */ (function () {
+    function BlogPostKO(src) {
+        var self = this;
+        this.id = ko.observable(null);
+        this.date = ko.observable('');
+        this.imageHtml = ko.observable('');
+        this.titleHtmlEN = ko.observable('');
+        this.titleHtmlFR = ko.observable('');
+        this.titleHtmlNL = ko.observable('');
+        this.textHtmlEN = ko.observable('');
+        this.textHtmlFR = ko.observable('');
+        this.textHtmlNL = ko.observable('');
+        this.active = ko.observable(false);
+        if (src != null)
+            self.fromDTO(src);
+    }
+    BlogPostKO.prototype.fromDTO = function (src) {
+        var self = this;
+        self.id(src.id);
+        self.date(src.date);
+        self.imageHtml(src.imageHtml);
+        self.titleHtmlEN(src.titleHtmlEN);
+        self.titleHtmlFR(src.titleHtmlFR);
+        self.titleHtmlNL(src.titleHtmlNL);
+        self.textHtmlEN(src.textHtmlEN);
+        self.textHtmlFR(src.textHtmlFR);
+        self.textHtmlNL(src.textHtmlNL);
+        self.active(src.active);
+    };
+    BlogPostKO.prototype.toDTO = function () {
+        var self = this;
+        var dst = {};
+        dst.id = self.id();
+        dst.date = self.date();
+        dst.imageHtml = self.imageHtml();
+        dst.titleHtmlEN = self.titleHtmlEN();
+        dst.titleHtmlFR = self.titleHtmlFR();
+        dst.titleHtmlNL = self.titleHtmlNL();
+        dst.textHtmlEN = self.textHtmlEN();
+        dst.textHtmlFR = self.textHtmlFR();
+        dst.textHtmlNL = self.textHtmlNL();
+        dst.active = self.active();
+        return dst;
+    };
+    return BlogPostKO;
+}());
+exports.BlogPostKO = BlogPostKO;
+
+},{}],4:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -65,7 +115,7 @@ var ItemKO = /** @class */ (function (_super) {
 }(BaseAutoItem_1.BaseAutoItem));
 exports.ItemKO = ItemKO;
 
-},{"../Utils/BaseAutoItem":11,"../Views/common":20}],4:[function(require,module,exports){
+},{"../Utils/BaseAutoItem":12,"../Views/common":21}],5:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -140,13 +190,13 @@ var TranslationItemKO = /** @class */ (function (_super) {
 }(TranslationKO));
 exports.TranslationItemKO = TranslationItemKO;
 
-},{"../Views/common":20}],5:[function(require,module,exports){
+},{"../Views/common":21}],6:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var _a;
 var common = require("./Views/common");
 exports.Languages = (_a = common.utils.strEnum(['en', 'fr', 'nl']), _a.e), exports.allLanguages = _a.a;
 
-},{"./Views/common":20}],6:[function(require,module,exports){
+},{"./Views/common":21}],7:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -220,8 +270,38 @@ function uploadPicture(file) {
     });
 }
 exports.uploadPicture = uploadPicture;
+function save(post) {
+    return __awaiter(this, void 0, void 0, function () {
+        var rc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, common.url.postRequestJSON(common.routes.api.blog.save, post)];
+                case 1:
+                    rc = _a.sent();
+                    rc.id = rc.result;
+                    delete rc.result;
+                    return [2 /*return*/, rc];
+            }
+        });
+    });
+}
+exports.save = save;
+function delete_(id) {
+    return __awaiter(this, void 0, void 0, function () {
+        var rc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, common.url.postRequestForm(common.routes.api.blog.delete, { id: id })];
+                case 1:
+                    rc = _a.sent();
+                    return [2 /*return*/, rc];
+            }
+        });
+    });
+}
+exports.delete_ = delete_;
 
-},{"../Views/common":20}],7:[function(require,module,exports){
+},{"../Views/common":21}],8:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -324,7 +404,7 @@ function delete_(code) {
 }
 exports.delete_ = delete_;
 
-},{"../Views/common":20}],8:[function(require,module,exports){
+},{"../Views/common":21}],9:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -431,7 +511,7 @@ function setMain(p) {
 }
 exports.setMain = setMain;
 
-},{"../Views/common":20}],9:[function(require,module,exports){
+},{"../Views/common":21}],10:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -486,7 +566,7 @@ function changePassword(p) {
 }
 exports.changePassword = changePassword;
 
-},{"../Views/common":20}],10:[function(require,module,exports){
+},{"../Views/common":21}],11:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -572,7 +652,7 @@ function autoCompleteResolve(p) {
 }
 exports.autoCompleteResolve = autoCompleteResolve;
 
-},{"../Views/common":20}],11:[function(require,module,exports){
+},{"../Views/common":21}],12:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var fieldTagAttribute = 'ttt-name';
 var BaseAutoItem = /** @class */ (function () {
@@ -624,7 +704,7 @@ var BaseAutoItem = /** @class */ (function () {
 }());
 exports.BaseAutoItem = BaseAutoItem;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -843,7 +923,7 @@ var Features = /** @class */ (function (_super) {
     return Features;
 }(TranslationsBase));
 
-},{"../../DTOs/Translation":4,"../../Services/LoginController":9,"../../Services/TranslationController":10,"../common":20}],13:[function(require,module,exports){
+},{"../../DTOs/Translation":5,"../../Services/LoginController":10,"../../Services/TranslationController":11,"../common":21}],14:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -899,7 +979,7 @@ var list;
     list_1.list = list;
 })(list = exports.list || (exports.list = {}));
 
-},{"../common":20}],14:[function(require,module,exports){
+},{"../common":21}],15:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -937,16 +1017,26 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("../common");
+var dtos = require("../../DTOs/BlogPost");
 var ctrl = require("../../Services/BlogController");
+var message_confirmRefresh = 'Are your sure you want to reset the current form ?';
+var message_confirmDelete = 'Are your sure you want to delete the current post ?';
+var isAdding;
+var $blockingDiv;
 function init(p) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             common.utils.log('edit.init() START', { p: p });
+            isAdding = p.isAdding;
+            $blockingDiv = p.$blockingDiv;
+            exports.post = new dtos.BlogPostKO(p.post);
             common.utils.log('edit.init(): Init picture upload');
             p.$picUploadControl.on('change', function () {
                 var files = p.$picUploadControl[0].files;
                 uploadPicture(files);
             });
+            common.utils.log('edit.init(): Init date picker');
+            p.$txtDate.datepicker({ dateFormat: 'yy-mm-dd' });
             common.utils.log('edit.init() END');
             return [2 /*return*/];
         });
@@ -974,15 +1064,118 @@ function uploadPicture(files) {
                         common.html.showMessage(rc.errorMessage);
                         return [2 /*return*/];
                     }
-                    $('#foobar').html(rc.imageTagContent);
+                    exports.post.imageHtml(rc.imageTagContent);
                     common.utils.log('edit.uploadPicture(): END');
                     return [2 /*return*/];
             }
         });
     });
 }
+function refresh() {
+    return __awaiter(this, void 0, void 0, function () {
+        var confirmed, rc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    common.utils.log('edit.refresh(): START');
+                    common.utils.log('edit.refresh(): Wait for user confirmation');
+                    return [4 /*yield*/, common.html.confirm(message_confirmRefresh)];
+                case 1:
+                    confirmed = _a.sent();
+                    if (!confirmed) {
+                        common.utils.log('edit.refresh(): NOT confirmed ; END');
+                        return [2 /*return*/];
+                    }
+                    common.utils.log('edit.refresh(): Retreive item');
+                    common.html.block($blockingDiv);
+                    return [4 /*yield*/, ctrl.list({ id: exports.post.id(), includeImages: true, includeInactives: true })];
+                case 2:
+                    rc = _a.sent();
+                    common.html.unblock($blockingDiv);
+                    if (!rc.success) {
+                        common.utils.error('retreive post error', { rc: rc });
+                        common.html.showMessage(rc.errorMessage);
+                        return [2 /*return*/];
+                    }
+                    common.utils.log('edit.refresh(): Update blog post');
+                    exports.post.fromDTO(rc.posts[0]);
+                    common.utils.log('edit.refresh(): END');
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.refresh = refresh;
+function save() {
+    return __awaiter(this, void 0, void 0, function () {
+        var dto, rc, url;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    common.utils.log('edit.save(): START');
+                    common.utils.log('edit.save(): Create DTO');
+                    dto = exports.post.toDTO();
+                    common.utils.log('edit.save(): Send the save request');
+                    common.html.block($blockingDiv);
+                    return [4 /*yield*/, ctrl.save(dto)];
+                case 1:
+                    rc = _a.sent();
+                    common.html.unblock($blockingDiv);
+                    if (!rc.success) {
+                        common.utils.error('edit.save(): Error', { rc: rc });
+                        common.html.showMessage(rc.errorMessage);
+                        return [2 /*return*/];
+                    }
+                    if (isAdding) {
+                        common.utils.log('edit.save(): Adding => Redirect to edit page');
+                        url = common.routes.blog.edit.replace(common.routes.itemIDParameter, '' + rc.id);
+                        common.url.redirect(url);
+                    }
+                    common.utils.log('edit.save(): END');
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.save = save;
+function delete_() {
+    return __awaiter(this, void 0, void 0, function () {
+        var confirmed, rc, url;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    common.utils.log('edit.delete(): START');
+                    common.utils.log('edit.delete(): Wait for user confirmation');
+                    return [4 /*yield*/, common.html.confirm(message_confirmDelete)];
+                case 1:
+                    confirmed = _a.sent();
+                    if (!confirmed) {
+                        common.utils.log('edit.delete(): NOT confirmed ; END');
+                        return [2 /*return*/];
+                    }
+                    common.utils.log('edit.delete(): Send the delete request');
+                    common.html.block($blockingDiv);
+                    return [4 /*yield*/, ctrl.delete_(exports.post.id())];
+                case 2:
+                    rc = _a.sent();
+                    common.html.unblock($blockingDiv);
+                    if (!rc.success) {
+                        common.utils.error('edit.delete(): Error', { rc: rc });
+                        common.html.showMessage(rc.errorMessage);
+                        return [2 /*return*/];
+                    }
+                    common.utils.error('edit.delete(): Redirect to list page');
+                    url = common.routes.blog.list.replace(common.routes.languageParameter, common.pageParameters.currentLanguage);
+                    common.url.redirect(url);
+                    common.utils.log('edit.delete(): END');
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.delete_ = delete_;
 
-},{"../../Services/BlogController":6,"../common":20}],15:[function(require,module,exports){
+},{"../../DTOs/BlogPost":3,"../../Services/BlogController":7,"../common":21}],16:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1126,7 +1319,7 @@ function loadImages() {
     });
 }
 
-},{"../../Services/BlogController":6,"../common":20,"./BlogController":13}],16:[function(require,module,exports){
+},{"../../Services/BlogController":7,"../common":21,"./BlogController":14}],17:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1214,7 +1407,7 @@ function save() {
     });
 }
 
-},{"../../DTOs/Item":3,"../../Services/ItemController":7,"../common":20}],17:[function(require,module,exports){
+},{"../../DTOs/Item":4,"../../Services/ItemController":8,"../common":21}],18:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1631,7 +1824,7 @@ var ItemKO = /** @class */ (function (_super) {
     return ItemKO;
 }(dto.ItemKO));
 
-},{"../../DTOs/Item":3,"../../DTOs/Translation":4,"../../Services/ItemController":7,"../../Services/ItemPictureController":8,"../../Services/TranslationController":10,"../common":20}],18:[function(require,module,exports){
+},{"../../DTOs/Item":4,"../../DTOs/Translation":5,"../../Services/ItemController":8,"../../Services/ItemPictureController":9,"../../Services/TranslationController":11,"../common":21}],19:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1691,7 +1884,7 @@ var list;
     ;
 })(list = exports.list || (exports.list = {}));
 
-},{"../common":20}],19:[function(require,module,exports){
+},{"../common":21}],20:[function(require,module,exports){
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1941,7 +2134,7 @@ var ItemKO = /** @class */ (function (_super) {
     return ItemKO;
 }(dto.ItemKO));
 
-},{"../../DTOs/Item":3,"../../Language":5,"../../Services/ItemController":7,"../common":20,"./ItemTTTController":18}],20:[function(require,module,exports){
+},{"../../DTOs/Item":4,"../../Language":6,"../../Services/ItemController":8,"../common":21,"./ItemTTTController":19}],21:[function(require,module,exports){
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -2209,7 +2402,7 @@ var html;
     html_1.showMessage = showMessage;
     function confirm(msg) {
         // Bootstrap style:
-        var html = "<div class=\"modal\" tabindex=\"-1\" role=\"dialog\">\n\t\t\t\t\t\t<div class=\"modal-dialog\" role=\"document\">\n\t\t\t\t\t\t\t<div class=\"modal-content\">\n\t\t\t\t\t\t\t\t<div class=\"modal-body\">\n\t\t\t\t\t\t\t\t\t<!-- Text content here -->\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t<div class=\"modal-footer\">\n\t\t\t\t\t\t\t\t\t<button type=\"button\" class=\"btn btn-primary\">Save changes</button>\n\t\t\t\t\t\t\t\t\t<button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Cancel</button>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>";
+        var html = "<div class=\"modal\" tabindex=\"-1\" role=\"dialog\">\n\t\t\t\t\t\t<div class=\"modal-dialog\" role=\"document\">\n\t\t\t\t\t\t\t<div class=\"modal-content\">\n\t\t\t\t\t\t\t\t<div class=\"modal-body\">\n\t\t\t\t\t\t\t\t\t<!-- Text content here -->\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t<div class=\"modal-footer\">\n\t\t\t\t\t\t\t\t\t<button type=\"button\" class=\"btn btn-primary\">Ok</button>\n\t\t\t\t\t\t\t\t\t<button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Cancel</button>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>";
         var $div = $(html);
         $div.find('.modal-body').text(msg);
         return new Promise(function (resolve) {
@@ -2468,6 +2661,6 @@ var url;
 // nb: Exports at the end or the order of execution breaks everything (i.e. strEnum must be defined before) ...
 __export(require("../Language"));
 
-},{"../Language":5,"./common":20}]},{},[1,2])
+},{"../Language":6,"./common":21}]},{},[1,2])
 
 //# sourceMappingURL=site.js.map

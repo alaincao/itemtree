@@ -16,9 +16,17 @@ namespace ItemTTT.Views.Blog
 
 		internal static string CreateUrlDetails(Languages language, int blogPostID)
 		{
+			Utils.Assert( blogPostID > 0, typeof(BlogController), $"Missing parameter '{nameof(blogPostID)}'" );
 			var url = Routes.BlogDetails
-								.Replace( Language.RouteParameter, ""+language )
-								.Replace( "{id}", ""+blogPostID );
+								.Replace( Routes.LangParameter, ""+language )
+								.Replace( Routes.ItemIDParameter, ""+blogPostID );
+			return url;
+		}
+		internal static string CreateUrlEdit(int blogPostID)
+		{
+			Utils.Assert( blogPostID > 0, typeof(BlogController), $"Missing parameter '{nameof(blogPostID)}'" );
+			var url = Routes.BlogEdit
+								.Replace( Routes.ItemIDParameter, ""+blogPostID );
 			return url;
 		}
 
@@ -59,10 +67,35 @@ namespace ItemTTT.Views.Blog
 		}
 
 		[HttpGet( Routes.BlogDetails )]
-		public async Task<IActionResult> Details(int id)
+		public Task<IActionResult> Details(int id)
 		{
 			var logHelper = PageHelper.ScopeLogs;
-			logHelper.AddLogMessage( $"BlogDetails: START: {nameof(id)}:{id}" );
+			logHelper.AddLogMessage( $"BlogDetails: {nameof(id)}:{id}" );
+			return ShowItem( id );
+		}
+
+		[HttpGet( Routes.BlogAdd )]
+		[HttpGet( Routes.BlogEdit )]
+		public async Task<IActionResult> Edit(int? id)
+		{
+			if(! PageHelper.IsAuthenticated )
+				return NotAuthenticated();
+
+			var logHelper = PageHelper.ScopeLogs;
+			logHelper.AddLogMessage( $"BlogEdit: {nameof(id)}:{id}" );
+
+			if( id == null )
+				// Add
+				return View( (DTOs.BlogPost)null );
+			else
+				// Edit
+				return await ShowItem( id.Value );
+		}
+
+		private async Task<IActionResult> ShowItem(int id)
+		{
+			var logHelper = PageHelper.ScopeLogs;
+			logHelper.AddLogMessage( $"BlogShowItem: START: {nameof(id)}:{id}" );
 
 			var includeInactives = PageHelper.IsAuthenticated;
 			var rv = await (new Services.BlogController( DataContext, PageHelper )).List( id:id, includeInactives:includeInactives );
@@ -73,22 +106,8 @@ namespace ItemTTT.Views.Blog
 			Utils.Assert( rv.Result.Length == 1, this, $"Invalid result count:{rv.Result.Length} ; expected 1" );
 			var item = rv.Result[0];
 
-			var result = View( item );
-			logHelper.AddLogMessage( $"BlogDetails: END" );
-			return result;
-		}
-
-		[HttpGet( Routes.BlogEdit )]
-		public IActionResult Edit()
-		{
-			if(! PageHelper.IsAuthenticated )
-				return NotAuthenticated();
-
-			var logHelper = PageHelper.ScopeLogs;
-			logHelper.AddLogMessage( $"BlogEdit: START" );
-
-			logHelper.AddLogMessage( $"BlogEdit: END" );
-			return View();
+			logHelper.AddLogMessage( $"BlogShowItem: END" );
+			return View( item );
 		}
 	}
 }

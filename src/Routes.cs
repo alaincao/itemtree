@@ -10,27 +10,30 @@ namespace ItemTTT
 {
 	internal static class Routes
 	{
-		private const string Lang				= Language.RouteParameter;  // i.e. "{lang:lang}" => e.g. "en" or "fr"
-		private const string ItemCode			= "{itemCode}";
-		private const string LangClientSide		= "{lang}";  // nb: only because it is cleaner ...
-		private const string ItemCodeClientSide	= "{code}";  // nb: only because it is cleaner ...
+		internal const string	LangParameter		= Language.RouteParameter;  // i.e. "{lang:lang}" => e.g. "en" or "fr"
+		private const string	ItemCodeParameter	= "{itemCode}";
+		internal const string	ItemIDParameter		= "{id}";
+		private const string	LangClientSide		= "{lang}";  // nb: only because it is cleaner ...
+		private const string	ItemCodeClientSide	= "{code}";  // nb: only because it is cleaner ...
+		private const string	ItemIDClientSide	= ItemIDParameter;
 
 		// Views
 		internal const string	InitializationLog	= "/initialization-log";
 		internal const string	Home1				= "/";
-		internal const string	Home2				= "/"+Lang;
+		internal const string	Home2				= "/"+LangParameter;
 		internal const string	Error				= "/error";
 		internal const string	ErrorStatus			= "/error/{status}";
 		internal const string	AdminHome			= "/admin";
 		internal const string	Login				= "/admin/login";
 		internal const string	Logout				= "/admin/logout";
-		internal const string	ItemsList			= "/"+Lang+"/car-listing";
-		internal const string	ItemDetails			= "/"+Lang+"/car-details/"+ItemCode;
-		internal const string	ItemEdit			= "/car-edit/"+ItemCode;
+		internal const string	ItemsList			= "/"+LangParameter+"/car-listing";
+		internal const string	ItemDetails			= "/"+LangParameter+"/car-details/"+ItemCodeParameter;
+		internal const string	ItemEdit			= "/car-edit/"+ItemCodeParameter;
 		internal const string	ItemAdd				= "/car-add";
-		internal const string	BlogList			= "/"+Lang+"/blog";
-		internal const string	BlogDetails			= "/"+Lang+"/blog/{id}";
-		internal const string	BlogEdit			= "/blog/edit";
+		internal const string	BlogList			= "/"+LangParameter+"/blog";
+		internal const string	BlogDetails			= "/"+LangParameter+"/blog/"+ItemIDParameter;
+		internal const string	BlogAdd				= "/blog/add";
+		internal const string	BlogEdit			= "/blog/edit/"+ItemIDParameter;
 
 		// APIs
 		internal const string	GetUrlCode			= "/api/geturlcode";
@@ -41,16 +44,18 @@ namespace ItemTTT
 		internal const string	GetTranslations		= "/api/translations";
 		internal const string	SaveTranslations	= "/api/translations/save";
 		internal const string	ItemsListApi		= "/api/car-listing";
-		internal const string	ItemDetailsApi		= "/api/car-details/"+ItemCode;
+		internal const string	ItemDetailsApi		= "/api/car-details/"+ItemCodeParameter;
 		internal const string	ItemSave			= "/api/car-save";
-		internal const string	ItemDelete			= "/api/car-delete/"+ItemCode;
-		internal const string	ItemPictureList		= "/api/car-details/"+ItemCode+"/pictures";
-		internal const string	ItemPictureDelete	= "/api/car-details/"+ItemCode+"/pictures/delete";
-		internal const string	ItemPictureReorder	= "/api/car-details/"+ItemCode+"/pictures/reorder";
-		internal const string	ItemPictureSetMain	= "/api/car-details/"+ItemCode+"/pictures/setmain";
-		internal const string	ItemPictureDownload	= "/car-details/"+ItemCode+"/pictures/{number}";
-		internal const string	ItemPictureUpload	= "/api/car-details/"+ItemCode+"/pictures/upload";
+		internal const string	ItemDelete			= "/api/car-delete/"+ItemCodeParameter;
+		internal const string	ItemPictureList		= "/api/car-details/"+ItemCodeParameter+"/pictures";
+		internal const string	ItemPictureDelete	= "/api/car-details/"+ItemCodeParameter+"/pictures/delete";
+		internal const string	ItemPictureReorder	= "/api/car-details/"+ItemCodeParameter+"/pictures/reorder";
+		internal const string	ItemPictureSetMain	= "/api/car-details/"+ItemCodeParameter+"/pictures/setmain";
+		internal const string	ItemPictureDownload	= "/car-details/"+ItemCodeParameter+"/pictures/{number}";
+		internal const string	ItemPictureUpload	= "/api/car-details/"+ItemCodeParameter+"/pictures/upload";
 		internal const string	BlogListApi			= "/api/blog";
+		internal const string	BlogSaveApi			= "/api/blog/save";
+		internal const string	BlogDeleteApi		= "/api/blog/delete";
 		internal const string	BlogPictureUpload	= "/api/blog/picture/upload";
 
 		/// <summary>Set PageParameters routes for client-side</summary>
@@ -64,14 +69,15 @@ namespace ItemTTT
 
 			Func<string,string> tr = (route)=>
 				{
-					route = route.Replace( Lang, LangClientSide ).Replace( ItemCode, ItemCodeClientSide );  // Cleanup a little bit URLs before sending to clients ...
+					route = route.Replace( LangParameter, LangClientSide ).Replace( ItemCodeParameter, ItemCodeClientSide );  // Cleanup a little bit URLs before sending to clients ...
 					pageHelper.ResolveRoute( route );
 					return route;
 				};
 
 			var obj = new {
-					LanguageParameter = LangClientSide,
-					ItemCodeParameter = ItemCodeClientSide,
+					LanguageParameter	= LangClientSide,
+					ItemCodeParameter	= ItemCodeClientSide,
+					ItemIDParameter		= ItemIDClientSide,
 
 					ItemTTT = new {
 							List	= tr( ItemsList ),
@@ -79,6 +85,7 @@ namespace ItemTTT
 						},
 					Blog = new {
 							List	= tr( BlogList ),
+							Edit	= tr( BlogEdit ),
 						},
 					API = new {
 							GetUrlCode			= tr( GetUrlCode ),
@@ -105,6 +112,8 @@ namespace ItemTTT
 								},
 							Blog = new {
 									List			= tr( BlogListApi ),
+									Save			= tr( BlogSaveApi ),
+									Delete			= tr( BlogDeleteApi ),
 									PictureUpload	= tr( BlogPictureUpload ),
 								},
 						},

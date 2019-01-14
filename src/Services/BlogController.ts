@@ -40,3 +40,21 @@ export interface UploadPictureResult extends Result
 {
 	imageTagContent : string;
 }
+
+export async function save(post:dto.BlogPost) : Promise<SaveResponse>
+{
+	const rc = await common.url.postRequestJSON<SaveResponse>( common.routes.api.blog.save, post );
+	rc.id = rc.result;
+	delete rc.result;
+	return rc;
+}
+export interface SaveResponse extends Result
+{
+	id : number;
+}
+
+export async function delete_(id:number) : Promise<Result>
+{
+	const rc = await common.url.postRequestForm<Result>( common.routes.api.blog.delete, { id } );
+	return rc;
+}

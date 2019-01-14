@@ -3,6 +3,7 @@ export interface Routes
 {
 	languageParameter	: string,
 	itemCodeParameter	: string,
+	itemIDParameter		: string,
 
 	itemTTT : {
 			list	: string,
@@ -10,6 +11,7 @@ export interface Routes
 		},
 	blog : {
 			list	: string,
+			edit	: string,
 		},
 	api	: {
 			getUrlCode		: string,
@@ -36,6 +38,8 @@ export interface Routes
 				},
 			blog : {
 					list			: string,
+					save			: string,
+					delete			: string,
 					pictureUpload	: string,
 				},
 		},

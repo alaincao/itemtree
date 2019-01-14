@@ -1,16 +1,75 @@
 @inherits ItemTTT.Views.BaseView
 @{
 	Init( PageHelper );
+	var post = (ItemTTT.DTOs.BlogPost)Model;
+	var isAdding = false;
+	if( post == null )
+	{
+		isAdding = true;
+		post = new ItemTTT.DTOs.BlogPost();
+	}
+	var isEditting = (! isAdding);
 }
 @section Scripts
 {
 <script type="text/javascript">
-	ttt.blog.edit.init( {	$picUploadControl	: $('#cca9f27d'),
+	ttt.blog.edit.init( {	isAdding			: @Html.Raw( JSON(isAdding) ),
+							post				: @Html.Raw( JSON(post) ),
+							$blockingDiv		: $('#ca1e7f48'),
+							$picUploadControl	: $('#cca9f27d'),
+							$txtDate			: $('#e6f60366'),
 						} );
+	ko.applyBindings( ttt.blog.edit, $('#ca1e7f48')[0] );
 </script>
 }
 
-Upload an image:
-<input type="file" id="cca9f27d"/>
+<div id="ca1e7f48">
 
-<div id="foobar"></div>
+	<div data-bind="with:post">
+
+		<p>
+			Image :<br/>
+			Upload an image :<input type="file" id="cca9f27d"/><br/>
+			<div data-bind="html:imageHtml"></div>
+		</p>
+		<p>
+			Title EN :<br/>
+			<div data-bind="html:titleHtmlEN"></div>
+		</p>
+		<p>
+			Title FR :<br/>
+			<div data-bind="html:titleHtmlFR"></div>
+		</p>
+		<p>
+			Title NL :<br/>
+			<div data-bind="html:titleHtmlNL"></div>
+		</p>
+		<p>
+			Text EN :<br/>
+			<div data-bind="html:textHtmlEN"></div>
+		</p>
+		<p>
+			Text FR :<br/>
+			<div data-bind="html:textHtmlFR"></div>
+		</p>
+		<p>
+			Text NL :<br/>
+			<div data-bind="html:textHtmlNL"></div>
+		</p>
+		<p>
+			Post date :<br/>
+			<input type="text" id="e6f60366" data-bind="value:date"/>
+		</p>
+		<p>
+			Active :<br/>
+			<input type="checkbox" data-bind="checked:active"/>
+		</p>
+
+	</div>
+
+	<button ttt-only-if="isAdding" data-bind="click:save">Add</button>
+	<button ttt-only-if="isEditting" data-bind="click:save">Save</button>
+	<button ttt-only-if="isEditting" data-bind="click:refresh">Discard changes</button>
+	<button ttt-only-if="isEditting" data-bind="click:delete_">Delete</button>
+
+</div>

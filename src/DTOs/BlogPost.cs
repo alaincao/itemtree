@@ -21,13 +21,17 @@ namespace ItemTTT.DTOs
 		public bool		Active			{ get; set; }
 
 		public string	Url				{ get; set; }
+		public string	UrlEdit			{ get; set; }
 		public string	UrlPrevious		{ get; set; }
 		public string	UrlNext			{ get; set; }
 
 		public BlogPost(Models.BlogPost src=null)
 		{
 			if( src == null )
+			{
+				Date = DateTime.Now.ToIsoDate();
 				return;
+			}
 
 			ID			= src.ID;
 			Date		= src.Date.ToIsoDate();
@@ -39,6 +43,21 @@ namespace ItemTTT.DTOs
 			TextHtmlFR	= src.TextHtmlFR;
 			TextHtmlNL	= src.TextHtmlNL;
 			Active		= src.Active;
+		}
+
+		internal void ToModel(Models.BlogPost dst)
+		{
+			var date = (Date != null) ? (Date.FromIsoDate()??DateTime.Now) : DateTime.Now;
+
+			dst.Date		= date;
+			dst.ImageHtml	= ImageHtml		?? "";
+			dst.TitleHtmlEN	= TitleHtmlEN	?? "";
+			dst.TitleHtmlFR	= TitleHtmlFR	?? "";
+			dst.TitleHtmlNL	= TitleHtmlNL	?? "";
+			dst.TextHtmlEN	= TextHtmlEN	?? "";
+			dst.TextHtmlFR	= TextHtmlFR	?? "";
+			dst.TextHtmlNL	= TextHtmlNL	?? "";
+			dst.Active		= Active;
 		}
 	}
 }
