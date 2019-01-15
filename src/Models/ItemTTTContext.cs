@@ -18,6 +18,7 @@ namespace ItemTTT.Models
 		public DbSet<Item>				Items				{ get; set; }
 		public DbSet<ItemPicture>		ItemPictures		{ get; set; }
 		public DbSet<BlogPost>			BlogPosts			{ get; set; }
+		public DbSet<Testimonial>		Testimonials		{ get; set; }
 
 		public ItemTTTContext(DbContextOptions options) : base(options)  {}
 
