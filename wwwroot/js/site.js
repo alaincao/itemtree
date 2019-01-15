@@ -1030,6 +1030,8 @@ function init(p) {
             isAdding = p.isAdding;
             $blockingDiv = p.$blockingDiv;
             exports.post = new dtos.BlogPostKO(p.post);
+            common.utils.log('edit.init(): add custom Knockout bindings handler');
+            addKoTinymceEditor();
             common.utils.log('edit.init(): Init picture upload');
             p.$picUploadControl.on('change', function () {
                 var files = p.$picUploadControl[0].files;
@@ -1043,6 +1045,32 @@ function init(p) {
     });
 }
 exports.init = init;
+/** Add 'tinymceEditor' Knockout bindings handler */
+function addKoTinymceEditor() {
+    // Create HTML editor KO's binding
+    ko.bindingHandlers.tinymceEditor =
+        {
+            init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+                var $element = $(element);
+                var observable = valueAccessor();
+                $element.html(observable());
+                $element.tinymce({
+                    inline: true,
+                    plugins: 'image,code',
+                    setup: function (ed) {
+                        ed.on('change', function () {
+                            observable($element.html());
+                        });
+                    },
+                });
+            },
+            update: function (element, valueAccessor) {
+                var observable = valueAccessor();
+                var $element = $(element);
+                $element.html(observable());
+            },
+        };
+}
 function uploadPicture(files) {
     return __awaiter(this, void 0, void 0, function () {
         var rc;

@@ -17,6 +17,8 @@
 			<h1 ttt-only-if="IsNL">@Html.Raw(post.TitleHtmlNL)</h1>
 		</a>
 
+		<a href="@post.UrlEdit" ttt-only-if="PageHelper.IsAuthenticated" style="margin-left:10px">EDIT</a>
+
 		<div data-bind="html:imageHtml">@Html.Raw(post.ImageHtml)</div>
 
 		<p>@FormatDate(post.Date)</p>

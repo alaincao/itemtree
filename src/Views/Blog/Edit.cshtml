@@ -12,6 +12,8 @@
 }
 @section Scripts
 {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.9.2/tinymce.min.js" integrity="sha384-kVYX8VboA0JojawCjMIZxOjynoW5k1G61gLF6uN1WHPGYA73jMug2ueDOVJAS4dJ" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.9.2/jquery.tinymce.min.js" integrity="sha384-5DCs0atV/hXpQogb6lHKuobEvuCEeEVXxyhuqnMXVHdXrSZChvc4RqiT4PwinVjp" crossorigin="anonymous"></script>
 <script type="text/javascript">
 	ttt.blog.edit.init( {	isAdding			: @Html.Raw( JSON(isAdding) ),
 							post				: @Html.Raw( JSON(post) ),
@@ -27,43 +29,43 @@
 
 	<div data-bind="with:post">
 
-		<p>
+		<div style="border:1px solid black">
 			Image :<br/>
 			Upload an image :<input type="file" id="cca9f27d"/><br/>
-			<div data-bind="html:imageHtml"></div>
-		</p>
-		<p>
+			<div data-bind="tinymceEditor:imageHtml"></div>
+		</div>
+		<div style="border:1px solid black">
 			Title EN :<br/>
-			<div data-bind="html:titleHtmlEN"></div>
-		</p>
-		<p>
+			<div data-bind="tinymceEditor:titleHtmlEN"></div>
+		</div>
+		<div style="border:1px solid black">
 			Title FR :<br/>
-			<div data-bind="html:titleHtmlFR"></div>
-		</p>
-		<p>
+			<div data-bind="tinymceEditor:titleHtmlFR"></div>
+		</div>
+		<div style="border:1px solid black">
 			Title NL :<br/>
-			<div data-bind="html:titleHtmlNL"></div>
-		</p>
-		<p>
+			<div data-bind="tinymceEditor:titleHtmlNL"></div>
+		</div>
+		<div style="border:1px solid black">
 			Text EN :<br/>
-			<div data-bind="html:textHtmlEN"></div>
-		</p>
-		<p>
+			<div data-bind="tinymceEditor:textHtmlEN"></div>
+		</div>
+		<div style="border:1px solid black">
 			Text FR :<br/>
-			<div data-bind="html:textHtmlFR"></div>
-		</p>
-		<p>
+			<div data-bind="tinymceEditor:textHtmlFR"></div>
+		</div>
+		<div style="border:1px solid black">
 			Text NL :<br/>
-			<div data-bind="html:textHtmlNL"></div>
-		</p>
-		<p>
+			<div data-bind="tinymceEditor:textHtmlNL"></div>
+		</div>
+		<div style="border:1px solid black">
 			Post date :<br/>
 			<input type="text" id="e6f60366" data-bind="value:date"/>
-		</p>
-		<p>
+		</div>
+		<div style="border:1px solid black">
 			Active :<br/>
 			<input type="checkbox" data-bind="checked:active"/>
-		</p>
+		</div>
 
 	</div>
 

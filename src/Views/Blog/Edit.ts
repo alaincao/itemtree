@@ -1,4 +1,5 @@
 
+import * as tmce from "tinymce";
 import * as common from "../common";
 import * as dtos from "../../DTOs/BlogPost";
 import * as ctrl from "../../Services/BlogController";
@@ -23,6 +24,9 @@ export async function init(p:{	isAdding			: boolean,
 	$blockingDiv	= p.$blockingDiv;
 	post			= new dtos.BlogPostKO( p.post );
 
+	common.utils.log( 'edit.init(): add custom Knockout bindings handler' );
+	addKoTinymceEditor();
+
 	common.utils.log( 'edit.init(): Init picture upload' );
 	p.$picUploadControl.on( 'change', ()=>
 		{
@@ -34,6 +38,38 @@ export async function init(p:{	isAdding			: boolean,
 	p.$txtDate.datepicker({ dateFormat: 'yy-mm-dd' });
 
 	common.utils.log( 'edit.init() END' );
+}
+
+/** Add 'tinymceEditor' Knockout bindings handler */
+function addKoTinymceEditor() : void
+{
+	// Create HTML editor KO's binding
+	ko.bindingHandlers.tinymceEditor =
+		{
+			init : function(element, valueAccessor, allBindings, viewModel, bindingContext)
+				{
+					const $element = $(element);
+					const observable : KnockoutObservable<string> = valueAccessor();
+					$element.html( observable() );
+					(<any>$element).tinymce( {
+							inline	: true,
+							plugins	: 'image,code',
+							setup	: function(ed:tmce.Editor)
+										{
+											ed.on( 'change', function()
+												{
+													observable( $element.html() );
+												} );
+										},
+						} );
+				},
+			update : function(element, valueAccessor)
+				{
+					const observable : KnockoutObservable<string> = valueAccessor();
+					const $element = $(element);
+					$element.html( observable() );
+				},
+		};
 }
 
 async function uploadPicture(files:FileList) : Promise<void>
