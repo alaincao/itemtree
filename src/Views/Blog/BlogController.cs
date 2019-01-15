@@ -47,7 +47,11 @@ namespace ItemTTT.Views.Blog
 
 			var rv = await (new Services.BlogController( DataContext, PageHelper )).List( includeImages:includeImages, includeInactives:includeInactives, skipToID:skipToID, take:take );
 
+			var baseUrl = Routes.BlogList.Replace( Routes.LangParameter, ""+PageHelper.CurrentLanguage );
 			var model = new ListModel{	PartialView				= ListPartial,
+										InactivesIncluded		= includeInactives ? true : false,
+										UrlInactivesIncluded	= PageHelper.ResolveRoute( $"{baseUrl}?{nameof(includeInactives)}=true" ),
+										UrlInactivesNotIncluded	= PageHelper.ResolveRoute( $"{baseUrl}" ),
 										BlogPosts				= rv.Result ?? (new DTOs.BlogPost[]{}),
 										PostsNumberIncrement	= PostsNumberIncrement };
 
@@ -62,6 +66,9 @@ namespace ItemTTT.Views.Blog
 		public struct ListModel
 		{
 			public string			PartialView;
+			public bool				InactivesIncluded;
+			public string			UrlInactivesIncluded;
+			public string			UrlInactivesNotIncluded;
 			public DTOs.BlogPost[]	BlogPosts;
 			public int				PostsNumberIncrement;
 		}

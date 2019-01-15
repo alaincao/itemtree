@@ -17,6 +17,12 @@
 </script>
 }
 
+<div ttt-only-if="PageHelper.IsAuthenticated">
+	<i ttt-only-if="@(!item.InactivesIncluded)" class="fa fa-square-o" aria-hidden="true"></i>
+	<i ttt-only-if="@(item.InactivesIncluded)" class="fa fa-check-square-o" aria-hidden="true"></i>
+	<a href="@(item.InactivesIncluded ? item.UrlInactivesNotIncluded : item.UrlInactivesIncluded)">Show inactives</a>
+</div>
+
 <ul id="a7e30919">
 
 	<partial name="@view" />
