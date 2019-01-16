@@ -1,0 +1,26 @@
+@inherits ItemTTT.Views.BaseView
+@{
+	Init( PageHelper );
+
+	var parameters = PageHelper.Parameters;
+	var model = (ItemTTT.Views.Testimonial.TestimonialController.ListModel)Model;
+	var items = model.Items;
+}
+@section Scripts
+{
+<script type="text/javascript">
+	console.log( 'Hola mundo' );
+</script>
+}
+
+<ul>
+@foreach( var item in items )
+{
+	<li>
+		<img src="@item.ImageData" style="width:60px"/><br/>
+		<span>@Html.Raw(HtmlShield(item.Text))</span><br/>
+		<span>@item.FirstLastName</span><br/>
+		<span>@item.WhosWho</span>
+	</li>
+}
+</ul>

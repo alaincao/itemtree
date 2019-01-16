@@ -51,5 +51,12 @@ namespace ItemTTT.Views
 				return "";
 			return dt.Value.ToString( "dd/MM/yyyy" );
 		}
+
+		protected string HtmlShield(string txt)
+		{
+			txt = HtmlEncoder.Encode( txt );
+			txt = txt.Replace( "&#xA;", "<br/>" );  // nb: "&#xA;" => "\n"
+			return txt;
+		}
 	}
 }

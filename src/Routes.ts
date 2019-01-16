@@ -42,5 +42,8 @@ export interface Routes
 					delete			: string,
 					pictureUpload	: string,
 				},
+			testimonial : {
+					pictureUpload	: string,
+				},
 		},
 }

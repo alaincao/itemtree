@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace ItemTTT.Models
 {
@@ -31,5 +32,18 @@ namespace ItemTTT.Models
 
 		[Column("ImageTestimonial", TypeName = "nvarchar(max)")]
 		public string	ImageData		{ get; set; }
+
+		internal static IQueryable<Testimonial> UnselectImage(IQueryable<Testimonial> query)
+		{
+			return query.Select( v=>new Testimonial{
+											ID				= v.ID,
+											Date			= v.Date,
+											FirstLastName	= v.FirstLastName,
+											WhosWho			= v.WhosWho,
+											Text			= v.Text,
+											Active			= v.Active,
+											ImageData		= null,
+										} );
+		}
 	}
 }
