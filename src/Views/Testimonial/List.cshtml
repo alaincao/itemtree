@@ -9,10 +9,60 @@
 @section Scripts
 {
 <script type="text/javascript">
-	console.log( 'Hola mundo' );
+	ttt.testimonial.list.init( {
+			urlImgNotFound		: @Html.Raw(JSON( model.UrlImgNotFound )),
+			$picUploadControl	: $('#d13591a9'),
+		} );
+	ko.applyBindings( ttt.testimonial.list.formAddNew, $('#e2c7c1b9')[0] );
 </script>
 }
 
+@* Popup open button *@
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#e2c7c1b9">
+	<span ttt-only-if="IsEN">Leave a testimonial</span>
+	<span ttt-only-if="IsFR">Laissez-nous votre témoignage</span>
+	<span ttt-only-if="IsNL">Click hier voor uw deelname in het Golden Book !</span>
+</button>
+@* Popup content *@
+<div class="modal fade" id="e2c7c1b9" tabindex="-1" role="dialog" aria-labelledby="eed640a8" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">
+
+					<span id="eed640a8" ttt-only-if="IsEN">Your Car Golden Book form</span>
+					<span id="eed640a8" ttt-only-if="IsFR">Formulaire de témoignage Your Car</span>
+					<span id="eed640a8" ttt-only-if="IsNL">Your Car Golden Book vorm</span>
+
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			</div>
+			<div class="modal-body">
+
+				<input type="file" id="d13591a9" />
+				<img width="650px" height="650px" data-bind="attr:{ src:imageSrc }"/>
+
+			</div>
+			<div class="modal-footer">
+
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">
+					<span ttt-only-if="IsEN">Close</span>
+					<span ttt-only-if="IsFR">Fermer</span>
+					<span ttt-only-if="IsNL">Gesloten</span>
+				</button>
+
+				<button type="button" data-bind="click:save" class="btn btn-primary" data-dismiss="modal">
+					<span ttt-only-if="IsEN">Save</span>
+					<span ttt-only-if="IsFR">Valider</span>
+					<span ttt-only-if="IsNL">Verzenden</span>
+				</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+@* Entries list *@
 <ul>
 @foreach( var item in items )
 {

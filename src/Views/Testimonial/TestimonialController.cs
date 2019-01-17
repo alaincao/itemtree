@@ -23,13 +23,17 @@ namespace ItemTTT.Views.Testimonial
 			logHelper.AddLogMessage( $"TestimonialList: START" );
 
 			var rv = await (new Services.TestimonialController( DataContext, PageHelper )).List( includeImages:includeImages );
-			var model = new ListModel{ Items = rv.Result ?? (new DTOs.Testimonial[]{}) };
+			var model = new ListModel{
+								UrlImgNotFound	= PageHelper.ResolveRoute( ItemTTT.wwwroot.ImgNotFound ),
+								Items			= rv.Result ?? (new DTOs.Testimonial[]{}),
+							};
 
 			logHelper.AddLogMessage( $"TestimonialList: END" );
 			return View( model );
 		}
 		public struct ListModel
 		{
+			public string				UrlImgNotFound;
 			public DTOs.Testimonial[]	Items;
 		}
 	}

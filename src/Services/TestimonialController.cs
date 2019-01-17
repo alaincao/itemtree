@@ -68,7 +68,7 @@ namespace ItemTTT.Services
 			}
 		}
 
-		[HttpPost( Routes.BlogPictureUpload )]
+		[HttpPost( Routes.TestimPictUpload )]
 		public async Task<Utils.TTTServiceResult<string>> UploadPicture(Microsoft.AspNetCore.Http.IFormFile file)
 		{
 			try

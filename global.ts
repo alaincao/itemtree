@@ -6,6 +6,7 @@ import * as itemadd		from "./src/Views/ItemTTT/Add";
 import * as itemedit	from "./src/Views/ItemTTT/Edit";
 import * as bloglist	from "./src/Views/Blog/List";
 import * as blogedit	from "./src/Views/Blog/Edit";
+import * as tstmlist	from "./src/Views/Testimonial/List";
 
 ///////
 
@@ -24,6 +25,9 @@ var ttt =
 	blog: {
 		list	: bloglist,
 		edit	: blogedit,
+	},
+	testimonial: {
+		list	: tstmlist,
 	},
 }
 declare global
