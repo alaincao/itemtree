@@ -5,6 +5,7 @@
 	var parameters = PageHelper.Parameters;
 	var model = (ItemTTT.Views.Testimonial.TestimonialController.ListModel)Model;
 	var items = model.Items;
+	var imageUploadErrorMessage = "An error occurred: unable to read the image file";
 	var saveSuccessMessage =  IsEN ? "Your message has been recorded. Thank you!"
 							: IsFR ? "Votre message a été enregistré. Merci!"
 							: "Uw bericht is opgenomen. Dank u!";
@@ -13,10 +14,12 @@
 {
 <script type="text/javascript">
 	ttt.testimonial.list.init( {
-			urlImgNotFound		: @Html.Raw(JSON( model.UrlImgNotFound )),
-			saveSuccessMessage	: @Html.Raw(JSON( saveSuccessMessage )),
-			$formDialog			: $('#e2c7c1b9'),
-			$picUploadControl	: $('#d13591a9'),
+			urlImgNotFound			: @Html.Raw(JSON( model.UrlImgNotFound )),
+			imageUploadErrorMessage	: @Html.Raw(JSON( imageUploadErrorMessage )),
+			saveSuccessMessage		: @Html.Raw(JSON( saveSuccessMessage )),
+			$blockingDiv			: $('body'),
+			$formDialog				: $('#e2c7c1b9'),
+			$picUploadControl		: $('#d13591a9'),
 		} );
 </script>
 }
@@ -65,7 +68,8 @@
 				</ul>
 
 				<input type="file" id="d13591a9" />
-				<img width="650px" height="650px" data-bind="attr:{ src:imageSrc }"/>
+				<button data-bind="visible:(imageData() != null), click:function(){ imageData(null); }">Clear</button>
+				<img data-bind="visible:(imageData() != null), attr:{ src:imageSrc }" width="650px" height="650px"/>
 
 			</div>
 			<div class="modal-footer">
@@ -95,8 +99,14 @@
 <ul>
 @foreach( var item in items )
 {
-	<li>
+	<li ttt-testimonial-id="@item.ID">
 		<img src="@item.ImageData" style="width:60px"/><br/>
+		<span ttt-only-if="PageHelper.IsAuthenticated">
+			<i data-bind="click:toggleActive" class="fa @(item.Active ? "fa-check-square-o" : "fa-square-o")" style="cursor:pointer"></i>
+			<i data-bind="click:edit" class="fa fa-wrench" style="cursor:pointer"></i>
+			<i data-bind="click:delete_" class="fa fa-times" style="cursor:pointer"></i>
+			<br/>
+		</span>
 		<span>@Html.Raw(HtmlShield(item.Text))</span><br/>
 		<span>@item.FirstLastName</span><br/>
 		<span>@item.WhosWho</span>

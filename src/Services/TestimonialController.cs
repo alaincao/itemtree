@@ -70,7 +70,7 @@ namespace ItemTTT.Services
 		}
 
 		[HttpPost( Routes.TestimSaveApi )]
-		public async Task<Utils.TTTServiceResult> Save([FromBody]DTOs.Testimonial testimonial)
+		public async Task<Utils.TTTServiceResult> Save([FromBody]SaveRequest testimonial)
 		{
 			try
 			{
@@ -82,7 +82,7 @@ namespace ItemTTT.Services
 
 				var isAdding = (testimonial.ID == null);
 				if(! isAdding )
-					if(! PageHelper.IsAuthenticated )
+					if(! PageHelper.IsAuthenticated )  // nb: Only admins can edit an entry
 						throw new Utils.TTTException( "Not logged-in" );
 
 				var dc = DataContext;
@@ -101,7 +101,7 @@ namespace ItemTTT.Services
 				}
 
 				logHelper.AddLogMessage( $"TestimonialSave: Copy fields" );
-				testimonial.ToModel( model, includeAdminFields:PageHelper.IsAuthenticated );
+				testimonial.ToModel( model, includeImage:testimonial.SaveImage, includeAdminFields:PageHelper.IsAuthenticated );
 
 				logHelper.AddLogMessage( $"TestimonialSave: Save changes to database" );
 				await dc.SaveChangesAsync();
@@ -113,6 +113,10 @@ namespace ItemTTT.Services
 			{
 				return Utils.TTTServiceResult.LogAndNew( PageHelper, ex );
 			}
+		}
+		public class SaveRequest : DTOs.Testimonial
+		{
+			public bool	SaveImage	{ get; set; }
 		}
 
 		[HttpPost( Routes.TestimDeleteApi )]

@@ -122,6 +122,7 @@ namespace ItemTTT
 									PictureUpload	= tr( BlogPictureUpload ),
 								},
 							Testimonial = new {
+									List			= tr( TestimListApi ),
 									Save			= tr( TestimSaveApi ),
 									Delete			= tr( TestimDeleteApi ),
 									PictureUpload	= tr( TestimPictUpload ),

@@ -608,6 +608,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("../Views/common");
+function list(p) {
+    return __awaiter(this, void 0, void 0, function () {
+        var rc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, common.url.postRequestForm(common.routes.api.testimonial.list, p)];
+                case 1:
+                    rc = _a.sent();
+                    rc.testimonials = rc.result;
+                    delete rc.result;
+                    return [2 /*return*/, rc];
+            }
+        });
+    });
+}
+exports.list = list;
 function save(post) {
     return __awaiter(this, void 0, void 0, function () {
         var rc;
@@ -622,6 +638,20 @@ function save(post) {
     });
 }
 exports.save = save;
+function delete_(id) {
+    return __awaiter(this, void 0, void 0, function () {
+        var rc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, common.url.postRequestForm(common.routes.api.testimonial.delete, { id: id })];
+                case 1:
+                    rc = _a.sent();
+                    return [2 /*return*/, rc];
+            }
+        });
+    });
+}
+exports.delete_ = delete_;
 function uploadPicture(file) {
     return __awaiter(this, void 0, void 0, function () {
         var url, formData, response;
@@ -2278,30 +2308,168 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("../common");
 var ctrl = require("../../Services/TestimonialController");
+var testimonialIdAttribute = 'ttt-testimonial-id';
+var message_imageUploadError;
+var message_confirmDelete = 'Are you sure you want to delete this testimonial?';
 var saveSuccessMessage;
 function init(p) {
     common.utils.log('list.init(): START');
+    message_imageUploadError = p.imageUploadErrorMessage;
     saveSuccessMessage = p.saveSuccessMessage;
     common.utils.log('list.init(): Create KO for new testimonial form');
-    exports.formTestimonial = new FormTestimonial(p.$formDialog, p.urlImgNotFound);
+    exports.formTestimonial = new FormTestimonial(p.$formDialog, p.$blockingDiv, p.urlImgNotFound);
     common.utils.log('list.init(): Init picture upload');
-    p.$picUploadControl.on('change', function () {
+    p.$picUploadControl.click(function () {
+        // Clear upload control so selecting the same image twice triggers the 'change' event
+        p.$picUploadControl.val(null);
+    });
+    p.$picUploadControl.change(function () {
         var files = p.$picUploadControl[0].files;
         /*await*/ exports.formTestimonial.uploadPicture(files);
     });
+    if (common.pageParameters.isAutenticated) // Nb: binding actions on testimonial entries is required only for the administrator
+     {
+        common.utils.log('list.init(): Bind all testimonial items');
+        $("[" + testimonialIdAttribute + "]").each(function (i, e) {
+            var $e = $(e);
+            var id = parseInt($e.attr(testimonialIdAttribute));
+            var o = new TestimonialItem(id, $e, p.$blockingDiv);
+            ko.applyBindings(o, $e[0]);
+        });
+    }
     common.utils.log('list.init(): END');
 }
 exports.init = init;
+var TestimonialItem = /** @class */ (function () {
+    function TestimonialItem(id, $container, $blockingDiv) {
+        common.utils.log("TestimonialItem(): id:" + id);
+        this.id = id;
+        this.$blockingDiv = $blockingDiv;
+    }
+    TestimonialItem.prototype.toggleActive = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var self, rc1, dto, saveRequest, rc2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        self = this;
+                        common.utils.log("TestimonialItem.toggleActive(): START: id:'" + self.id + "'");
+                        common.html.block(self.$blockingDiv);
+                        return [4 /*yield*/, ctrl.list({ id: self.id, includeImages: false, includeInactives: true })];
+                    case 1:
+                        rc1 = _a.sent();
+                        if (!rc1) {
+                            common.html.unblock(self.$blockingDiv);
+                            common.utils.error('retreive testimonial error', { rc1: rc1 });
+                            common.html.showMessage(rc1.errorMessage);
+                            return [2 /*return*/];
+                        }
+                        if (rc1.testimonials.length != 1) {
+                            common.html.showMessage('Error while retreiving testimonial');
+                            return [2 /*return*/];
+                        }
+                        dto = rc1.testimonials[0];
+                        common.utils.log("TestimonialItem.toggleActive(): Create save request");
+                        dto.active = dto.active ? false : true;
+                        saveRequest = $.extend(dto, { saveImage: false });
+                        common.utils.log('TestimonialItem.toggleActive(): Send the save request');
+                        return [4 /*yield*/, ctrl.save(saveRequest)];
+                    case 2:
+                        rc2 = _a.sent();
+                        common.html.unblock(self.$blockingDiv);
+                        if (!rc2.success) {
+                            common.utils.error('TestimonialItem.toggleActive(): Error', { rc2: rc2 });
+                            common.html.showMessage(rc2.errorMessage);
+                            return [2 /*return*/];
+                        }
+                        common.utils.log('TestimonialItem.toggleActive(): Reload page');
+                        location.reload();
+                        common.utils.log('TestimonialItem.toggleActive(): END');
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    TestimonialItem.prototype.edit = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var self, rc1, dto;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        self = this;
+                        common.utils.log("TestimonialItem.edit(): START: id:'" + self.id + "'");
+                        common.html.block(self.$blockingDiv);
+                        return [4 /*yield*/, ctrl.list({ id: self.id, includeImages: true, includeInactives: true })];
+                    case 1:
+                        rc1 = _a.sent();
+                        common.html.unblock(self.$blockingDiv);
+                        if (!rc1) {
+                            common.utils.error('retreive testimonial error', { rc1: rc1 });
+                            common.html.showMessage(rc1.errorMessage);
+                            return [2 /*return*/];
+                        }
+                        if (rc1.testimonials.length != 1) {
+                            common.html.showMessage('Error while retreiving testimonial');
+                            return [2 /*return*/];
+                        }
+                        dto = rc1.testimonials[0];
+                        exports.formTestimonial.show(dto);
+                        common.utils.log("TestimonialItem.edit(): START: id:'" + self.id + "'");
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    TestimonialItem.prototype.delete_ = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var self, rc1, rc2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        self = this;
+                        common.utils.log('TestimonialItem.delete_(): START');
+                        common.utils.log('TestimonialItem.delete_(): Ask confirmation');
+                        return [4 /*yield*/, common.html.confirm(message_confirmDelete)];
+                    case 1:
+                        rc1 = _a.sent();
+                        if (!rc1) {
+                            common.utils.log('TestimonialItem.delete_(): NOT CONFIRMED');
+                            return [2 /*return*/];
+                        }
+                        common.utils.log('TestimonialItem.delete_(): Launch delete request');
+                        common.html.block(self.$blockingDiv);
+                        return [4 /*yield*/, ctrl.delete_(self.id)];
+                    case 2:
+                        rc2 = _a.sent();
+                        common.html.unblock(self.$blockingDiv);
+                        if (!rc2.success) {
+                            common.utils.error('TestimonialItem.delete_(): Error', { rc2: rc2 });
+                            common.html.showMessage(rc2.errorMessage);
+                            return [2 /*return*/];
+                        }
+                        common.utils.log('TestimonialItem.delete_(): Reload page');
+                        location.reload();
+                        common.utils.log('TestimonialItem.delete_(): END');
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return TestimonialItem;
+}());
+exports.TestimonialItem = TestimonialItem;
 var FormTestimonial = /** @class */ (function () {
-    function FormTestimonial($container, urlImgNotFound) {
+    function FormTestimonial($container, $blockingDiv, urlImgNotFound) {
         var self = this;
         this.$container = $container;
-        this.$blockingDiv = $container;
+        this.$blockingDiv = $blockingDiv;
         this.showRequiredText = ko.observable(false);
         this.model = null;
+        this.date = ko.observable('');
         this.firstLastName = ko.observable('');
         this.whosWho = ko.observable('');
         this.text = ko.observable('');
+        this.active = ko.observable(false);
         this.imageData = ko.observable(null);
         this.imageSrc = ko.computed(function () {
             var data = self.imageData();
@@ -2314,6 +2482,13 @@ var FormTestimonial = /** @class */ (function () {
         common.utils.log('FormTestimonial(): KO bind the form dialog');
         ko.applyBindings(self, self.$container[0]);
     }
+    FormTestimonial.prototype.show = function (dto) {
+        common.utils.log('FormTestimonial.show(): START', { dto: dto });
+        var self = this;
+        self.reset(dto);
+        self.open();
+        common.utils.log('FormTestimonial.show(): END');
+    };
     FormTestimonial.prototype.uploadPicture = function (files) {
         return __awaiter(this, void 0, void 0, function () {
             var self, rc;
@@ -2335,7 +2510,7 @@ var FormTestimonial = /** @class */ (function () {
                         common.html.unblock(self.$blockingDiv);
                         if (!rc.success) {
                             common.utils.error('FormTestimonial.uploadPicture(): Error', { rc: rc });
-                            common.html.showMessage(rc.errorMessage);
+                            common.html.showMessage(/*rc.errorMessage*/ message_imageUploadError);
                             return [2 /*return*/];
                         }
                         self.imageData(rc.imageData);
@@ -2345,16 +2520,33 @@ var FormTestimonial = /** @class */ (function () {
             });
         });
     };
-    FormTestimonial.prototype.reset = function () {
+    FormTestimonial.prototype.reset = function (dto) {
         common.utils.log('FormTestimonial.reset(): START');
         var self = this;
-        self.showRequiredText(false);
-        self.model = null;
-        self.firstLastName('');
-        self.whosWho('');
-        self.text('');
-        self.imageData(null);
+        if (dto == null) {
+            self.model = null;
+            self.date('');
+            self.firstLastName('');
+            self.whosWho('');
+            self.text('');
+            self.active(false);
+            self.imageData(null);
+        }
+        else {
+            self.model = dto;
+            self.date(dto.date);
+            self.firstLastName(dto.firstLastName);
+            self.whosWho(dto.whosWho);
+            self.text(dto.text);
+            self.active(dto.active);
+            self.imageData(dto.imageData);
+        }
         common.utils.log('FormTestimonial.reset(): END');
+    };
+    FormTestimonial.prototype.open = function () {
+        common.utils.log('FormTestimonial.open(): START');
+        this.$container.modal('show');
+        common.utils.log('FormTestimonial.open(): END');
     };
     FormTestimonial.prototype.close = function () {
         common.utils.log('FormTestimonial.close(): START');
@@ -2363,7 +2555,7 @@ var FormTestimonial = /** @class */ (function () {
     };
     FormTestimonial.prototype.save = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var self, fields, rc;
+            var self, fields, saveRequest, rc;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -2376,20 +2568,23 @@ var FormTestimonial = /** @class */ (function () {
                             return [2 /*return*/];
                         }
                         fields = {
+                            date: self.date(),
                             firstLastName: self.firstLastName(),
                             whosWho: self.whosWho(),
                             text: self.text(),
+                            active: self.active(),
                             imageData: self.imageData(),
+                            saveImage: true,
                         };
                         if (self.model == null)
-                            // Add new
-                            self.model = $.extend({ date: '', active: false }, fields);
+                            // add new
+                            saveRequest = $.extend({ date: '', active: false }, fields);
                         else
-                            // Edit openned one
-                            $.extend(self.model, fields);
+                            // edit existing
+                            saveRequest = $.extend(self.model, fields);
                         common.utils.log('FormTestimonial.save(): Send the save request');
                         common.html.block(self.$blockingDiv);
-                        return [4 /*yield*/, ctrl.save(self.model)];
+                        return [4 /*yield*/, ctrl.save(saveRequest)];
                     case 1:
                         rc = _a.sent();
                         common.html.unblock(self.$blockingDiv);
@@ -2398,8 +2593,15 @@ var FormTestimonial = /** @class */ (function () {
                             common.html.showMessage(rc.errorMessage);
                             return [2 /*return*/];
                         }
-                        self.close();
-                        common.html.showMessage(saveSuccessMessage);
+                        if (common.pageParameters.isAutenticated) {
+                            common.utils.log('FormTestimonial.save(): Refresh page'); // nb: list may have changed
+                            location.reload();
+                        }
+                        else {
+                            common.utils.log('FormTestimonial.save(): Close & show success message');
+                            self.close();
+                            common.html.showMessage(saveSuccessMessage);
+                        }
                         common.utils.log('FormTestimonial.save(): END');
                         return [2 /*return*/];
                 }
