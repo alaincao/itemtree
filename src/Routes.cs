@@ -60,6 +60,8 @@ namespace ItemTTT
 		internal const string	BlogPictureUpload	= "/api/blog/picture/upload";
 		internal const string	TestimListApi		= "/api/golden-book";
 		internal const string	TestimPictUpload	= "/api/golden-book/picture/upload";
+		internal const string	TestimSaveApi		= "/api/golden-book/save";
+		internal const string	TestimDeleteApi		= "/api/golden-book/delete";
 
 		/// <summary>Set PageParameters routes for client-side</summary>
 		internal static object GetPageParameterRoutes(PageHelper pageHelper)
@@ -120,6 +122,8 @@ namespace ItemTTT
 									PictureUpload	= tr( BlogPictureUpload ),
 								},
 							Testimonial = new {
+									Save			= tr( TestimSaveApi ),
+									Delete			= tr( TestimDeleteApi ),
 									PictureUpload	= tr( TestimPictUpload ),
 								},
 						},

@@ -17,12 +17,12 @@ namespace ItemTTT.Views.Testimonial
 		}
 
 		[HttpGet( Routes.TestimonialList )]
-		public async Task<IActionResult> List(bool includeImages=true)
+		public async Task<IActionResult> List(bool includeImages=true, bool includeInactives=true)
 		{
 			var logHelper = PageHelper.ScopeLogs;
 			logHelper.AddLogMessage( $"TestimonialList: START" );
 
-			var rv = await (new Services.TestimonialController( DataContext, PageHelper )).List( includeImages:includeImages );
+			var rv = await (new Services.TestimonialController( DataContext, PageHelper )).List( includeImages:includeImages, includeInactives:includeInactives );
 			var model = new ListModel{
 								UrlImgNotFound	= PageHelper.ResolveRoute( ItemTTT.wwwroot.ImgNotFound ),
 								Items			= rv.Result ?? (new DTOs.Testimonial[]{}),

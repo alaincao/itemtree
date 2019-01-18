@@ -48,7 +48,8 @@ namespace ItemTTT.Services
 
 				logHelper.AddLogMessage( $"TestimonialList: Retreive rows" );
 				var imgNotFound = PageHelper.ResolveRoute( wwwroot.ImgNotFound );
-				var dtos = await query	.OrderByDescending( v=>v.ID )
+				var dtos = await query	.OrderByDescending( v=>v.Date )
+										.ThenByDescending( v=>v.ID )
 										.ToAsyncEnumerable()
 										.Select( v=>
 											{
@@ -65,6 +66,83 @@ namespace ItemTTT.Services
 			catch( System.Exception ex )
 			{
 				return Utils.TTTServiceResult<DTOs.Testimonial[]>.LogAndNew( PageHelper, ex );
+			}
+		}
+
+		[HttpPost( Routes.TestimSaveApi )]
+		public async Task<Utils.TTTServiceResult> Save([FromBody]DTOs.Testimonial testimonial)
+		{
+			try
+			{
+				if( testimonial == null )
+					throw new ArgumentException( $"Missing parameter '{nameof(testimonial)}" );
+
+				var logHelper = PageHelper.ScopeLogs;
+				logHelper.AddLogMessage( $"TestimonialSave: START: {nameof(testimonial.ID)}:'{testimonial.ID}'" );
+
+				var isAdding = (testimonial.ID == null);
+				if(! isAdding )
+					if(! PageHelper.IsAuthenticated )
+						throw new Utils.TTTException( "Not logged-in" );
+
+				var dc = DataContext;
+
+				Models.Testimonial model;
+				if( isAdding )
+				{
+					logHelper.AddLogMessage( $"TestimonialSave: Adding a new one" );
+					model = new Models.Testimonial{ Date=DateTime.Now, Active=false };
+					dc.Testimonials.Add( model );
+				}
+				else
+				{
+					logHelper.AddLogMessage( $"TestimonialSave: Retreive testimonial from database" );
+					model = await dc.Testimonials.Where( v=>v.ID == testimonial.ID ).SingleAsync();
+				}
+
+				logHelper.AddLogMessage( $"TestimonialSave: Copy fields" );
+				testimonial.ToModel( model, includeAdminFields:PageHelper.IsAuthenticated );
+
+				logHelper.AddLogMessage( $"TestimonialSave: Save changes to database" );
+				await dc.SaveChangesAsync();
+
+				logHelper.AddLogMessage( $"TestimonialSave: END" );
+				return new Utils.TTTServiceResult<int>( PageHelper );
+			}
+			catch( System.Exception ex )
+			{
+				return Utils.TTTServiceResult.LogAndNew( PageHelper, ex );
+			}
+		}
+
+		[HttpPost( Routes.TestimDeleteApi )]
+		public async Task<Utils.TTTServiceResult> Delete(int id)
+		{
+			try
+			{
+				if(! PageHelper.IsAuthenticated )
+					throw new Utils.TTTException( "Not logged-in" );
+
+				var logHelper = PageHelper.ScopeLogs;
+				logHelper.AddLogMessage( $"TestimonialDelete: START: {nameof(id)}:'{id}'" );
+
+				if( id <= 0 )
+					throw new ArgumentException( $"Missing parameter '{nameof(id)}'" );
+
+				var testimonial = new Models.Testimonial{ ID=id };
+				var dc = DataContext;
+				dc.Testimonials.Attach( testimonial );
+				dc.Testimonials.Remove( testimonial );
+
+				logHelper.AddLogMessage( $"TestimonialDelete: Save to database" );
+				await dc.SaveChangesAsync();
+
+				logHelper.AddLogMessage( $"TestimonialDelete: END" );
+				return new Utils.TTTServiceResult( PageHelper );
+			}
+			catch( System.Exception ex )
+			{
+				return Utils.TTTServiceResult.LogAndNew( PageHelper, ex );
 			}
 		}
 

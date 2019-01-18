@@ -66,6 +66,33 @@ export function init(p:{ pageParameters:PageParameters })
 							$(element).hide( 'blind', { direction: 'left' } );
 					}
 		};
+
+	ko.bindingHandlers.ttt_blink =
+		{
+			init: (element,valueAccessor)=>
+					{
+						// Initially hidden
+						$(element).hide();
+
+						// Initial value must always be 'false'
+						const koValue = valueAccessor();
+						koValue( false );
+					},
+			update: (element,valueAccessor)=>
+					{
+						const $element = $(element);
+						const koValue = valueAccessor();
+						if( koValue() == true )
+						{
+							// Switched to 'true' => animate
+							$element.fadeIn().delay(1000).fadeOut( ()=>
+								{
+									// then revert to 'false'
+									koValue( false );
+								} );
+						}
+					},
+		};
 }
 
 export namespace utils

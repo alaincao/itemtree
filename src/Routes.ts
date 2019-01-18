@@ -43,6 +43,8 @@ export interface Routes
 					pictureUpload	: string,
 				},
 			testimonial : {
+					save			: string,
+					delete			: string,
 					pictureUpload	: string,
 				},
 		},

@@ -5,15 +5,19 @@
 	var parameters = PageHelper.Parameters;
 	var model = (ItemTTT.Views.Testimonial.TestimonialController.ListModel)Model;
 	var items = model.Items;
+	var saveSuccessMessage =  IsEN ? "Your message has been recorded. Thank you!"
+							: IsFR ? "Votre message a été enregistré. Merci!"
+							: "Uw bericht is opgenomen. Dank u!";
 }
 @section Scripts
 {
 <script type="text/javascript">
 	ttt.testimonial.list.init( {
 			urlImgNotFound		: @Html.Raw(JSON( model.UrlImgNotFound )),
+			saveSuccessMessage	: @Html.Raw(JSON( saveSuccessMessage )),
+			$formDialog			: $('#e2c7c1b9'),
 			$picUploadControl	: $('#d13591a9'),
 		} );
-	ko.applyBindings( ttt.testimonial.list.formAddNew, $('#e2c7c1b9')[0] );
 </script>
 }
 
@@ -39,19 +43,44 @@
 			</div>
 			<div class="modal-body">
 
+				<ul>
+					<li>
+						<span ttt-only-if="IsEN">Your name</span>
+						<span ttt-only-if="IsFR">Votre nom</span>
+						<span ttt-only-if="IsNL">Uw naam</span>
+						<input type="text" data-bind="value:firstLastName"/>
+					</li>
+					<li>
+						<span ttt-only-if="IsEN">Who are you?</span>
+						<span ttt-only-if="IsFR">Qui êtes-vous?</span>
+						<span ttt-only-if="IsNL">Wie bent u?</span>
+						<input type="text" data-bind="value:whosWho"/>
+					</li>
+					<li>
+						<span ttt-only-if="IsEN">Testimonial</span>
+						<span ttt-only-if="IsFR">Témoignage</span>
+						<span ttt-only-if="IsNL">Testimonial</span>
+						<textarea data-bind="value:text"></textarea>
+					</li>
+				</ul>
+
 				<input type="file" id="d13591a9" />
 				<img width="650px" height="650px" data-bind="attr:{ src:imageSrc }"/>
 
 			</div>
 			<div class="modal-footer">
 
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">
+				<span ttt-only-if="IsEN" data-bind="ttt_blink:showRequiredText">Please fill in all the fields</span>
+				<span ttt-only-if="IsFR" data-bind="ttt_blink:showRequiredText">Veuillez remplir tous les champs</span>
+				<span ttt-only-if="IsNL" data-bind="ttt_blink:showRequiredText">Gelieve alle velden in te vullen</span>
+
+				<button type="button" data-bind="click:close" class="btn btn-secondary">
 					<span ttt-only-if="IsEN">Close</span>
 					<span ttt-only-if="IsFR">Fermer</span>
 					<span ttt-only-if="IsNL">Gesloten</span>
 				</button>
 
-				<button type="button" data-bind="click:save" class="btn btn-primary" data-dismiss="modal">
+				<button type="button" data-bind="click:save" class="btn btn-primary">
 					<span ttt-only-if="IsEN">Save</span>
 					<span ttt-only-if="IsFR">Valider</span>
 					<span ttt-only-if="IsNL">Verzenden</span>

@@ -34,16 +34,17 @@ namespace ItemTTT.DTOs
 			ImageData		= src.ImageData;
 		}
 
-		internal void ToModel(Models.Testimonial dst)
+		internal void ToModel(Models.Testimonial dst, bool includeAdminFields)
 		{
-			var date = (Date != null) ? (Date.FromIsoDate()??DateTime.Now) : DateTime.Now;
-
-			dst.Date			= date;
 			dst.FirstLastName	= FirstLastName	?? "";
 			dst.WhosWho			= WhosWho		?? "";
 			dst.Text			= Text			?? "";
-			dst.Active			= Active;
-			dst.ImageData		= ImageData		?? "";
+			dst.ImageData		= string.IsNullOrWhiteSpace(ImageData) ? null : ImageData;
+			if( includeAdminFields )
+			{
+				dst.Date	= (Date != null) ? (Date.FromIsoDate()??DateTime.Now) : DateTime.Now;
+				dst.Active	= Active;
+			}
 		}
 	}
 }

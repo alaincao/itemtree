@@ -608,6 +608,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("../Views/common");
+function save(post) {
+    return __awaiter(this, void 0, void 0, function () {
+        var rc;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, common.url.postRequestJSON(common.routes.api.testimonial.save, post)];
+                case 1:
+                    rc = _a.sent();
+                    return [2 /*return*/, rc];
+            }
+        });
+    });
+}
+exports.save = save;
 function uploadPicture(file) {
     return __awaiter(this, void 0, void 0, function () {
         var url, formData, response;
@@ -2264,21 +2278,30 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var common = require("../common");
 var ctrl = require("../../Services/TestimonialController");
+var saveSuccessMessage;
 function init(p) {
     common.utils.log('list.init(): START');
+    saveSuccessMessage = p.saveSuccessMessage;
     common.utils.log('list.init(): Create KO for new testimonial form');
-    exports.formAddNew = new FormAddNew(p.urlImgNotFound);
+    exports.formTestimonial = new FormTestimonial(p.$formDialog, p.urlImgNotFound);
     common.utils.log('list.init(): Init picture upload');
     p.$picUploadControl.on('change', function () {
         var files = p.$picUploadControl[0].files;
-        /*await*/ exports.formAddNew.uploadPicture(files);
+        /*await*/ exports.formTestimonial.uploadPicture(files);
     });
     common.utils.log('list.init(): END');
 }
 exports.init = init;
-var FormAddNew = /** @class */ (function () {
-    function FormAddNew(urlImgNotFound) {
+var FormTestimonial = /** @class */ (function () {
+    function FormTestimonial($container, urlImgNotFound) {
         var self = this;
+        this.$container = $container;
+        this.$blockingDiv = $container;
+        this.showRequiredText = ko.observable(false);
+        this.model = null;
+        this.firstLastName = ko.observable('');
+        this.whosWho = ko.observable('');
+        this.text = ko.observable('');
         this.imageData = ko.observable(null);
         this.imageSrc = ko.computed(function () {
             var data = self.imageData();
@@ -2286,14 +2309,18 @@ var FormAddNew = /** @class */ (function () {
                 return urlImgNotFound;
             return data;
         });
+        common.utils.log('FormTestimonial(): Bind to the Boostrap\'s close event');
+        self.$container.on('hidden.bs.modal', function () { return self.reset(); });
+        common.utils.log('FormTestimonial(): KO bind the form dialog');
+        ko.applyBindings(self, self.$container[0]);
     }
-    FormAddNew.prototype.uploadPicture = function (files) {
+    FormTestimonial.prototype.uploadPicture = function (files) {
         return __awaiter(this, void 0, void 0, function () {
             var self, rc;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        common.utils.log('AddNewForm.uploadPicture(): START', { files: files });
+                        common.utils.log('FormTestimonial.uploadPicture(): START', { files: files });
                         self = this;
                         if (files.length == 0)
                             return [2 /*return*/];
@@ -2301,25 +2328,85 @@ var FormAddNew = /** @class */ (function () {
                             common.utils.error("This browser doesn't support HTML5 file uploads!");
                             return [2 /*return*/];
                         }
+                        common.html.block(self.$blockingDiv);
                         return [4 /*yield*/, ctrl.uploadPicture(files[0])];
                     case 1:
                         rc = _a.sent();
+                        common.html.unblock(self.$blockingDiv);
                         if (!rc.success) {
-                            common.utils.error('AddNewForm.uploadPicture(): Error', { rc: rc });
+                            common.utils.error('FormTestimonial.uploadPicture(): Error', { rc: rc });
                             common.html.showMessage(rc.errorMessage);
                             return [2 /*return*/];
                         }
                         self.imageData(rc.imageData);
-                        common.utils.log('AddNewForm.uploadPicture(): END');
+                        common.utils.log('FormTestimonial.uploadPicture(): END');
                         return [2 /*return*/];
                 }
             });
         });
     };
-    FormAddNew.prototype.save = function () {
-        common.utils.error('TODO: FormAddNew.save()');
+    FormTestimonial.prototype.reset = function () {
+        common.utils.log('FormTestimonial.reset(): START');
+        var self = this;
+        self.showRequiredText(false);
+        self.model = null;
+        self.firstLastName('');
+        self.whosWho('');
+        self.text('');
+        self.imageData(null);
+        common.utils.log('FormTestimonial.reset(): END');
     };
-    return FormAddNew;
+    FormTestimonial.prototype.close = function () {
+        common.utils.log('FormTestimonial.close(): START');
+        this.$container.modal('hide');
+        common.utils.log('FormTestimonial.close(): END');
+    };
+    FormTestimonial.prototype.save = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var self, fields, rc;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        common.utils.log('FormTestimonial.save(): START');
+                        self = this;
+                        if (common.utils.stringIsNullOrWhitespace(self.firstLastName())
+                            || common.utils.stringIsNullOrWhitespace(self.whosWho())
+                            || common.utils.stringIsNullOrWhitespace(self.text())) {
+                            self.showRequiredText(true);
+                            return [2 /*return*/];
+                        }
+                        fields = {
+                            firstLastName: self.firstLastName(),
+                            whosWho: self.whosWho(),
+                            text: self.text(),
+                            imageData: self.imageData(),
+                        };
+                        if (self.model == null)
+                            // Add new
+                            self.model = $.extend({ date: '', active: false }, fields);
+                        else
+                            // Edit openned one
+                            $.extend(self.model, fields);
+                        common.utils.log('FormTestimonial.save(): Send the save request');
+                        common.html.block(self.$blockingDiv);
+                        return [4 /*yield*/, ctrl.save(self.model)];
+                    case 1:
+                        rc = _a.sent();
+                        common.html.unblock(self.$blockingDiv);
+                        if (!rc.success) {
+                            common.utils.error('FormTestimonial.save(): Error', { rc: rc });
+                            common.html.showMessage(rc.errorMessage);
+                            return [2 /*return*/];
+                        }
+                        self.close();
+                        common.html.showMessage(saveSuccessMessage);
+                        common.utils.log('FormTestimonial.save(): END');
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return FormTestimonial;
 }());
 
 },{"../../Services/TestimonialController":11,"../common":23}],23:[function(require,module,exports){
@@ -2420,6 +2507,27 @@ function init(p) {
                 else
                     $(element).hide('blind', { direction: 'left' });
             }
+        };
+    ko.bindingHandlers.ttt_blink =
+        {
+            init: function (element, valueAccessor) {
+                // Initially hidden
+                $(element).hide();
+                // Initial value must always be 'false'
+                var koValue = valueAccessor();
+                koValue(false);
+            },
+            update: function (element, valueAccessor) {
+                var $element = $(element);
+                var koValue = valueAccessor();
+                if (koValue() == true) {
+                    // Switched to 'true' => animate
+                    $element.fadeIn().delay(1000).fadeOut(function () {
+                        // then revert to 'false'
+                        koValue(false);
+                    });
+                }
+            },
         };
 }
 exports.init = init;
