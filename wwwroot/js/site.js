@@ -2658,6 +2658,10 @@ function init(p) {
     exports.pageParameters = p.pageParameters;
     exports.routes = exports.pageParameters.routes;
     utils.log('common.init()');
+    if (exports.pageParameters.hasErrors) {
+        utils.log('common.init(): Page has errors! ; outputting the logs');
+        common.utils.error('Page has errors!', { log: exports.pageParameters.logs });
+    }
     utils.log('common.init(): Add custom KnockoutHandler');
     ko.bindingHandlers.ttt_autocomplete =
         {

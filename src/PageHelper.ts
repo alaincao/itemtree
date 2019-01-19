@@ -9,5 +9,7 @@ export interface PageParameters
 	currentLanguage	: Language,
 	languageUrls	: {[key:string]:string},
 	routes			: Routes,
+	hasErrors		: boolean,
 	isDebug			: boolean,
+	logs			: string[],
 }

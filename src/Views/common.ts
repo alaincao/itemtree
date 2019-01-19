@@ -14,6 +14,12 @@ export function init(p:{ pageParameters:PageParameters })
 	routes = pageParameters.routes;
 	utils.log( 'common.init()' );
 
+	if( pageParameters.hasErrors )
+	{
+		utils.log( 'common.init(): Page has errors! ; outputting the logs' );
+		common.utils.error( 'Page has errors!', { log:pageParameters.logs } );
+	}
+
 	utils.log( 'common.init(): Add custom KnockoutHandler' );
 
 	ko.bindingHandlers.ttt_autocomplete =

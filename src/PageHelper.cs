@@ -20,6 +20,7 @@ namespace ItemTTT
 				CurrentLanguage	= ""+currentLanguage;
 				LanguageUrls	= languageUrls;
 				Routes			= routes;
+				HasErrors		= false;
 				IsDebug			= Utils.IsDebug;
 			}
 			public string						PageTitle		{ get { return (string)this["PageTitle"]; } set { this["PageTitle"] = value; } }
@@ -27,7 +28,9 @@ namespace ItemTTT
 			private string						CurrentLanguage	{ set { this["CurrentLanguage"] = value; } }
 			public Dictionary<Languages,string>	LanguageUrls	{ get { return (Dictionary<Languages,string>)this["LanguageUrls"]; } private set { this["LanguageUrls"] = value; } }
 			private object						Routes			{ set { this["Routes"] = value; } }
+			internal bool						HasErrors		{ set { this["HasErrors"] = value; } }
 			private bool						IsDebug			{ set { this["IsDebug"] = value; } }
+			internal string[]					Logs			{ set { this["Logs"] = value; } }
 		}
 
 		internal LogHelper				ScopeLogs			{ get; private set; } = new LogHelper();

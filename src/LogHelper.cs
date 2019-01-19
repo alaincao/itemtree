@@ -13,6 +13,7 @@ namespace ItemTTT
 		}
 
 		private List<Entry>		Messages	= new List<Entry>();
+		public bool				HasErrors	= false;
 
 		internal void AddLogMessage(string message)
 		{
@@ -44,6 +45,7 @@ namespace ItemTTT
 			try
 			{
 				Utils.Assert( exception != null, GetType(), $"Missing parameter {nameof(exception)}" );
+				HasErrors = true;
 
 				var aggregateException = exception as AggregateException;
 				if( aggregateException != null )

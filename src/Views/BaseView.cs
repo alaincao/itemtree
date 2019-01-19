@@ -23,10 +23,12 @@ namespace ItemTTT.Views
 			IsFR = (lng == Languages.fr);
 			IsNL = (lng == Languages.nl);
 
+			pageHelper.Parameters.HasErrors = logHelper.HasErrors;
+
 			logHelper.AddLogMessage( "BaseView Init: END" );
-			if( Utils.IsDebug )
+			if( Utils.IsDebug || logHelper.HasErrors )
 				// Add scope's log to page parameters
-				pageHelper.Parameters["Logs"] = logHelper.GetLogLines();
+				pageHelper.Parameters.Logs = logHelper.GetLogLines();
 		}
 
 		protected string JSON(object obj, bool? indented=null)
