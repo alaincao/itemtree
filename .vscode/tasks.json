@@ -75,6 +75,13 @@
 			"problemMatcher": [
 				"$gulp-tsc"
 			]
+		},
+		{
+			"type": "gulp",
+			"task": "style.css",
+			"problemMatcher": [
+				"$node-sass"
+			]
 		}
 	]
 }
