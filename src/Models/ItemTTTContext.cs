@@ -10,7 +10,7 @@ namespace ItemTTT.Models
 	public class ItemTTTContext : DbContext
 	{
 		internal static readonly Dictionary<string,string> KnownErrorTriggers = new Dictionary<string, string>{
-																						{ "'IX_Car'", "An item with the same code already exists" },
+																						{ "'IX_Item'", "An item with the same code already exists" },
 																					};
 
 		public DbSet<Configuration>		Configurations		{ get; set; }

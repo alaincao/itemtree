@@ -4,11 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ItemTTT.Models
 {
-	[Table("Car")]
+	[Table("Item")]
 	public class Item
 	{
 		[Key]
-		[Column("CarID")]
+		[Column("ItemID")]
 		public int		ID				{ get; set; }
 
 		[Required]
@@ -36,7 +36,6 @@ namespace ItemTTT.Models
 		[Column(TypeName = "varchar(max)")]
 		public string	Features		{ get; set; }
 
-		[Required]
 		public bool		Active			{ get; set; }
 
 		public int?		MainImageNumber	{ get; set; }

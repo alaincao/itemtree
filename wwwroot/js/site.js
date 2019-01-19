@@ -712,7 +712,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var _a;
 var common = require("../Views/common");
-exports.TranslationTypes = (_a = common.utils.strEnum(['feature']), _a.e), exports.allTranslationTypes = _a.a;
+exports.TranslationTypes = (_a = common.utils.strEnum([
+    'feature',
+]), _a.e), exports.allTranslationTypes = _a.a;
 function list(p) {
     return __awaiter(this, void 0, void 0, function () {
         var rc;

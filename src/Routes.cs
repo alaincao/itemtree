@@ -26,15 +26,15 @@ namespace ItemTTT
 		internal const string	AdminHome			= "/admin";
 		internal const string	Login				= "/admin/login";
 		internal const string	Logout				= "/admin/logout";
-		internal const string	ItemsList			= "/"+LangParameter+"/car-listing";
-		internal const string	ItemDetails			= "/"+LangParameter+"/car-details/"+ItemCodeParameter;
-		internal const string	ItemEdit			= "/car-edit/"+ItemCodeParameter;
-		internal const string	ItemAdd				= "/car-add";
+		internal const string	ItemsList			= "/"+LangParameter+"/item-listing";
+		internal const string	ItemDetails			= "/"+LangParameter+"/item-details/"+ItemCodeParameter;
+		internal const string	ItemEdit			= "/item-edit/"+ItemCodeParameter;
+		internal const string	ItemAdd				= "/item-add";
 		internal const string	BlogList			= "/"+LangParameter+"/blog";
 		internal const string	BlogDetails			= "/"+LangParameter+"/blog/"+ItemIDParameter;
 		internal const string	BlogAdd				= "/blog/add";
 		internal const string	BlogEdit			= "/blog/edit/"+ItemIDParameter;
-		internal const string	TestimonialList		= "/"+LangParameter+"/golden-book";
+		internal const string	TestimonialList		= "/"+LangParameter+"/testimonial";
 
 		// APIs
 		internal const string	GetUrlCode			= "/api/geturlcode";
@@ -44,24 +44,24 @@ namespace ItemTTT
 		internal const string	AutoComplete		= "/api/autocomplete";
 		internal const string	GetTranslations		= "/api/translations";
 		internal const string	SaveTranslations	= "/api/translations/save";
-		internal const string	ItemsListApi		= "/api/car-listing";
-		internal const string	ItemDetailsApi		= "/api/car-details/"+ItemCodeParameter;
-		internal const string	ItemSave			= "/api/car-save";
-		internal const string	ItemDelete			= "/api/car-delete/"+ItemCodeParameter;
-		internal const string	ItemPictureList		= "/api/car-details/"+ItemCodeParameter+"/pictures";
-		internal const string	ItemPictureDelete	= "/api/car-details/"+ItemCodeParameter+"/pictures/delete";
-		internal const string	ItemPictureReorder	= "/api/car-details/"+ItemCodeParameter+"/pictures/reorder";
-		internal const string	ItemPictureSetMain	= "/api/car-details/"+ItemCodeParameter+"/pictures/setmain";
-		internal const string	ItemPictureDownload	= "/car-details/"+ItemCodeParameter+"/pictures/{number}";
-		internal const string	ItemPictureUpload	= "/api/car-details/"+ItemCodeParameter+"/pictures/upload";
+		internal const string	ItemsListApi		= "/api/item-listing";
+		internal const string	ItemDetailsApi		= "/api/item-details/"+ItemCodeParameter;
+		internal const string	ItemSave			= "/api/item-save";
+		internal const string	ItemDelete			= "/api/item-delete/"+ItemCodeParameter;
+		internal const string	ItemPictureList		= "/api/item-details/"+ItemCodeParameter+"/pictures";
+		internal const string	ItemPictureDelete	= "/api/item-details/"+ItemCodeParameter+"/pictures/delete";
+		internal const string	ItemPictureReorder	= "/api/item-details/"+ItemCodeParameter+"/pictures/reorder";
+		internal const string	ItemPictureSetMain	= "/api/item-details/"+ItemCodeParameter+"/pictures/setmain";
+		internal const string	ItemPictureDownload	= "/item-details/"+ItemCodeParameter+"/pictures/{number}";
+		internal const string	ItemPictureUpload	= "/api/item-details/"+ItemCodeParameter+"/pictures/upload";
 		internal const string	BlogListApi			= "/api/blog";
 		internal const string	BlogSaveApi			= "/api/blog/save";
 		internal const string	BlogDeleteApi		= "/api/blog/delete";
 		internal const string	BlogPictureUpload	= "/api/blog/picture/upload";
-		internal const string	TestimListApi		= "/api/golden-book";
-		internal const string	TestimPictUpload	= "/api/golden-book/picture/upload";
-		internal const string	TestimSaveApi		= "/api/golden-book/save";
-		internal const string	TestimDeleteApi		= "/api/golden-book/delete";
+		internal const string	TestimListApi		= "/api/testimonial";
+		internal const string	TestimPictUpload	= "/api/testimonial/picture/upload";
+		internal const string	TestimSaveApi		= "/api/testimonial/save";
+		internal const string	TestimDeleteApi		= "/api/testimonial/delete";
 
 		/// <summary>Set PageParameters routes for client-side</summary>
 		internal static object GetPageParameterRoutes(PageHelper pageHelper)

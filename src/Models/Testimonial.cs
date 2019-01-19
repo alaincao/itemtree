@@ -6,14 +6,14 @@ using System.Linq;
 
 namespace ItemTTT.Models
 {
-	[Table("Testimonials")]
+	[Table("Testimonial")]
 	public class Testimonial
 	{
 		[Key]
 		[Column("TestimonialID")]
 		public int		ID				{ get; set; }
 
-		[Column("TestimonialDate", TypeName = "date")]
+		[Column(TypeName = "date")]
 		public DateTime	Date			{ get; set; }
 
 		[Required]
@@ -25,12 +25,12 @@ namespace ItemTTT.Models
 		public string	WhosWho			{ get; set; }
 
 		[Required]
-		[Column("Testimonial", TypeName = "nvarchar(max)")]
+		[Column(TypeName = "nvarchar(max)")]
 		public string	Text			{ get; set; }
 
 		public bool		Active			{ get; set; }
 
-		[Column("ImageTestimonial", TypeName = "nvarchar(max)")]
+		[Column(TypeName = "nvarchar(max)")]
 		public string	ImageData		{ get; set; }
 
 		internal static IQueryable<Testimonial> UnselectImage(IQueryable<Testimonial> query)

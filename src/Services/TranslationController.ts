@@ -3,7 +3,9 @@ import * as common from "../Views/common";
 import Result from "../Utils/TTTServiceResult";
 import * as dto from "../DTOs/Translation";
 
-export const { e:TranslationTypes, a:allTranslationTypes } = common.utils.strEnum([ 'feature' ]);
+export const { e:TranslationTypes, a:allTranslationTypes } = common.utils.strEnum([
+																	'feature',
+																]);
 export type TranslationType = keyof typeof TranslationTypes;
 
 export async function list(p:ListRequest) : Promise<ListResponse>

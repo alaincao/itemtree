@@ -3,18 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ItemTTT.Models
 {
-	[Table("CarPicture")]
+	[Table("ItemPicture")]
 	public class ItemPicture
 	{
 		internal const string	Type_Original		= "original";
 		internal const string	Type_HeightPrefix	= "height=";
 
 		[Key]
-		[Column("CarPictureID")]
+		[Column("ItemPictureID")]
 		public int		ID			{ get; set; }
 
 		[Required]
-		[Column("CarID")]
 		public int		ItemID		{ get; set; }
 
 		[Required]

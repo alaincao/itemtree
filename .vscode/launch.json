@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "Build dotnet",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/bin/Debug/netcoreapp2.2/test01.dll",
+            "program": "${workspaceFolder}/bin/Debug/netcoreapp2.2/itemttt.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,

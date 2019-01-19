@@ -13,7 +13,7 @@ namespace ItemTTT.Models
 		[Column("BlogPostID")]
 		public int		ID				{ get; set; }
 
-		[Column("PostDate", TypeName = "date")]
+		[Column(TypeName = "date")]
 		public DateTime	Date			{ get; set; }
 
 		[Required]
