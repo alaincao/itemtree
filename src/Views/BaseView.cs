@@ -5,6 +5,8 @@ namespace ItemTTT.Views
 {
 	public abstract class BaseView : Microsoft.AspNetCore.Mvc.Razor.RazorPage<object>
 	{
+		private PageHelper		PageHelper;
+
 		/// <summary>Tag parameter to add to scripts URLs so browsers' cache get refreshed</summary>
 		protected string		ScriptsTag		{ get { return scriptsTag ?? (scriptsTag = Guid.NewGuid().ToString().Replace("-", "")); } }
 		private static string	scriptsTag		= null;
@@ -15,6 +17,8 @@ namespace ItemTTT.Views
 
 		protected void Init(PageHelper pageHelper)
 		{
+			PageHelper = pageHelper;
+
 			var logHelper = pageHelper.ScopeLogs;
 			logHelper.AddLogMessage( "BaseView Init: START" );
 
@@ -29,6 +33,13 @@ namespace ItemTTT.Views
 			if( Utils.IsDebug || logHelper.HasErrors )
 				// Add scope's log to page parameters
 				pageHelper.Parameters.Logs = logHelper.GetLogLines();
+		}
+
+		protected string Resolve(string route)
+		{
+			Utils.Assert( !string.IsNullOrWhiteSpace(route), this, $"Missing parameter '{nameof(route)}'" );
+			route = route.Replace( Routes.LangParameter, ""+PageHelper.CurrentLanguage );
+			return PageHelper.ResolveRoute( route );
 		}
 
 		protected string JSON(object obj, bool? indented=null)

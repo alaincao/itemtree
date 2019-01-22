@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ItemTTT
 {
-	internal static class Routes
+	public static class Routes
 	{
 		internal const string	LangParameter		= Language.RouteParameter;  // i.e. "{lang:lang}" => e.g. "en" or "fr"
 		private const string	ItemCodeParameter	= "{itemCode}";
@@ -19,22 +19,22 @@ namespace ItemTTT
 
 		// Views
 		internal const string	InitializationLog	= "/initialization-log";
-		internal const string	Home1				= "/";
-		internal const string	Home2				= "/"+LangParameter;
+		public const string		Home1				= "/";
+		public const string		Home2				= "/"+LangParameter;
 		internal const string	Error				= "/error";
 		internal const string	ErrorStatus			= "/error/{status}";
-		internal const string	AdminHome			= "/admin";
-		internal const string	Login				= "/admin/login";
-		internal const string	Logout				= "/admin/logout";
-		internal const string	ItemsList			= "/"+LangParameter+"/item-listing";
+		public const string		AdminHome			= "/admin";
+		public const string		Login				= "/admin/login";
+		public const string		Logout				= "/admin/logout";
+		public const string		ItemsList			= "/"+LangParameter+"/item-listing";
 		internal const string	ItemDetails			= "/"+LangParameter+"/item-details/"+ItemCodeParameter;
 		internal const string	ItemEdit			= "/item-edit/"+ItemCodeParameter;
-		internal const string	ItemAdd				= "/item-add";
-		internal const string	BlogList			= "/"+LangParameter+"/blog";
+		public const string		ItemAdd				= "/item-add";
+		public const string		BlogList			= "/"+LangParameter+"/blog";
 		internal const string	BlogDetails			= "/"+LangParameter+"/blog/"+ItemIDParameter;
-		internal const string	BlogAdd				= "/blog/add";
+		public const string		BlogAdd				= "/blog/add";
 		internal const string	BlogEdit			= "/blog/edit/"+ItemIDParameter;
-		internal const string	TestimonialList		= "/"+LangParameter+"/testimonial";
+		public const string		TestimonialList		= "/"+LangParameter+"/testimonial";
 
 		// APIs
 		internal const string	GetUrlCode			= "/api/geturlcode";
