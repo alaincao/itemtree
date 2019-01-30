@@ -1,4 +1,5 @@
 @inherits ItemTTT.Views.BaseView
+@inject ItemTTT.Views.Shared.LayoutHelper LayoutHelper
 @using System.Collections.Generic
 @{
 	Init( PageHelper );
@@ -75,7 +76,7 @@
 
 	<!-- Initialize common module -->
 	<script type="text/javascript">
-		ttt.common.init({ pageParameters:@Html.Raw(JSON(parameters)) });
+		ttt.common.init({ pageParameters:@Html.Raw(LayoutHelper.GetPageParametersJSON()) });
 	</script>
 
 	<!-- Page's custom script -->

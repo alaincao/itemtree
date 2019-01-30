@@ -91,6 +91,8 @@ namespace ItemTTT
 			// NB: This is required for the PageHelper to be able to use the UrlHelper (https://stackoverflow.com/questions/30696337/unable-to-utilize-urlhelper)
 			services.AddSingleton<Microsoft.AspNetCore.Mvc.Infrastructure.IActionContextAccessor,Microsoft.AspNetCore.Mvc.Infrastructure.ActionContextAccessor>();
 
+			services.AddScoped<Views.Shared.LayoutHelper>();
+
 			InitializationLog.AddLogMessage( "Startup: ConfigureServices END" );
 		}
 
