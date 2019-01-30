@@ -72,7 +72,7 @@ async function loadImages() : Promise<PostItem>
 	posts.forEach( async (item)=>
 		{
 			common.html.block( item.$container );
-			const rc = await apiCtrl.list({ id:item.id });
+			const rc = await apiCtrl.list({ id:item.id, includeInactives:true });
 			common.html.unblock( item.$container );
 			if(! rc.success )
 			{

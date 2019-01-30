@@ -1433,7 +1433,7 @@ function loadImages() {
                     switch (_a.label) {
                         case 0:
                             common.html.block(item.$container);
-                            return [4 /*yield*/, apiCtrl.list({ id: item.id })];
+                            return [4 /*yield*/, apiCtrl.list({ id: item.id, includeInactives: true })];
                         case 1:
                             rc = _a.sent();
                             common.html.unblock(item.$container);
