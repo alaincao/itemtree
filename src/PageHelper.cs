@@ -35,7 +35,6 @@ namespace ItemTTT
 
 		internal LogHelper				ScopeLogs			{ get; private set; } = new LogHelper();
 		public readonly PageParameters	Parameters;
-		public bool						UseMinified			{ get { return Utils.IsDebug == false; } }
 		public readonly Languages		CurrentLanguage;
 		public readonly bool			IsAuthenticated;
 

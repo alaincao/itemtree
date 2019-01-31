@@ -15,6 +15,9 @@ namespace ItemTTT.Views
 		protected bool	IsFR	{ get; private set; }
 		protected bool	IsNL	{ get; private set; }
 
+		protected bool	UseMini	{ get; private set; }
+		protected bool	UseMaxi	{ get; private set; }
+
 		protected void Init(PageHelper pageHelper)
 		{
 			PageHelper = pageHelper;
@@ -26,6 +29,9 @@ namespace ItemTTT.Views
 			IsEN = (lng == Languages.en);
 			IsFR = (lng == Languages.fr);
 			IsNL = (lng == Languages.nl);
+
+			UseMini = ( Utils.IsDebug == false );
+			UseMaxi = (! UseMini);
 
 			logHelper.AddLogMessage( "BaseView Init: END" );
 		}
