@@ -176,10 +176,6 @@ namespace ItemTTT.Services
 							switch( request.Type )
 							{
 								case Types.Feature:			await RenameFeature( dc, enOriginal, en );		break;
-								case Types.Color:			await RenameColor( dc, enOriginal, en );		break;
-								case Types.Carburant:		await RenameCarburant( dc, enOriginal, en );	break;
-								case Types.Transmission:	await RenameTransmission( dc, enOriginal, en );	break;
-								case Types.CarType:			await RenameCarType( dc, enOriginal, en );		break;
 								default:
 									throw new NotImplementedException( $"Unknown value '{request.Type}' for parameter {nameof(request.Type)}" );
 							}
