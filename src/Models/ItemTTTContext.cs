@@ -19,6 +19,7 @@ namespace ItemTTT.Models
 		public DbSet<ItemPicture>		ItemPictures		{ get; set; }
 		public DbSet<BlogPost>			BlogPosts			{ get; set; }
 		public DbSet<Testimonial>		Testimonials		{ get; set; }
+		public DbSet<DynamicPage>		DynamicPages		{ get; set; }
 
 		public ItemTTTContext(DbContextOptions options) : base(options)  {}
 
@@ -49,6 +50,10 @@ namespace ItemTTT.Models
 
 			modelBuilder.Entity<Translation>()
 							.HasIndex( v=>new{ v.TypeString, v.TranslationEN } )
+							.IsUnique();
+
+			modelBuilder.Entity<DynamicPage>()
+							.HasIndex( v=>new{ v.Code } )
 							.IsUnique();
 		}
 	}
