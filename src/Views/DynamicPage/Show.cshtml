@@ -1,0 +1,9 @@
+@inherits ItemTTT.Views.BaseView
+@{
+	Init( PageHelper );
+
+	var parameters = PageHelper.Parameters;
+	var item = (ItemTTT.Views.DynamicPageController.ShowModel)Model;
+}
+
+<div>@Html.Raw(item.Text)</div>

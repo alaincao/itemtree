@@ -35,6 +35,8 @@ namespace ItemTTT
 		public const string		BlogAdd				= "/blog/add";
 		internal const string	BlogEdit			= "/blog/edit/"+ItemIDParameter;
 		public const string		TestimonialList		= "/"+LangParameter+"/testimonial";
+		public const string		DynamicPageShow		= "/"+LangParameter+"/dynamicpage/"+ItemCodeParameter;
+		public const string		DynamicPageStatic	= "/static/demo";
 
 		// APIs
 		internal const string	GetUrlCode			= "/api/geturlcode";
