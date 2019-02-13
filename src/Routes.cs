@@ -62,6 +62,8 @@ namespace ItemTTT
 		internal const string	TestimPictUpload	= "/api/testimonial/picture/upload";
 		internal const string	TestimSaveApi		= "/api/testimonial/save";
 		internal const string	TestimDeleteApi		= "/api/testimonial/delete";
+		internal const string	DynamicPageGetApi	= "/api/dynamicpage/get";
+		internal const string	DynamicPageUpdateApi= "/api/dynamicpage/update";
 
 		/// <summary>Set PageParameters routes for client-side</summary>
 		internal static object GetPageParameterRoutes(PageHelper pageHelper)
