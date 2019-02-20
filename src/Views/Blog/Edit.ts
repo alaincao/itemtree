@@ -41,7 +41,7 @@ export async function init(p:{	isAdding			: boolean,
 }
 
 /** Add 'tinymceEditor' Knockout bindings handler */
-function addKoTinymceEditor() : void
+export function addKoTinymceEditor() : void
 {
 	// Create HTML editor KO's binding
 	ko.bindingHandlers.tinymceEditor =
@@ -50,7 +50,11 @@ function addKoTinymceEditor() : void
 				{
 					const $element = $(element);
 					const observable : KnockoutObservable<string> = valueAccessor();
+
+					// Initial sync.
+					observable( $element.html() );
 					$element.html( observable() );
+
 					(<any>$element).tinymce( {
 							inline	: true,
 							plugins	: 'image,code',
@@ -58,6 +62,7 @@ function addKoTinymceEditor() : void
 										{
 											ed.on( 'change', function()
 												{
+													// HTML has changed
 													observable( $element.html() );
 												} );
 										},
@@ -65,6 +70,7 @@ function addKoTinymceEditor() : void
 				},
 			update : function(element, valueAccessor)
 				{
+					// Observable has changed
 					const observable : KnockoutObservable<string> = valueAccessor();
 					const $element = $(element);
 					$element.html( observable() );
