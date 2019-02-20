@@ -31,12 +31,14 @@ namespace ItemTTT.Views
 			if(! rv.Success )
 				return ObjectNotFound();
 
-			var model = new ShowModel{ Text=rv.Result };
+			var model = new ShowModel {	ItemCode	= itemCode,
+										Text		= rv.Result };
 			return View( ShowView, model );
 		}
 		public struct ShowModel
 		{
-			public string			Text;
+			public string	ItemCode;
+			public string	Text;
 		}
 	}
 }

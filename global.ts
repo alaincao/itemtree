@@ -7,6 +7,7 @@ import * as itemedit	from "./src/Views/ItemTTT/Edit";
 import * as bloglist	from "./src/Views/Blog/List";
 import * as blogedit	from "./src/Views/Blog/Edit";
 import * as tstmlist	from "./src/Views/Testimonial/List";
+import * as dynpgshow	from "./src/Views/DynamicPage/Show";
 
 ///////
 
@@ -28,6 +29,9 @@ var ttt =
 	},
 	testimonial: {
 		list	: tstmlist,
+	},
+	dynamicpage: {
+		show	: dynpgshow,
 	},
 }
 declare global

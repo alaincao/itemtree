@@ -48,5 +48,9 @@ export interface Routes
 					delete			: string,
 					pictureUpload	: string,
 				},
+			dynamicPage : {
+					get		: string,
+					update	: string,
+				},
 		},
 }

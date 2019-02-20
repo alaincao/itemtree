@@ -131,6 +131,10 @@ namespace ItemTTT
 									Delete			= tr( TestimDeleteApi ),
 									PictureUpload	= tr( TestimPictUpload ),
 								},
+							DynamicPage = new {
+									Get		= tr( DynamicPageGetApi ),
+									Update	= tr( DynamicPageUpdateApi ),
+								},
 						},
 				};
 			GetPageParameterRoutesCache = obj;
