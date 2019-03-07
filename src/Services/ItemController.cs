@@ -44,7 +44,7 @@ namespace ItemTTT.Services
 					chars[i] = '-';
 			}
 			string str = new String( chars );
-			for( var newStr = str.Replace("__", "_") ; newStr.Length != str.Length; newStr = str.Replace("__", "_") )
+			for( var newStr = str.Replace("--", "-") ; newStr.Length != str.Length; newStr = str.Replace("--", "-") )
 				str =  newStr;
 			return str;
 		}
