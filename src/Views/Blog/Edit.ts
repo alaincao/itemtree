@@ -52,7 +52,6 @@ export function addKoTinymceEditor() : void
 					const observable : KnockoutObservable<string> = valueAccessor();
 
 					// Initial sync.
-					observable( $element.html() );
 					$element.html( observable() );
 
 					(<any>$element).tinymce( {
@@ -72,8 +71,14 @@ export function addKoTinymceEditor() : void
 				{
 					// Observable has changed
 					const observable : KnockoutObservable<string> = valueAccessor();
+					const newHtml = observable();
 					const $element = $(element);
-					$element.html( observable() );
+					const origHtml = $element.html();
+					if( newHtml != origHtml )
+						// HTML has changed
+						$element.html( newHtml );
+					else
+						{/*nb: Don't update HTML when not necessary or we loose the cursor position*/}
 				},
 		};
 }

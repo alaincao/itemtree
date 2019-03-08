@@ -1240,7 +1240,6 @@ function addKoTinymceEditor() {
                 var $element = $(element);
                 var observable = valueAccessor();
                 // Initial sync.
-                observable($element.html());
                 $element.html(observable());
                 $element.tinymce({
                     inline: true,
@@ -1256,8 +1255,13 @@ function addKoTinymceEditor() {
             update: function (element, valueAccessor) {
                 // Observable has changed
                 var observable = valueAccessor();
+                var newHtml = observable();
                 var $element = $(element);
-                $element.html(observable());
+                var origHtml = $element.html();
+                if (newHtml != origHtml)
+                    // HTML has changed
+                    $element.html(newHtml);
+                else { /*nb: Don't update HTML when not necessary or we loose the cursor position*/ }
             },
         };
 }
