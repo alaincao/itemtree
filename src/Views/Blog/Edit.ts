@@ -108,12 +108,13 @@ async function uploadPicture(files:FileList) : Promise<void>
 	common.utils.log( 'edit.uploadPicture(): END' );
 }
 
-export async function refresh() : Promise<void>
+export async function refresh(confirmed:boolean) : Promise<void>
 {
 	common.utils.log( 'edit.refresh(): START' );
 
 	common.utils.log( 'edit.refresh(): Wait for user confirmation' );
-	const confirmed = await common.html.confirm( message_confirmRefresh );
+	if( confirmed != true )
+		confirmed = await common.html.confirm( message_confirmRefresh );
 	if(! confirmed )
 	{
 		common.utils.log( 'edit.refresh(): NOT confirmed ; END' );
@@ -159,6 +160,10 @@ export async function save() : Promise<void>
 		common.utils.log( 'edit.save(): Adding => Redirect to edit page' );
 		const url = common.routes.blog.edit.replace( common.routes.itemIDParameter, ''+rc.id );
 		common.url.redirect( url );
+	}
+	else
+	{
+		await refresh( /*confirmed*/true );
 	}
 
 	common.utils.log( 'edit.save(): END' );

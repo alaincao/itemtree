@@ -1294,17 +1294,20 @@ function uploadPicture(files) {
         });
     });
 }
-function refresh() {
+function refresh(confirmed) {
     return __awaiter(this, void 0, void 0, function () {
-        var confirmed, rc;
+        var rc;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     common.utils.log('edit.refresh(): START');
                     common.utils.log('edit.refresh(): Wait for user confirmation');
+                    if (!(confirmed != true)) return [3 /*break*/, 2];
                     return [4 /*yield*/, common.html.confirm(message_confirmRefresh)];
                 case 1:
                     confirmed = _a.sent();
+                    _a.label = 2;
+                case 2:
                     if (!confirmed) {
                         common.utils.log('edit.refresh(): NOT confirmed ; END');
                         return [2 /*return*/];
@@ -1312,7 +1315,7 @@ function refresh() {
                     common.utils.log('edit.refresh(): Retreive item');
                     common.html.block($blockingDiv);
                     return [4 /*yield*/, ctrl.list({ id: exports.post.id(), includeImages: true, includeInactives: true })];
-                case 2:
+                case 3:
                     rc = _a.sent();
                     common.html.unblock($blockingDiv);
                     if (!rc.success) {
@@ -1349,11 +1352,16 @@ function save() {
                         common.html.showMessage(rc.errorMessage);
                         return [2 /*return*/];
                     }
-                    if (isAdding) {
-                        common.utils.log('edit.save(): Adding => Redirect to edit page');
-                        url = common.routes.blog.edit.replace(common.routes.itemIDParameter, '' + rc.id);
-                        common.url.redirect(url);
-                    }
+                    if (!isAdding) return [3 /*break*/, 2];
+                    common.utils.log('edit.save(): Adding => Redirect to edit page');
+                    url = common.routes.blog.edit.replace(common.routes.itemIDParameter, '' + rc.id);
+                    common.url.redirect(url);
+                    return [3 /*break*/, 4];
+                case 2: return [4 /*yield*/, refresh(/*confirmed*/ true)];
+                case 3:
+                    _a.sent();
+                    _a.label = 4;
+                case 4:
                     common.utils.log('edit.save(): END');
                     return [2 /*return*/];
             }
