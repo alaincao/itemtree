@@ -2,10 +2,10 @@
   "name": "some_application_name",
   "version": "0.0.0",
   "devDependencies": {
-    "@types/bootstrap": "4.1.1",
+    "@types/bootstrap": "^4.1.4",
     "@types/jquery": "~3.3.5",
     "@types/jqueryui": "1.12.1",
-    "@types/knockout": "~3.4.54",
+    "@types/knockout": "^3.4.67",
     "@types/tinymce": "^4.5.16",
     "browserify": "^16.2.2",
     "del": "^3.0.0",
@@ -15,7 +15,7 @@
     "gulp-sourcemaps": "^2.6.4",
     "gulp-uglify": "^3.0.1",
     "tsify": "^4.0.0",
-    "typescript": "^3.0.1",
+    "typescript": "^3.8.2",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   },
