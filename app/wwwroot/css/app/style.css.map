@@ -1,0 +1,1 @@
+{"version":3,"sources":["Shared/Layout.scss"],"names":[],"mappings":"AACA,IAAI,CACJ;EACC,MAAM,EAAE,IAAI,GACZ","file":"../style.css","sourcesContent":["\nbody\n{\n\tmargin: 10px;\n}\n"]}

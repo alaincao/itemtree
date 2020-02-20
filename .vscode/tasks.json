@@ -4,22 +4,27 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Build dotnet",
+			"label": "dotnet build",
 			"group": "build",
 			"problemMatcher": "$msCompile",
+			"type": "process",
 			"command": "dotnet",
 			"args": [
 				"build",
-				"${workspaceRoot}/itemttt.csproj"
+				"${workspaceFolder}/app/itemttt.csproj"
 			]
 		},
 		{
-			"label": "Run (dev)",
+			"label": "dotnet run (dev)",
 			"group": "test",
-			"type": "shell",
 			"problemMatcher": [],
-			"command": "dotnet run",
-			"args": [],
+			"type": "process",
+			"command": "dotnet",
+			"args": [
+				"run",
+				"--project",
+				"${workspaceFolder}/app/itemttt.csproj"
+			],
 			"options": {
 				"env": {
 					"ASPNETCORE_ENVIRONMENT": "Development",
@@ -28,12 +33,17 @@
 			}
 		},
 		{
-			"label": "Run (dev --no-build)",
+			"label": "dotnet run (dev --no-build)",
 			"group": "test",
-			"type": "shell",
 			"problemMatcher": [],
-			"command": "dotnet run --no-build",
-			"args": [],
+			"type": "process",
+			"command": "dotnet",
+			"args": [
+				"run",
+				"--no-build",
+				"--project",
+				"${workspaceFolder}/app/itemttt.csproj"
+			],
 			"options": {
 				"env": {
 					"ASPNETCORE_ENVIRONMENT": "Development",
@@ -42,13 +52,22 @@
 			}
 		},
 		{
-			"label": "Run (prod)",
+			"label": "dotnet run (prod)",
 			"group": "test",
-			"type": "shell",
 			"problemMatcher": [],
-			"command": "dotnet run",
-			"args": [],
-			"options": {}
+			"type": "process",
+			"command": "dotnet",
+			"args": [
+				"run",
+				"--project",
+				"${workspaceFolder}/app/itemttt.csproj"
+			],
+			"options": {
+				"env": {
+					"ASPNETCORE_ENVIRONMENT": "Production",
+					"ASPNETCORE_URLS": "http://0.0.0.0:5000"
+				}
+			}
 		},
 		{
 			"type": "gulp",

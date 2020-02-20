@@ -10,5 +10,5 @@
 	},
 	// NB: This list is NOT used when compiling using gulp+browserify but is still required for the VisualStudio Code's Intellisense
 	// cf. https://stackoverflow.com/questions/44533334/compiler-fails-to-import-type-from-global-d-ts
-	"files": [ "./global.d.ts", "./global.ts" ]
+	"files": [ "./app/global.d.ts", "./app/global.ts" ]
 }

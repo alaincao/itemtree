@@ -18,12 +18,12 @@ gulp.task( 'default', gulp.parallel('site.js', 'site.min.js', 'style.css') );
 
 gulp.task( 'clean', function()
 {
-	return del( [	'./bin',
-					'./obj',
-					'./wwwroot/js/site*.js',
-					'./wwwroot/js/site*.map',
-					'./wwwroot/css/style.css',
-					'./wwwroot/css/style.css.map',
+	return del( [	'./app/bin',
+					'./app/obj',
+					'./app/wwwroot/js/site*.js',
+					'./app/wwwroot/js/site*.map',
+					'./app/wwwroot/css/style.css',
+					'./app/wwwroot/css/style.css.map',
 				] );
 } );
 
@@ -37,8 +37,8 @@ function buildJs(fileName, releaseMode)
 		tsifyParms.noUnusedLocals = true;
 	}
 	var b = browserify({ debug:true })
- 				.add( './global.d.ts' )
-				.add( './global.ts' )  // The TypeScript entry point
+ 				.add( './app/global.d.ts' )
+				.add( './app/global.ts' )  // The TypeScript entry point
 				.plugin( tsify, tsifyParms );
 
 	var stream = b.bundle()  // Execute Browserify
@@ -51,16 +51,16 @@ function buildJs(fileName, releaseMode)
 	stream = stream
 			.on( 'error', function(error){ console.error(error.toString()); } )
 			.pipe( sourcemaps.write('./') )
-			.pipe( gulp.dest('./wwwroot/js/') );  // Destination directory
+			.pipe( gulp.dest('./app/wwwroot/js/') );  // Destination directory
 	return stream;
 };
 
 function buildCSS( fileName )
 {
-	return gulp.src( './src/Views/**/*.scss' )
+	return gulp.src( './app/src/Views/**/*.scss' )
 		.pipe( sourcemaps.init({ loadMaps: true }) )
 		.pipe( sass().on('error', sass.logError) )
 		.pipe( concat(fileName) )
 		.pipe( sourcemaps.write('./') )
-		.pipe( gulp.dest('./wwwroot/css') );
+		.pipe( gulp.dest('./app/wwwroot/css') );
 };

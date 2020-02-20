@@ -1,6 +1,6 @@
 /.stfolder
 /.stignore*
-/bin
 /node_modules
-/obj
-/wwwroot/lib
+/app/bin
+/app/obj
+/app/wwwroot/lib
