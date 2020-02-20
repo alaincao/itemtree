@@ -1,0 +1,36 @@
+version: '3'
+services:
+
+  webserver:
+    build: ./app/
+    image: "itemttt.toctoctoc.be"
+    container_name: "itemttt.toctoctoc.be"
+    network_mode: bridge
+    # ports:
+    #   - "12345:80"
+    depends_on:
+      - dbserver
+    links:
+      - 'dbserver'
+    labels:
+      # Register against "traefik":
+      traefik.enable: "true"
+      traefik.protocol: "http"
+      traefik.port: 80
+      traefik.frontend.rule: "Host:itemttt.toctoctoc.be"
+    environment:
+      # Register against "jwilder/nginx-proxy":
+      VIRTUAL_HOST: "itemttt.toctoctoc.be"
+
+  dbserver:
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    container_name: "itemttt.toctoctoc.be-db"
+    network_mode: bridge
+    # ports:
+    #   - "12346:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+      # SA_PASSWORD: "XXXX"
+    volumes:
+      - "./volumes/dbserver:/var/opt"
