@@ -18,8 +18,7 @@ namespace ItemTTT.Services
 		private readonly Models.ItemTTTContext	DataContext;
 
 		internal const string	LoginHardCoded	= "admin";
-		// TODO: Server-side(?) session & seed creation (encrypt password before POSTing - as it is in original YourCar)
-		private const string	CurrentSeed		= "";
+		private const string	PasswordSeed	= "ItemTTT";
 
 		public LoginController(Models.ItemTTTContext dataContext, PageHelper pageHelper)
 		{
@@ -128,20 +127,8 @@ namespace ItemTTT.Services
 
 		private static async Task<bool> CheckLogin(Models.ItemTTTContext dc, string password)
 		{
-			string expected;
-			{
-				var hashedPassword = await dc.Configurations.Where( v=>v.Key == Models.Configuration.Key_PasswordHash ).Select( v=>v.Value ).SingleAsync();
-				expected = hashedPassword + CurrentSeed;
-				expected = Utils.GetMd5Sum( expected );
-			}
-
-			string challenge;
-			{
-				var hashedPassword = Utils.GetMd5Sum( password );
-				challenge = hashedPassword + CurrentSeed;
-				challenge = Utils.GetMd5Sum( challenge );
-			}
-
+			var expected = await dc.Configurations.Where( v=>v.Key == Models.Configuration.Key_PasswordHash ).Select( v=>v.Value ).SingleAsync();
+			var challenge = Utils.GetMd5Sum( password + PasswordSeed );
 			return (challenge == expected);
 		}
 	}
