@@ -11,12 +11,12 @@ services:
     depends_on:
       - dbserver
     links:
-      - 'dbserver'
+      - dbserver
     labels:
       # Register against "traefik":
       traefik.enable: "true"
       traefik.protocol: "http"
-      traefik.port: 80
+      traefik.port: "80"
       traefik.frontend.rule: "Host:itemttt.toctoctoc.be"
     environment:
       # Register against "jwilder/nginx-proxy":
