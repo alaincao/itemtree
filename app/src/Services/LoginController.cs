@@ -110,7 +110,7 @@ namespace ItemTTT.Services
 				if(! originalPasswordOK )
 					throw new Utils.TTTException( "The original password is invalid" );
 
-				var newPasswordHash = Utils.GetMd5Sum( newPassword );
+				var newPasswordHash = Utils.GetMd5Sum( newPassword + PasswordSeed );
 				var entry = await DataContext.Configurations.Where( v=>v.Key == Models.Configuration.Key_PasswordHash ).SingleAsync();
 				entry.Value = newPasswordHash;
 				await DataContext.SaveChangesAsync();
