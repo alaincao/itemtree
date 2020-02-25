@@ -1,6 +1,4 @@
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -35,38 +33,38 @@ namespace ItemTTT.Services
 
 			if( PageHelper.IsAuthenticated )
 			{
-				logHelper.AddLogMessage( $"Login: Already logged-in" );
+				logHelper.AddLogMessage( $"{nameof(Login)}: Already logged-in" );
 				return new Utils.TTTServiceResult( PageHelper, errorMessage:"Already logged-in" );
 			}
 
-			logHelper.AddLogMessage( $"Login: Check login empty" );
+			logHelper.AddLogMessage( $"{nameof(Login)}: Check login empty" );
 			if( string.IsNullOrWhiteSpace(login) )
 			{
 				errorMessage = "Please enter your login";
 				goto FAILED;
 			}
-			logHelper.AddLogMessage( "Login: Check password empty" );
+			logHelper.AddLogMessage( $"{nameof(Login)}: Check password empty" );
 			if( string.IsNullOrWhiteSpace(password) )
 			{
 				errorMessage = "Please enter your password";
 				goto FAILED;
 			}
 
-			logHelper.AddLogMessage( "Login: Check login" );
+			logHelper.AddLogMessage( $"{nameof(Login)}: Check login" );
 			if( login.ToLower() != Services.LoginController.LoginHardCoded )
 			{
 				errorMessage = "Login failed !";
 				goto FAILED;
 			}
 
-			logHelper.AddLogMessage( "Login: Check password" );
+			logHelper.AddLogMessage( $"{nameof(Login)}: Check password" );
 			if(! await Services.LoginController.CheckLogin(DataContext, password) )
 			{
 				errorMessage = "Login failed !";
 				goto FAILED;
 			}
 
-			logHelper.AddLogMessage( "Login: success" );
+			logHelper.AddLogMessage( $"{nameof(Login)}: success" );
 			var claimsIdentity = new ClaimsIdentity( new Claim[]
 											{
 												new Claim( ClaimTypes.Name, Services.LoginController.LoginHardCoded, ClaimValueTypes.String, issuer:"ItemTTT login" ),
@@ -77,7 +75,7 @@ namespace ItemTTT.Services
 			return new Utils.TTTServiceResult( PageHelper );
 
 		FAILED:
-			logHelper.AddLogMessage( "Login: failed" );
+			logHelper.AddLogMessage( $"{nameof(Login)}: failed" );
 			return new Utils.TTTServiceResult( PageHelper, errorMessage:errorMessage );
 		}
 

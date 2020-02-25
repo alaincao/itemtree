@@ -14,24 +14,24 @@ namespace ItemTTT
 		public static void Main(string[] args)
 		{
 			var logHelper = new LogHelper();
-			logHelper.AddLogMessage( "Main: START" );
+			logHelper.AddLogMessage( $"{nameof(Main)}: START" );
 
-			logHelper.AddLogMessage( "Main: Create the WebHost" );
+			logHelper.AddLogMessage( $"{nameof(Main)}: Create the WebHost" );
 			var webHost = BuildWebHost( args );
 
-			logHelper.AddLogMessage( "Main: Create the service scope" );
+			logHelper.AddLogMessage( $"{nameof(Main)}: Create the service scope" );
 			using( var scope = webHost.Services.CreateScope() )
 			{
-				logHelper.AddLogMessage( "Main: Get Startup service" );
+				logHelper.AddLogMessage( $"{nameof(Main)}: Get Startup service" );
 				var startup = scope.ServiceProvider.GetRequiredService<Startup>();
-				logHelper.AddLogMessage( "Main: Launch 'Startup.Initialize()'" );
+				logHelper.AddLogMessage( $"{nameof(Main)}: Launch 'Startup.Initialize()'" );
 				startup.Initialize( logHelper, scope.ServiceProvider );
 			}
 
-			logHelper.AddLogMessage( "Main: Start web host" );
+			logHelper.AddLogMessage( $"{nameof(Main)}: Start web host" );
 			webHost.Run();
 
-			logHelper.AddLogMessage( "Main: EXIT" );
+			logHelper.AddLogMessage( $"{nameof(Main)}: EXIT" );
 		}
 
 		public static IWebHost BuildWebHost(string[] args) =>

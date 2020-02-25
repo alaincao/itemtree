@@ -32,7 +32,7 @@ namespace ItemTTT
 
 		internal static IConfigurationRoot CreateConfiguration(LogHelper logHelper, string rootPath, string environmentName)
 		{
-			logHelper.AddLogMessage( "Startup: CreateConfiguration START" );
+			logHelper.AddLogMessage( $"{nameof(Startup)}: CreateConfiguration START" );
 
 			Utils.Assert( !string.IsNullOrWhiteSpace(rootPath), typeof(Startup), "Missing parameter rootPath" );
 			var builder = new ConfigurationBuilder();
@@ -43,7 +43,7 @@ namespace ItemTTT
 			builder.AddEnvironmentVariables();
 			var rc = builder.Build();
 
-			logHelper.AddLogMessage( "Startup: CreateConfiguration END" );
+			logHelper.AddLogMessage( $"{nameof(Startup)}: CreateConfiguration END" );
 			return rc;
 		}
 
@@ -51,21 +51,21 @@ namespace ItemTTT
 		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
-			InitializationLog.AddLogMessage( "Startup: ConfigureServices START" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: ConfigureServices START" );
 
-			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Add this instance to the services" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: ConfigureServices: Add this instance to the services" );
 			services.AddSingleton<Startup>( v=>this );
 
-			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Register cookie authentication" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: ConfigureServices: Register cookie authentication" );
 			var authentication = services.AddAuthentication( AuthScheme );
 			authentication.AddCookie( AuthScheme );
 
-			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Setup MVC" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: ConfigureServices: Setup MVC" );
 			services.AddRouting();
 			services.AddControllers();
 			services.AddRazorPages();
 
-			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Configure Views location" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: ConfigureServices: Configure Views location" );
 			// https://stackoverflow.com/questions/36747293/how-to-specify-the-view-location-in-asp-net-core-mvc-when-using-custom-locations
 			services.Configure<RazorViewEngineOptions>( o=>
 				{
@@ -74,17 +74,17 @@ namespace ItemTTT
 					o.ViewLocationFormats.Add( ViewsLocation+"Shared/{0}"+RazorViewEngine.ViewExtension );
 				} );
 
-			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Add languages constraint" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: ConfigureServices: Add languages constraint" );
 			services.Configure<RouteOptions>( opt=>opt.ConstraintMap.Add(Language.ConstraintName, typeof(LanguageRouteConstraint)) );
  
-			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Add database service" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: ConfigureServices: Add database service" );
 			var connectionString = Configuration[ AppSettingsKeys.ConnectionStrings.ItemTTT ];
 			services.AddDbContext<Models.ItemTTTContext>( options=>
 				{
 					options.UseSqlServer( connectionString );
 				} );
 
-			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Add custom services" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: ConfigureServices: Add custom services" );
 
 			services.AddScoped<PageHelper>();
 			// NB: This is required for the PageHelper to be able to use the UrlHelper (https://stackoverflow.com/questions/30696337/unable-to-utilize-urlhelper)
@@ -92,15 +92,15 @@ namespace ItemTTT
 
 			services.AddScoped<Views.Shared.LayoutHelper>();
 
-			InitializationLog.AddLogMessage( "Startup: ConfigureServices END" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: ConfigureServices END" );
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
 		{
-			InitializationLog.AddLogMessage( "Startup: Configure START" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: Configure START" );
 
-			InitializationLog.AddLogMessage( "Startup: Configure: Add handler for internal errors (i.e. status 500)" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: Configure: Add handler for internal errors (i.e. status 500)" );
 			if( env.IsDevelopment() )
 			{
 				Utils.IsDebug = true;
@@ -110,13 +110,13 @@ namespace ItemTTT
 			{
 				app.UseExceptionHandler( Routes.Error );
 			}
-			InitializationLog.AddLogMessage( "Startup: Configure: Add handler for other errors (e.g. 404)" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: Configure: Add handler for other errors (e.g. 404)" );
 			app.UseStatusCodePagesWithReExecute( Routes.ErrorStatus.Replace("{status}", "{0}") );
 
-			InitializationLog.AddLogMessage( $"Startup: Configure: Content root path: '{env.ContentRootPath}'" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: Configure: Content root path: '{env.ContentRootPath}'" );
 			ContentRootPath = env.ContentRootPath;
 
-			InitializationLog.AddLogMessage( $"Startup: Configure: Support for docker reverse-proxy & https" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: Configure: Support for docker reverse-proxy & https" );
 			// c.f. https://docs.microsoft.com/en-us/aspnet/core/publishing/linuxproduction?tabs=aspnetcore2x
 			// & https://github.com/IdentityServer/IdentityServer4/issues/1331
 			{
@@ -129,35 +129,35 @@ namespace ItemTTT
 				app.UseForwardedHeaders( options );
 			}
 
-			InitializationLog.AddLogMessage( "Startup: Configure: Add static files support" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: Configure: Add static files support" );
 			app.UseStaticFiles();
 
-			InitializationLog.AddLogMessage( "Startup: Configure: Activate authentication" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: Configure: Activate authentication" );
 			app.UseAuthentication();
 			app.UseCookiePolicy();
 
-			InitializationLog.AddLogMessage( "Startup: Configure: Add MVC support" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: Configure: Add MVC support" );
 			app.UseRouting();
 			app.UseEndpoints( endpoints=>
 				{
 					endpoints.MapControllers();
 				} );
 
-			InitializationLog.AddLogMessage( "Startup: Configure: Add languages redirections" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: Configure: Add languages redirections" );
 			app.UseLanguageRedirect();
 
-			InitializationLog.AddLogMessage( "Startup: Configure END" );
+			InitializationLog.AddLogMessage( $"{nameof(Startup)}: Configure END" );
 		}
 
 		internal void Initialize(LogHelper logHelper, IServiceProvider initializationServices)
 		{
-			logHelper.AddLogMessage( "Startup: Initialize START" );
+			logHelper.AddLogMessage( $"{nameof(Startup)}: Initialize START" );
 
-			logHelper.AddLogMessage( "Startup: Initialize: Replace 'InitializationLog'" );
+			logHelper.AddLogMessage( $"{nameof(Startup)}: Initialize: Replace 'InitializationLog'" );
 			logHelper.Merge( InitializationLog );
 			InitializationLog = logHelper;
 
-			logHelper.AddLogMessage( "Startup: Initialize END" );
+			logHelper.AddLogMessage( $"{nameof(Startup)}: Initialize END" );
 		}
 	}
 
