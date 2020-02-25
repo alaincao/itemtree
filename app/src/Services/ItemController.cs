@@ -125,9 +125,10 @@ namespace ItemTTT.Services
 				default:
 					throw new NotImplementedException( $"Invalid value '{sortingField}' for parameter '{nameof(sortingField)}'" );
 			}
-			var rows = await query.ToAsyncEnumerable()
-										.Select( v=>new{ ItemID=v.ID, v.Features, Item=new DTOs.Item(v) } )
-										.ToArray();
+
+			var rows = await query	.AsAsyncEnumerable()
+									.SelectAsync( v=>new{ ItemID=v.ID, v.Features, Item=new DTOs.Item(v) } )
+									.ToArrayAsync();
 			if( rows.Length == 0 )
 				// No need to continue ...
 				goto EXIT;

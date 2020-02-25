@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace ItemTTT
 {
@@ -25,7 +22,7 @@ namespace ItemTTT
 		internal readonly IConfigurationRoot	Configuration;
 		internal static string					ContentRootPath		{ get; private set; }
 
-		public Startup(IHostingEnvironment env)
+		public Startup(IWebHostEnvironment env)
 		{
 			InitializationLog = new LogHelper();
 
@@ -64,7 +61,9 @@ namespace ItemTTT
 			authentication.AddCookie( AuthScheme );
 
 			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Setup MVC" );
-			services.AddMvc();
+			services.AddRouting();
+			services.AddControllers();
+			services.AddRazorPages();
 
 			InitializationLog.AddLogMessage( "Startup: ConfigureServices: Configure Views location" );
 			// https://stackoverflow.com/questions/36747293/how-to-specify-the-view-location-in-asp-net-core-mvc-when-using-custom-locations
@@ -97,7 +96,7 @@ namespace ItemTTT
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
 		{
 			InitializationLog.AddLogMessage( "Startup: Configure START" );
 
@@ -138,7 +137,11 @@ namespace ItemTTT
 			app.UseCookiePolicy();
 
 			InitializationLog.AddLogMessage( "Startup: Configure: Add MVC support" );
-			app.UseMvc();
+			app.UseRouting();
+			app.UseEndpoints( endpoints=>
+				{
+					endpoints.MapControllers();
+				} );
 
 			InitializationLog.AddLogMessage( "Startup: Configure: Add languages redirections" );
 			app.UseLanguageRedirect();

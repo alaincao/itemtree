@@ -1,10 +1,30 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ItemTTT
 {
 	public static partial class ExtensionMethods
 	{
+		// Those are not(i.e. removed from v2.2) in standard libs!
+		// cf. https://github.com/dotnet/efcore/issues/18124   Major design headache! ;-)
+		public static async IAsyncEnumerable<U> SelectAsync<T,U>(this IAsyncEnumerable<T> list, Func<T,U> selector)
+		{
+			await foreach( var item in list )
+				yield return selector( item );
+		}
+		public static async Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> list)
+		{
+			var l = new List<T>();
+			await foreach( var item in list )
+				l.Add( item );
+			return l;
+		}
+		public static async Task<T[]> ToArrayAsync<T>(this IAsyncEnumerable<T> list)
+		{
+			return (await list.ToListAsync()).ToArray();
+		}
+
 		internal static string JSONStringify(this object obj, bool indented=false)
 		{
 			Utils.Assert( obj != null, System.Reflection.MethodInfo.GetCurrentMethod(), $"Missing parameter {nameof(obj)}" );

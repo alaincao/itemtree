@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Threading.Tasks;
@@ -50,15 +51,15 @@ namespace ItemTTT.Services
 				var imgNotFound = PageHelper.ResolveRoute( wwwroot.ImgNotFound );
 				var dtos = await query	.OrderByDescending( v=>v.Date )
 										.ThenByDescending( v=>v.ID )
-										.ToAsyncEnumerable()
-										.Select( v=>
+										.AsAsyncEnumerable()
+										.SelectAsync( v=>
 											{
 												var dto = new DTOs.Testimonial( v );
 												if( dto.ImageData == null )
 													dto.ImageData = imgNotFound;
 												return dto;
 											} )
-										.ToArray();
+										.ToArrayAsync();
 
 				logHelper.AddLogMessage( $"TestimonialList: END" );
 				return new Utils.TTTServiceResult<DTOs.Testimonial[]>( PageHelper ){ Result=dtos };
