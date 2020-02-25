@@ -157,6 +157,8 @@ namespace ItemTTT
 			logHelper.Merge( InitializationLog );
 			InitializationLog = logHelper;
 
+			Services.LoginController.Initialize( logHelper, initializationServices );
+
 			logHelper.AddLogMessage( $"{nameof(Startup)}: Initialize END" );
 		}
 	}

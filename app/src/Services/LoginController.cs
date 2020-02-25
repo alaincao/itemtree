@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ItemTTT.Services
 {
@@ -15,13 +16,34 @@ namespace ItemTTT.Services
 		private readonly PageHelper				PageHelper;
 		private readonly Models.ItemTTTContext	DataContext;
 
-		internal const string	LoginHardCoded	= "admin";
-		private const string	PasswordSeed	= "ItemTTT";
+		internal const string	LoginHardCoded			= "admin";
+		private const string	LoginDefaultPassword	= "123";  // Changeme after installation on production !!!
+		private const string	PasswordSeed			= "ItemTTT";
 
 		public LoginController(Models.ItemTTTContext dataContext, PageHelper pageHelper)
 		{
 			PageHelper = pageHelper;
 			DataContext = dataContext;
+		}
+
+		internal static void Initialize(LogHelper logHelper, IServiceProvider initializationServices)
+		{
+			logHelper.AddLogMessage( $"{nameof(LoginController)}: START" );
+
+			logHelper.AddLogMessage( $"{nameof(LoginController)}: Check for existance of admin's login in Configuration table" );
+			var dc = initializationServices.GetRequiredService<Models.ItemTTTContext>();
+			var entry = dc.Configurations.Where( v=>v.Key == Models.Configuration.Key_PasswordHash ).SingleOrDefault();
+			if( entry == null )
+			{
+				logHelper.AddWarningMessage( $"{nameof(LoginController)}: Does not exist => create it" );
+				var hash = Utils.GetMd5Sum( LoginDefaultPassword + PasswordSeed );
+				entry = new Models.Configuration{	Key		= Models.Configuration.Key_PasswordHash,
+													Value	= hash };
+				dc.Configurations.Add( entry );
+				dc.SaveChanges();
+			}
+
+			logHelper.AddLogMessage( $"{nameof(LoginController)}: END" );
 		}
 
 		[HttpGet( Routes.LoginAPI )]

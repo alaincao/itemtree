@@ -40,6 +40,11 @@ namespace ItemTTT
 				AddLogMessage( line );
 		}
 
+		internal void AddWarningMessage(string message)
+		{
+			AddLogMessage( message );  // Same thing for now... Maybe implement later ...
+		}
+
 		internal void AddException(Exception exception)
 		{
 			try
