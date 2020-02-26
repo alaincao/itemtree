@@ -24,10 +24,19 @@ namespace ItemTTT
 
 		public Startup(IWebHostEnvironment env)
 		{
-			InitializationLog = new LogHelper();
+			var logHelper = new LogHelper();
+			logHelper.AddLogMessage( $"{nameof(Startup)}: Constructor START" );
+
+			InitializationLog = logHelper;
+
+			if( env.IsDevelopment() )
+				Utils.IsDebug = true;
+			logHelper.AddLogMessage( $"{nameof(Startup)}: {nameof(Utils.IsDebug)}: '{Utils.IsDebug}'" );
 
 			// Prepare configuration for appsettings[.Development].json
 			Configuration = CreateConfiguration( InitializationLog, rootPath:env.ContentRootPath, environmentName:env.EnvironmentName );
+
+			logHelper.AddLogMessage( $"{nameof(Startup)}: Constructor END" );
 		}
 
 		internal static IConfigurationRoot CreateConfiguration(LogHelper logHelper, string rootPath, string environmentName)
@@ -63,7 +72,7 @@ namespace ItemTTT
 			InitializationLog.AddLogMessage( $"{nameof(Startup)}: ConfigureServices: Setup MVC" );
 			services.AddRouting();
 			services.AddControllers();
-			services.AddRazorPages();
+			services.AddRazorPages().AddRazorRuntimeCompilation();
 
 			InitializationLog.AddLogMessage( $"{nameof(Startup)}: ConfigureServices: Configure Views location" );
 			// https://stackoverflow.com/questions/36747293/how-to-specify-the-view-location-in-asp-net-core-mvc-when-using-custom-locations
@@ -101,9 +110,8 @@ namespace ItemTTT
 			InitializationLog.AddLogMessage( $"{nameof(Startup)}: Configure START" );
 
 			InitializationLog.AddLogMessage( $"{nameof(Startup)}: Configure: Add handler for internal errors (i.e. status 500)" );
-			if( env.IsDevelopment() )
+			if( Utils.IsDebug )
 			{
-				Utils.IsDebug = true;
 				app.UseDeveloperExceptionPage();
 			}
 			else

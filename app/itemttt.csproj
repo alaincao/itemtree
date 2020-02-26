@@ -5,8 +5,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.*" />
+
 		<!-- Enable Razor views compilations -->
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.ViewCompilation" Version="2.2.*" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.*" />
 
 		<!-- Support for EntityFramework -->
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.*" />
