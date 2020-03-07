@@ -50,3 +50,11 @@ Create database:
   update dbo.Configuration set "Value" = lower("Value")
   where "Key" = 'AdminPasswordHash'
   ```
+
+Cheatsheet:
+===========
+```bash
+$ cd app/
+$ dotnet ef migrations add <migration>
+$ dotnet ef database update
+```
