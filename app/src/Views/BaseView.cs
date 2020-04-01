@@ -1,6 +1,8 @@
 
 using System;
 
+using Microsoft.Extensions.DependencyInjection;
+
 namespace ItemTTT.Views
 {
 	public abstract class BaseView : Microsoft.AspNetCore.Mvc.Razor.RazorPage<object>
@@ -23,7 +25,14 @@ namespace ItemTTT.Views
 			PageHelper = pageHelper;
 
 			var logHelper = pageHelper.ScopeLogs;
-			logHelper.AddLogMessage( "BaseView Init: START" );
+			logHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Init)}: START" );
+
+			if( string.IsNullOrWhiteSpace(pageHelper.Parameters.PageTitle) )
+			{
+				logHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Init)}: START" );
+				var startup = this.Context.RequestServices.GetRequiredService<Startup>();
+				pageHelper.Parameters.PageTitle = startup.Configuration[ AppSettingsKeys.DefaultTitle ];
+			}
 
 			var lng = pageHelper.CurrentLanguage;
 			IsEN = (lng == Languages.en);
@@ -33,7 +42,7 @@ namespace ItemTTT.Views
 			UseMini = ( Utils.IsDebug == false );
 			UseMaxi = (! UseMini);
 
-			logHelper.AddLogMessage( "BaseView Init: END" );
+			logHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Init)}: END" );
 		}
 
 		protected string Resolve(string route)
