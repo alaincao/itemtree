@@ -1,3 +1,5 @@
+using System;
+
 namespace ItemTTT
 {
 	public static partial class Utils
@@ -14,8 +16,9 @@ namespace ItemTTT
 		{
 			if(! test )
 			{
-				// TODO
 				Utils.Log( sender, $"*** ASSERTION FAILED: '{message}'" );
+				if( IsDebug )
+					System.Diagnostics.Debug.Fail( message );
 			}
 		}
 
@@ -30,6 +33,17 @@ namespace ItemTTT
 		{
 			if( IsDebug )
 				System.Console.WriteLine( message );
+		}
+
+		internal static IDisposable NewDisposable(Action dispose)
+		{
+			return new Disposable( dispose );
+		}
+		private class Disposable : IDisposable
+		{
+			private readonly Action	DisposeCallback;
+			internal Disposable(Action dispose)	{ DisposeCallback = dispose; }
+			void IDisposable.Dispose()			{ DisposeCallback?.Invoke(); }
 		}
 
 		internal static string GetMd5Sum(string str)

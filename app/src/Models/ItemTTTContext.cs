@@ -20,6 +20,7 @@ namespace ItemTTT.Models
 		public DbSet<BlogPost>			BlogPosts			{ get; set; }
 		public DbSet<Testimonial>		Testimonials		{ get; set; }
 		public DbSet<DynamicPage>		DynamicPages		{ get; set; }
+		public DbSet<TreeNode>			TreeNodes			{ get; set; }
 
 		public ItemTTTContext(DbContextOptions options) : base(options)  {}
 
@@ -49,6 +50,12 @@ namespace ItemTTT.Models
 			modelBuilder.Entity<DynamicPage>()
 							.HasIndex( v=>new{ v.Code } )
 							.IsUnique();
+
+			modelBuilder.Entity<TreeNode>()
+							.HasIndex( v=>new{ v.Path } )
+							.IsUnique();
+			modelBuilder.Entity<TreeNode>()
+							.HasIndex( v=>new{ v.ParentPath, v.Meta } );
 		}
 	}
 }

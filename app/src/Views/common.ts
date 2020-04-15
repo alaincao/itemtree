@@ -2,6 +2,7 @@
 import * as common from "./common";
 import { PageParameters } from "../PageHelper";
 import { Routes } from "../Routes";
+import * as tree from "../Tree/TagHelpers";
 
 
 export const debugMessages : boolean = false;  // NB: 'export' so that it can be easily changed from the browser's console
@@ -99,6 +100,9 @@ export function init(p:{ pageParameters:PageParameters })
 						}
 					},
 		};
+
+	utils.log( 'common.init(): Initialize tree framework' );
+	tree.init();
 }
 
 export namespace utils
@@ -273,6 +277,26 @@ export namespace utils
 	export function sleep(ms:number) : Promise<void>
 	{
 		return new Promise( resolve => setTimeout(resolve, ms) );
+	}
+
+	export interface TrackedObservable<T> extends KnockoutObservable<T>
+	{
+		hasChanges		: KnockoutObservable<boolean>;
+		setInitial() : void;
+		reset() : void;
+	}
+	export function observable<T>(o?:KnockoutObservable<T>) : TrackedObservable<T>
+	{
+		if( o == null )
+			o = ko.observable<T>();
+
+		const obj = <TrackedObservable<T>>o;
+		const originalValue	= ko.observable( obj() );
+		(<any>obj)['originalValue'] = originalValue;  // nb: For debugging usage only: Render the 'originalValue' available to the JS console, but do not expose it to the TypeScript definitions
+		obj.hasChanges		= ko.computed( ()=> JSON.stringify(obj()) != JSON.stringify(originalValue()) );
+		obj.setInitial		= ()=>originalValue( obj() );
+		obj.reset			= ()=>obj( originalValue() );
+		return obj;
 	}
 } // namespace utils
 
@@ -626,7 +650,7 @@ export namespace url
 							error		: (jqXHR,textStatus,errorThrown)=>
 											{
 												utils.error( 'getRequest rejected', { jqXHR, textStatus, errorThrown } );
-												reject( textStatus );
+												reject( errorThrown );
 											}
 						});
 			} );

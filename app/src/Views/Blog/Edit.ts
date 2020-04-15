@@ -41,8 +41,15 @@ export async function init(p:{	isAdding			: boolean,
 }
 
 /** Add 'tinymceEditor' Knockout bindings handler */
+var koTinymceEditorAdded = false;
 export function addKoTinymceEditor() : void
 {
+	if( koTinymceEditorAdded == true )
+		// Already done
+		return;
+	common.utils.log( 'addKoTinymceEditor()' );
+	koTinymceEditorAdded = true;
+
 	// Create HTML editor KO's binding
 	ko.bindingHandlers.tinymceEditor =
 		{

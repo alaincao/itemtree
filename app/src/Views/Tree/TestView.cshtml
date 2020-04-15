@@ -1,0 +1,22 @@
+@inherits ItemTTT.Views.BaseView
+@{
+	Init( PageHelper );
+
+	PageHelper.Parameters.PageTitle = ViewBag.Title ?? PageHelper.Parameters.PageTitle;
+	var who = "world";
+}
+@section Scripts
+{
+	<script type="text/javascript">
+		$('#preParameters').html( JSON.stringify(ttt.common.pageParameters, null, 2) )
+	</script>
+}
+<h1>Hello @who!</h1>
+<h2>Foo (from database): '@ViewBag.Foo'</h2>
+<div ttt-only-if="IsEN">IsEN</div>
+<div ttt-only-if="IsFR">IsFR</div>
+<div ttt-only-if="IsNL">IsNL</div>
+<img tree-image="image01"/>
+<img tree-image="image02" tree-parameters="height=60"/>
+<div tree-html="./sometext"></div>
+<pre id="preParameters"></pre>

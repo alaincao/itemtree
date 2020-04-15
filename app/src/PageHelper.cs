@@ -2,10 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-
 namespace ItemTTT
 {
 	// NB: Scoped service
@@ -33,107 +29,45 @@ namespace ItemTTT
 			internal string[]					Logs			{ set { this["Logs"] = value; } }
 		}
 
-		internal LogHelper				ScopeLogs			{ get; private set; } = new LogHelper();
+		internal readonly LogHelper		ScopeLogs;
+		private readonly string			WebPathBase;  // e.g.: "" or "/foobar" ; i.e. without the trailing '/'
 		public readonly PageParameters	Parameters;
 		public readonly Languages		CurrentLanguage;
 		public readonly bool			IsAuthenticated;
 
-		private Func<string,string>	UrlHelperContent;
-
-		public PageHelper(IActionContextAccessor contextAccessor)
+		public PageHelper(IServiceProvider services, Language.Info languageInfo)
 		{
-			ScopeLogs.AddLogMessage( "PageHelper: Constructor" );
+			ScopeLogs = services.GetScopeLog();
+			ScopeLogs.AddLogMessage( $"{nameof(PageHelper)}: Constructor" );
 
-			var actionContext = contextAccessor.ActionContext;
-			var httpContext = actionContext.HttpContext;
+			var httpContext = services.GetHttpContext();
+			Utils.Assert( httpContext != null, this, $"PageHelper: Unable to get the HttpContext" );
 
-			// Create 'UrlHelperContent' callback
-			var urlHelper = new UrlHelper( actionContext );
-			UrlHelperContent = (route)=>
-				{
-					return urlHelper.Content( route );
-				};
+			WebPathBase = httpContext.Request.PathBase;
+			ScopeLogs.AddLogMessage( $"{nameof(PageHelper)}: {nameof(WebPathBase)}: '{WebPathBase}'" );
+
+			var languageUrls = Enum.GetValues( typeof(Languages) ).Cast<Languages>()
+									.Select( v=>new{	lng	= v,
+														url	= languageInfo.RawRoutePlusQuery.Replace(Language.RouteParameter, ""+v) } )
+									.ToDictionary( v=>v.lng, v=>ResolveRoute(v.url) );
 
 			IsAuthenticated	= httpContext.User.Identity.IsAuthenticated;
-			CurrentLanguage	= InitLangage( httpContext, out var languageURLs );
+			CurrentLanguage	= languageInfo.Current;
 			var routes		= Routes.GetPageParameterRoutes( this );
-			Parameters		= new PageParameters( IsAuthenticated, CurrentLanguage, languageURLs, routes );
+			Parameters		= new PageParameters( IsAuthenticated, CurrentLanguage, languageUrls, routes );
 		}
 
 		internal string ResolveRoute(string route)
 		{
-			Utils.Assert( !string.IsNullOrWhiteSpace(route), GetType(), $"Missing parameter {nameof(route)}" );
-			if( route[0] == '/' )
-				route = '~'+route;
-			return UrlHelperContent( route );
-		}
-
-		private Languages InitLangage(HttpContext httpContext, out Dictionary<Languages,string> languageUrls)
-		{
-			ScopeLogs.AddLogMessage( "PageHelper: InitLangage START" );
-			Languages? fromUrl, fromCookie;
-			Languages current;
-			string rawPath;
-			DetectLanguage( ScopeLogs, httpContext.Request, fromUrl:out fromUrl, fromCookie:out fromCookie, current:out current, rawPath:out rawPath );
-
-			if( fromUrl != null )
-			{
-				// Language has been forced by the URL
-				if( fromUrl.Value != fromCookie )
-				{
-					// The cookie does not reflect it => Set its new value
-					ScopeLogs.AddLogMessage( $"PageHelper: InitLangage: Set language cookie to '{fromUrl.Value}'" );
-					Utils.SetCookie<Languages>( httpContext.Response, fromUrl.Value );
-				}
-			}
-
-			languageUrls = Enum.GetValues( typeof(Languages) ).Cast<Languages>()
-									.Select( v=>new{	lng	= v,
-														url	= rawPath.Replace(Language.RouteParameter, ""+v) } )
-									.ToDictionary( v=>v.lng, v=>v.url );
-			ScopeLogs.AddLogMessage( "PageHelper: InitLangage END" );
-			return current;
-		}
-
-		internal static void DetectLanguage(LogHelper logHelper, HttpRequest request, out Languages? fromUrl, out Languages? fromCookie, out Languages current, out string rawPath)
-		{
-			logHelper.AddLogMessage( "PageHelper: DetectLanguage: Split URL segments" );
-			var segments = (""+request.Path).Split( "/" ).Where(v=>v != "").ToList();
-			if( segments.Count == 0 )
-			{
-				// Homepage ?
-				segments.Add( "" );
-			}
-
-			logHelper.AddLogMessage( "PageHelper: DetectLanguage: Get from URL" );
-			{
-				if( Enum.TryParse(typeof(Languages), segments[0], ignoreCase:true, result:out var obj) )
-				{
-					// Language found in the first segment of the URL
-					segments.RemoveAt( 0 );
-					fromUrl = (Languages)obj;
-				}
-				else
-				{
-					// Not found in URL
-					fromUrl = null;
-				}
-			}
-
-			logHelper.AddLogMessage( "PageHelper: DetectLanguage: Get from cookie" );
-			fromCookie = Utils.GetCookie<Languages>( request );
-
-			// Determine 'current'
-			if( fromUrl != null )
-				current = fromUrl.Value;
-			else if( fromCookie != null )
-				current = fromCookie.Value;
-			else
-				current = Language.Default;
-			logHelper.AddLogMessage( $"PageHelper: DetectLanguage: fromUrl:'{fromUrl}' ; fromCookie:'{fromCookie}' ; current:'{current}'" );
-
-			var segmentsStr = string.Join( "/", segments );
-			rawPath = $"/{Language.RouteParameter}/{segmentsStr}{request.QueryString}";
+			Utils.Assert( !string.IsNullOrWhiteSpace(route), GetType(), $"Missing parameter '{nameof(route)}'" );
+			var trimStart = 0;
+			if( route[0] == '~' )
+				++ trimStart;
+			if( route.StartsWith("/") )
+				++ trimStart;
+			if( trimStart > 0 )
+				route = route.Substring( trimStart );
+			return $"{WebPathBase}/{route}";
 		}
 	}
 }

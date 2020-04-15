@@ -1,5 +1,7 @@
 
 import * as common		from "./src/Views/common";
+import * as taghelpers	from "./src/Tree/TagHelpers";
+import * as treehelper	from "./src/Tree/TreeHelper";
 import * as adminhome	from "./src/Views/Admin/Home";
 import * as itemlist	from "./src/Views/ItemTTT/List";
 import * as itemadd		from "./src/Views/ItemTTT/Add";
@@ -32,6 +34,10 @@ var ttt =
 	},
 	dynamicpage: {
 		show	: dynpgshow,
+	},
+	tree: {
+		taghelpers,
+		treehelper,
 	},
 }
 declare global

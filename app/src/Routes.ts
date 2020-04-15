@@ -52,5 +52,9 @@ export interface Routes
 					get		: string,
 					update	: string,
 				},
+			tree : {
+					operations	: string,
+					image		: string,
+				},
 		},
 }

@@ -40,17 +40,27 @@ namespace ItemTTT
 				AddLogMessage( line );
 		}
 
+		internal void AddErrorMessage(string message)
+		{
+			if( Utils.IsDebug )
+				// Add the log to the page's JavaScript console
+				HasErrors = true;
+			AddLogMessage( message );  // Same thing for now... Maybe implement later ...
+		}
 		internal void AddWarningMessage(string message)
 		{
 			AddLogMessage( message );  // Same thing for now... Maybe implement later ...
 		}
 
-		internal void AddException(Exception exception)
+		internal void AddException(Exception exception, bool asLogMessages=false)
 		{
 			try
 			{
 				Utils.Assert( exception != null, GetType(), $"Missing parameter {nameof(exception)}" );
-				HasErrors = true;
+				if( asLogMessages )
+					{/* Not a real error */}
+				else
+					HasErrors = true;
 
 				var aggregateException = exception as AggregateException;
 				if( aggregateException != null )
@@ -60,7 +70,7 @@ namespace ItemTTT
 					Utils.Assert( aggregateException.InnerExceptions.Count() == 1, GetType(), "There are more than 1 exception in the 'AggregateException'; Only one will be logged ..." );  // What to do with the others ??
 
 					// Use the 'InnerExceptions' which is the one we are really interrested in
-					AddException( aggregateException.InnerException );
+					AddException( aggregateException.InnerException, asLogMessages );
 
 					// And from the original exception, only output its StackTrace
 					AddLogMessage( "--- Stack trace from AggregateException:" );
@@ -78,7 +88,7 @@ namespace ItemTTT
 
 			if( exception.InnerException != null )
 			{
-				AddException( exception:exception.InnerException );
+				AddException( exception:exception.InnerException, asLogMessages:true );
 			}
 		}
 

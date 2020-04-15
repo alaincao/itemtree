@@ -125,20 +125,7 @@ namespace ItemTTT.Services
 				if( string.IsNullOrWhiteSpace(itemCode) )
 					throw new ArgumentNullException( $"{nameof(itemCode)}" );
 
-				logHelper.AddLogMessage( $"ItemPicUpload: Create MemoryStream" );
-				var ms = new System.IO.MemoryStream();
-				await file.CopyToAsync( ms );
-
-				logHelper.AddLogMessage( $"ItemPicUpload: Test resize ({ms.Length} bytes)" );
-				{
-					var imageFull = System.Drawing.Image.FromStream( ms );
-					var imageResized = (System.Drawing.Image)new System.Drawing.Bitmap( imageFull, 640, 480 );
-
-					ms.Position = 0;  // Rewind stram
-				}
-
-				logHelper.AddLogMessage( $"ItemPicUpload: Create base64 string" );
-				var imageString = Convert.ToBase64String( ms.GetBuffer() );
+				var imageString = await GetImageBase64String( logHelper, file );
 
 				logHelper.AddLogMessage( $"ItemPicUpload: Open transaction" );
 				var dc = DataContext;
@@ -294,33 +281,7 @@ namespace ItemTTT.Services
 					logHelper.AddLogMessage( $"ItemPicDownload: Create image bitmap to determine the uploaded format" );
 					var ms = new System.IO.MemoryStream( outputBytes );  // NB: Do NOT dispose the stream ; The constructor below does NOT load the image entirely. ; Counting on the garbage collector here ...
 					var bitmap = new Bitmap( ms );
-
-					var guid = bitmap.RawFormat.Guid;
-					if( guid == ImageFormat.Bmp.Guid )
-					{
-						contentType = "image/x-ms-bmp";
-						fileExtension = ".bmp";
-					}
-					else if( guid == ImageFormat.Jpeg.Guid )
-					{
-						contentType = "image/jpeg";
-						fileExtension = ".jpg";
-					}
-					else if( guid == ImageFormat.Gif.Guid )
-					{
-						contentType = "image/gif";
-						fileExtension = ".hif";
-					}
-					else if( guid == ImageFormat.Png.Guid )
-					{
-						contentType = "image/png";
-						fileExtension = ".png";
-					}
-					else  // WTF is this ???
-					{
-						contentType = "application/octet-stream";
-						fileExtension = "";
-					}
+					GetImageType( bitmap, out contentType, out fileExtension );
 				}
 			}
 			var fileName = (height == null) ? $"{itemCode}.{number}{fileExtension}" : $"{itemCode}.{number}.x{height}{fileExtension}";
@@ -543,6 +504,63 @@ namespace ItemTTT.Services
 			catch( System.Exception ex )
 			{
 				return Utils.TTTServiceResult.LogAndNew( PageHelper, ex );
+			}
+		}
+
+		internal static async Task<string> GetImageBase64String(LogHelper logHelper, Microsoft.AspNetCore.Http.IFormFile file)
+		{
+			logHelper.AddLogMessage( $"{nameof(GetImageBase64String)}: Create MemoryStream" );
+			var ms = new System.IO.MemoryStream();
+			await file.CopyToAsync( ms );
+
+			logHelper.AddLogMessage( $"{nameof(GetImageBase64String)}: Test resize ({ms.Length} bytes)" );
+			{
+				var imageFull = System.Drawing.Image.FromStream( ms );
+				var imageResized = (System.Drawing.Image)new System.Drawing.Bitmap( imageFull, 640, 480 );
+
+				ms.Position = 0;  // Rewind stram
+			}
+
+			logHelper.AddLogMessage( $"{nameof(GetImageBase64String)}: Create base64 string" );
+			var imageString = Convert.ToBase64String( ms.GetBuffer() );
+			return imageString;
+		}
+
+		internal static void GetImageType(byte[] bytes, out string contentType, out string fileExtension)
+		{
+			using( var ms = new System.IO.MemoryStream(bytes) )
+			{
+				var bitmap = new Bitmap( ms );
+				GetImageType( bitmap, out contentType, out fileExtension );
+			}
+		}
+		internal static void GetImageType(Bitmap bitmap, out string contentType, out string fileExtension)
+		{
+			var guid = bitmap.RawFormat.Guid;
+			if( guid == ImageFormat.Bmp.Guid )
+			{
+				contentType = "image/x-ms-bmp";
+				fileExtension = ".bmp";
+			}
+			else if( guid == ImageFormat.Jpeg.Guid )
+			{
+				contentType = "image/jpeg";
+				fileExtension = ".jpg";
+			}
+			else if( guid == ImageFormat.Gif.Guid )
+			{
+				contentType = "image/gif";
+				fileExtension = ".gif";
+			}
+			else if( guid == ImageFormat.Png.Guid )
+			{
+				contentType = "image/png";
+				fileExtension = ".png";
+			}
+			else  // WTF is this ???
+			{
+				contentType = "application/octet-stream";
+				fileExtension = "";
 			}
 		}
 

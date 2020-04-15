@@ -21,6 +21,11 @@ namespace ItemTTT
 					Log = pageHelper.ScopeLogs.GetLogLines();
 			}
 
+			internal static TTTServiceResult<T> New<T>(PageHelper pageHelper, T result)
+			{
+				return new Utils.TTTServiceResult<T>( pageHelper ){ Result=result };
+			}
+
 			internal static TTTServiceResult LogAndNew(PageHelper pageHelper, System.Exception ex)
 			{
 				var errorMessage = LogAndReturnErrorMessage( pageHelper, ex );

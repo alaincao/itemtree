@@ -57,7 +57,7 @@ function buildJs(fileName, releaseMode)
 
 function buildCSS( fileName )
 {
-	return gulp.src( './app/src/Views/**/*.scss' )
+	return gulp.src( './app/src/**/*.scss' )
 		.pipe( sourcemaps.init({ loadMaps: true }) )
 		.pipe( sass().on('error', sass.logError) )
 		.pipe( concat(fileName) )
