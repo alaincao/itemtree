@@ -45,11 +45,14 @@ namespace ItemTTT.Views
 			logHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Init)}: END" );
 		}
 
-		protected string Resolve(string route)
+		protected string Resolve(string route, bool full=false)
 		{
 			Utils.Assert( !string.IsNullOrWhiteSpace(route), this, $"Missing parameter '{nameof(route)}'" );
 			route = route.Replace( Routes.LangParameter, ""+PageHelper.CurrentLanguage );
-			return PageHelper.ResolveRoute( route );
+			route = PageHelper.ResolveRoute( route );
+			if( full )
+				route = $"{Context.Request.Scheme}://{Context.Request.Host}{route}";
+			return route;
 		}
 
 		protected string JSON(object obj, bool? indented=null)
