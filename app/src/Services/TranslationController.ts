@@ -1,9 +1,10 @@
 
+import { strEnum } from "../Views/utils";
 import * as common from "../Views/common";
 import Result from "../Utils/TTTServiceResult";
 import * as dto from "../DTOs/Translation";
 
-export const { e:TranslationTypes, a:allTranslationTypes } = common.utils.strEnum([
+export const { e:TranslationTypes, a:allTranslationTypes } = strEnum([
 																	'feature',
 																]);
 export type TranslationType = keyof typeof TranslationTypes;

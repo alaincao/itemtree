@@ -173,7 +173,7 @@ namespace ItemTTT.Tree
 			var dc = cwd.DataContext;
 
 			logHelper.AddLogMessage( $"{nameof(GetNodeData)}: Retreive '{pathDb}'" );
-			var node = await dc.TreeNodes.Where( v=>v.Path == pathDb ).Select( v=>new{ v.ID, v.Data } ).SingleOrDefaultAsync();
+			var node = await dc.TreeNodes.Where( v=>v.Path == pathDb ).Select( v=>new{ v.Data } ).SingleOrDefaultAsync();
 			if( node == null )
 				return null;
 

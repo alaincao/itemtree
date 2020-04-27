@@ -6,11 +6,12 @@ namespace ItemTTT.Tree
 {
 	public abstract class TagHelperBase : TagHelper
 	{
-		protected const string	CsAttributeHtml		= "tree-html";
-		protected const string	CsAttributeImage	= "tree-image";
-		protected const string	JsAttributePath		= "tree-path";
-		protected const string	JsAttributeType		= "tree-type";
-		protected const string	AttributeParameters	= "tree-parameters";
+		protected const string	CsAttributeHtml				= "tree-html";
+		protected const string	CsAttributeHtmlTranslated	= "tree-htmlTranslated";
+		protected const string	CsAttributeImage			= "tree-image";
+		protected const string	JsAttributePath				= "tree-path";
+		protected const string	JsAttributeType				= "tree-type";
+		protected const string	AttributeParameters			= "tree-parameters";
 
 		protected readonly PageHelper				PageHelper;
 		protected readonly Models.ItemTTTContext	DataContext;
@@ -50,6 +51,37 @@ namespace ItemTTT.Tree
 				output.Content.SetHtmlContent( content );
 			}
 			logHelper.AddLogMessage( $"{nameof(HtmlTagHelper)}: END '{Path}'" );
+		}
+	}
+
+	[HtmlTargetElement(Attributes = TagHelperBase.CsAttributeHtmlTranslated)]
+	public class HtmlTranslatedTagHelper : TagHelperBase
+	{
+		[HtmlAttributeName(TagHelperBase.CsAttributeHtmlTranslated)]
+		public string		Path		{ get; set; }
+
+		public HtmlTranslatedTagHelper(PageHelper pageHelper, Models.ItemTTTContext dataContext, Tree.Cwd cwd) : base(pageHelper, dataContext, cwd)  {}
+
+		public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+		{
+			var logHelper = PageHelper.ScopeLogs;
+			logHelper.AddLogMessage( $"{nameof(HtmlTranslatedTagHelper)}: Start '{Path}'" );
+
+			using( Cwd.PushDisposable(Path) )
+			{
+				output.Attributes.RemoveAll( CsAttributeHtmlTranslated );
+				if( PageHelper.IsAuthenticated )
+				{
+					output.Attributes.Add( JsAttributeType, ""+TreeHelper.Types.translatedHtml );
+					output.Attributes.Add( JsAttributePath, Cwd.Pwd() );
+				}
+
+				var json = await Cwd.TreeHelper.GetNodeData( Cwd );
+				var content = string.IsNullOrWhiteSpace(json) ? "" : TreeController.GetTranslatedNodeText( PageHelper, json );
+
+				output.Content.SetHtmlContent( content );
+			}
+			logHelper.AddLogMessage( $"{nameof(HtmlTranslatedTagHelper)}: END '{Path}'" );
 		}
 	}
 

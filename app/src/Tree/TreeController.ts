@@ -45,13 +45,19 @@ export namespace operations
 {
 	export interface Operation
 	{
-		getOrCreateNode? : GetOrCreateNode;
+		getNodeData?		: GetNodeData;
+		getOrCreateNode?	: GetOrCreateNode;
 	}
 	export interface Response
 	{
-		path : string;
+		path	: string;
+		data?	: string;
 	}
 
+	export interface GetNodeData
+	{
+		path			: string;
+	}
 	export interface GetOrCreateNode
 	{
 		path			: string;

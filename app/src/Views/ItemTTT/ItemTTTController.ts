@@ -1,12 +1,13 @@
 
+import { strEnum } from "../utils";
 import * as common from "../common";
 
 export namespace list
 {
-	export const { e:ViewModes, a:allViewModes } = common.utils.strEnum([ 'grid', 'list' ]);
+	export const { e:ViewModes, a:allViewModes } = strEnum([ 'grid', 'list' ]);
 	export type ViewMode = keyof typeof ViewModes;
 
-	export const { e:SortingFields, a:allSortingFields } = common.utils.strEnum([ 'price', 'price_desc', 'name', 'name_desc' ]);
+	export const { e:SortingFields, a:allSortingFields } = strEnum([ 'price', 'price_desc', 'name', 'name_desc' ]);
 	export type SortingField = keyof typeof SortingFields;
 
 	export async function getListContent(p:GetListContentRequest) : Promise<string>

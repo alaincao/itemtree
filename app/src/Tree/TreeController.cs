@@ -43,10 +43,23 @@ namespace ItemTTT.Tree
 					{
 						logHelper.AddLogMessage( $"{nameof(Operations)}: Operation {i+1} of {operations.Count}" );
 						var operation = operations[ i ];
-						if( operation.GetOrCreateNode != null )
+						if( operation.GetNodeData != null )
+						{
+							var op = operation.GetNodeData;
+							logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.GetNodeData)} ; Path:'{op.Path}'" );
+							using( Cwd.PushDisposable(op.Path) )
+							{
+								var data = await Cwd.TreeHelper.GetNodeData( Cwd );
+
+								var path = Cwd.Pwd();
+								logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.GetNodeData)} 'path':'{path}' ; data length:'{""+data?.Length}'" );
+								rv.Add( new{ Path=path, Data=data } );
+							}
+						}
+						else if( operation.GetOrCreateNode != null )
 						{
 							var op = operation.GetOrCreateNode;
-							logHelper.AddLogMessage( $"{nameof(Operations)}: GetOrCreateNode ; Path:'{op.Path}' ; ExpectedType:'{op.ExpectedType}'" );
+							logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.GetOrCreateNode)} ; Path:'{op.Path}' ; ExpectedType:'{op.ExpectedType}'" );
 
 							var expectedType = (TreeHelper.Types?)null;
 							if( op.ExpectedType != null )
@@ -67,7 +80,7 @@ namespace ItemTTT.Tree
 								var node = await Cwd.TreeHelper.GetOrCreateNode( Cwd, expectedType, data );
 
 								var path = Cwd.Pwd();
-								logHelper.AddLogMessage( $"{nameof(Operations)}: GetOrCreateNode '{path}'" );
+								logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.GetOrCreateNode)} '{path}'" );
 								rv.Add( new{ Path=path } );
 							}
 						}
@@ -91,7 +104,12 @@ namespace ItemTTT.Tree
 		}
 		public class OperationsDTO
 		{
+			public GetNodeDataDTO		GetNodeData			{ get; set; } = null;
 			public GetOrCreateNodeDTO	GetOrCreateNode		{ get; set; } = null;
+			public class GetNodeDataDTO
+			{
+				public string	Path			{ get; set; }
+			}
 			public class GetOrCreateNodeDTO
 			{
 				public string	Path			{ get; set; }
@@ -163,25 +181,34 @@ namespace ItemTTT.Tree
 				return ObjectNotFound();
 			var json = node.B.Data;
 
-			logHelper.AddLogMessage( $"{nameof(HtmlTranslatedGet)}: Parse data JSON" );
-			var dict = json.JSONDeserialize();
-
-			logHelper.AddLogMessage( $"{nameof(HtmlTranslatedGet)}: Try get language '{PageHelper.CurrentLanguage}'" );
-			var data = (string)dict.TryGet( ""+PageHelper.CurrentLanguage );
-			if( data == null )
-			{
-				logHelper.AddLogMessage( $"{nameof(HtmlTranslatedGet)}: Try get language '{Language.Default}'" );
-				data = (string)dict.TryGet( ""+Language.Default );
-				if( data == null )
-				{
-					logHelper.AddLogMessage( $"{nameof(HtmlTranslatedGet)}: No matching data found => Returning an empty string" );
-					data = "";
-				}
-			}
+			var data = GetTranslatedNodeText( PageHelper, json );
 
 			var contentType = node.A.TreeMetadata_ContentType() ?? "text/html; charset=utf-8";
 			logHelper.AddLogMessage( $"{nameof(HtmlTranslatedGet)}: Output result ({data.Length}) as '{contentType}'" );
 			return Content( data, contentType );
+		}
+
+		internal static string GetTranslatedNodeText(PageHelper pageHelper, string json)
+		{
+			var logHelper = pageHelper.ScopeLogs;
+
+			logHelper.AddLogMessage( $"{nameof(GetTranslatedNodeText)}: Parse data JSON" );
+			var dict = json.JSONDeserialize();
+
+			logHelper.AddLogMessage( $"{nameof(GetTranslatedNodeText)}: Try get language '{pageHelper.CurrentLanguage}'" );
+			var data = (string)dict.TryGet( ""+pageHelper.CurrentLanguage );
+			if( data == null )
+			{
+				logHelper.AddLogMessage( $"{nameof(GetTranslatedNodeText)}: Try get language '{Language.Default}'" );
+				data = (string)dict.TryGet( ""+Language.Default );
+				if( data == null )
+				{
+					logHelper.AddLogMessage( $"{nameof(GetTranslatedNodeText)}: No matching data found => Returning an empty string" );
+					data = "";
+				}
+			}
+
+			return data;
 		}
 
 		[HttpGet( Routes.TreeImage )]

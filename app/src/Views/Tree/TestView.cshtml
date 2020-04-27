@@ -3,7 +3,7 @@
 	Init( PageHelper );
 
 	PageHelper.Parameters.PageTitle = ViewBag.Title ?? PageHelper.Parameters.PageTitle;
-	var who = "world";
+	var blah = "Blah blah";
 }
 @section Scripts
 {
@@ -11,12 +11,13 @@
 		$('#preParameters').html( JSON.stringify(ttt.common.pageParameters, null, 2) )
 	</script>
 }
-<h1>Hello @who!</h1>
-<h2>Foo (from database): '@ViewBag.Foo'</h2>
+<h2>Value from C#:</h2> '@blah'
+<h2>Value from database:</h2> '@ViewBag.Foo'
+<h2>HTML text from database:</h2> <span tree-html="./sometext"></span>
+<h2>Translated HTML text from database:</h2> <span tree-htmlTranslated="./sometranslatedtext"></span>
 <div ttt-only-if="IsEN">IsEN</div>
 <div ttt-only-if="IsFR">IsFR</div>
 <div ttt-only-if="IsNL">IsNL</div>
 <img tree-image="image01"/>
 <img tree-image="image02" tree-parameters="height=60"/>
-<div tree-html="./sometext"></div>
 <pre id="preParameters"></pre>

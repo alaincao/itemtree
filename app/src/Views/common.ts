@@ -101,6 +101,11 @@ export function init(p:{ pageParameters:PageParameters })
 					},
 		};
 
+	utils.log( 'common.init(): Replace KnockoutHandler template engine' );
+	{
+		ko.setTemplateEngine( html.newKoTemplateSource() );
+	}
+
 	utils.log( 'common.init(): Initialize tree framework' );
 	tree.init();
 }
@@ -121,19 +126,6 @@ export namespace utils
 	/** cf. https://schneidenbach.gitbooks.io/typescript-cookbook/nameof-operator.html */
 	export const nameof = <T>(name: keyof T) => name;
 
-	/** Function to simulate string-valued enums
-	 * Based on: https://basarat.gitbooks.io/typescript/docs/types/literal-types.html
-	 * Returns: { e:the enum , a:the array specified as parameter } */
-	export function strEnum<T extends string>(a:Array<T>): { e:{[K in T]: K}, a:T[] }
-	{
-		const e = a.reduce( (res, key)=>
-			{
-				res[key] = key;
-				return res;
-			}, Object.create(null) );
-		return { e, a };
-	}
-
 	export function stringIsNullOrEmpty(str:string) : boolean
 	{
 		if( str == null )
@@ -149,6 +141,12 @@ export namespace utils
 		if( str.trim() == '' )
 			return true;
 		return false;
+	}
+	export function stringStartsWith(str:string, match:string) : boolean
+	{
+		if( str == null )
+			return false;
+		return ( str.indexOf(match) === 0 );
 	}
 
 	export function htmlEncode(txt:string|string[]) : string
@@ -452,6 +450,75 @@ export namespace html
 				else  // Bind to scroll event & wait for $elem to be visible
 					$window.bind( 'scroll', scrollHandler );
 			} );
+	}
+
+	// based on https://embed.plnkr.co/plunk/yfQAnM
+	var registeredTemplates : {[name:string]:string};
+	export function registerKoTemplate(name:string, content:string) : void
+	{
+		registeredTemplates[ name ] = content;
+	}
+	export function getKoTemplateID(content:string) : string
+	{
+		for( const id of Object.keys(registeredTemplates) )
+		{
+			if( registeredTemplates[id] === content )
+				return id;
+		}
+		return null;
+	}
+	export function newKoTemplateSource() : KnockoutNativeTemplateEngine
+	{
+		if( registeredTemplates == null )
+			registeredTemplates = {};
+
+		const engine = new ko.nativeTemplateEngine();
+		engine.makeTemplateSource = (template, doc)=>
+			{
+				if( typeof(template) === 'string' )
+				{
+					// Try get an element that has this ID
+					const elem = (doc || document).getElementById( template );
+					if( elem != null )
+						return new ko.templateSources.domElement( elem );
+
+					// Failed => Fallback to 'StringTemplateSource'
+					return new StringTemplateSource( template );
+				}
+				else if (template && (template.nodeType == 1) || (template.nodeType == 8))
+				{
+					return new ko.templateSources.anonymousTemplate(template);
+				}
+			};
+		return engine;
+	}
+	class StringTemplateSource
+	{
+		public readonly		name	: string;
+		private readonly	data_	: {[key:string]:any};
+		constructor(name:string)
+		{
+			this.name	= name;
+			this.data_	= {};
+		}
+		public text(value:string) : string|void
+		{
+			const self = this;
+
+			if( arguments.length === 0 )
+				return registeredTemplates[ self.name ];
+			registerKoTemplate( self.name, value );
+			return;
+		}
+		public data(key:string, value:any) : any|void
+		{
+			const self = this;
+
+			if( arguments.length === 1 )
+				return self.data_[ key ];
+			else
+				self.data_[key] = value;
+		}
 	}
 } // namespace html
 
