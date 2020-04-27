@@ -1,15 +1,11 @@
 
+import { newGuid, strEnum } from "../Views/utils";
 import * as common from "../Views/common"
 import * as ctrl from "./TreeController";
 import * as lng from "../Language";
 
-export const types =
-{
-	html			: 'html',
-	translatedHtml	: 'translatedHtml',
-	image			: 'image',
-	view			: 'view',
-}
+export const { e:Types, a:allTypes } = strEnum([ 'html', 'translatedHtml', 'image', 'view' ]);
+export type Type = keyof typeof Types;
 
 const pageManagerTemplate = `
 <div class="tree-pagemanager">
@@ -52,7 +48,7 @@ export class PageProperty
 		}
 		else  // This template needs an ID and be registered
 		{
-			templateID = '_'+common.utils.newGuid();
+			templateID = '_'+newGuid();
 			common.html.registerKoTemplate( templateID, template );
 		}
 		this.templateID = templateID;

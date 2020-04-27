@@ -1,5 +1,5 @@
 
-import { strEnum } from "./Views/utils";
+import { strEnum, stringIsNullOrWhitespace } from "./Views/utils";
 import * as common from "./Views/common";
 
 export const { e:Languages, a:allLanguages } = strEnum([ 'en', 'fr', 'nl' ]);
@@ -58,7 +58,7 @@ export class Translation
 		for( const l of allLanguages )
 		{
 			const value = values[ l ];
-			if( common.utils.stringIsNullOrWhitespace(value) )
+			if( stringIsNullOrWhitespace(value) )
 				self.items[ l ]( '' );
 			else
 				self.items[ l ]( value );

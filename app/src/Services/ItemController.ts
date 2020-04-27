@@ -1,11 +1,12 @@
 
+import { stringIsNullOrWhitespace } from "../Views/utils";
 import * as common from "../Views/common";
 import { Item } from "../DTOs/Item";
 import Result from "../Utils/TTTServiceResult";
 
 export async function getUrlCode(originalCode:string) : Promise<string>
 {
-	if( common.utils.stringIsNullOrWhitespace(originalCode) )
+	if( stringIsNullOrWhitespace(originalCode) )
 		return null;
 	return await common.url.getRequest( common.routes.api.getUrlCode, { originalCode } );
 }

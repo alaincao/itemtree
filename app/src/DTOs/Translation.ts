@@ -1,5 +1,5 @@
 
-import * as common from "../Views/common";
+import { stringIsNullOrWhitespace } from "../Views/utils";
 
 export interface Translation
 {
@@ -80,9 +80,9 @@ export class TranslationItemKO extends TranslationKO
 	{
 		const self = this;
 		const en = self.en();
-		if( common.utils.stringIsNullOrWhitespace(self.fr()) )
+		if( stringIsNullOrWhitespace(self.fr()) )
 			self.fr( en );
-		if( common.utils.stringIsNullOrWhitespace(self.nl()) )
+		if( stringIsNullOrWhitespace(self.nl()) )
 			self.nl( en );
 	}
 }

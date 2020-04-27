@@ -14,9 +14,9 @@ export function init()
 	common.utils.log( 'tree.init()' );
 
 	const callbacks : {[key:string]:($e:JQuery,path:string)=>void} = {};
-	callbacks[ tree.types.html ]			= HtmlComponent.create;
-	callbacks[ tree.types.translatedHtml ]	= HtmlTranslatedComponent.create;
-	callbacks[ tree.types.image ]			= initImage;
+	callbacks[ tree.Types.html ]			= HtmlComponent.create;
+	callbacks[ tree.Types.translatedHtml ]	= HtmlTranslatedComponent.create;
+	callbacks[ tree.Types.image ]			= initImage;
 
 	common.utils.log( 'tree.init(): Initialize components' );
 
@@ -103,7 +103,7 @@ class HtmlComponent implements tree.PageComponent
 
 		const operation : ctrl.operations.GetOrCreateNode = {
 				path			: self.path,
-				expectedType	: tree.types.html,
+				expectedType	: tree.Types.html,
 				data			: self.trackedObject(),
 			};
 		return{ getOrCreateNode:operation };
@@ -195,7 +195,7 @@ class HtmlTranslatedComponent implements tree.PageComponent
 
 		const operation : ctrl.operations.GetOrCreateNode = {
 				path			: self.path,
-				expectedType	: tree.types.translatedHtml,
+				expectedType	: tree.Types.translatedHtml,
 				data			: self.translation.getValues(),
 			};
 		return{ getOrCreateNode:operation };

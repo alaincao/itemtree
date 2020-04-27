@@ -1,4 +1,5 @@
 
+import { stringIsNullOrWhitespace } from "../utils";
 import * as common from "../common";
 import * as dtos from "../../DTOs/Testimonial";
 import * as ctrl from "../../Services/TestimonialController";
@@ -295,9 +296,9 @@ class FormTestimonial
 		common.utils.log( 'FormTestimonial.save(): START' );
 		const self = this;
 
-		if( common.utils.stringIsNullOrWhitespace( self.firstLastName() )
-		 || common.utils.stringIsNullOrWhitespace( self.whosWho() )
-		 || common.utils.stringIsNullOrWhitespace( self.text() ) )
+		if( stringIsNullOrWhitespace( self.firstLastName() )
+		 || stringIsNullOrWhitespace( self.whosWho() )
+		 || stringIsNullOrWhitespace( self.text() ) )
 		{
 			self.showRequiredText( true );
 			return;

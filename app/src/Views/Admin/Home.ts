@@ -1,4 +1,5 @@
 
+import { stringIsNullOrWhitespace } from "../utils";
 import * as common from "../common";
 import * as loginCtrl from "../../Services/LoginController";
 import * as trnCtrl from "../../Services/TranslationController";
@@ -41,9 +42,9 @@ class ChangePassword
 		const newPassword = self.newPassword();
 		const newPasswordAgain = self.newPasswordAgain();
 
-		if( common.utils.stringIsNullOrWhitespace(newPassword) )
+		if( stringIsNullOrWhitespace(newPassword) )
 			return;
-		if( common.utils.stringIsNullOrWhitespace(oldPassword) )
+		if( stringIsNullOrWhitespace(oldPassword) )
 			return;
 		if( newPassword != newPasswordAgain )
 		{

@@ -1,4 +1,5 @@
 
+import { nameof, stringIsNullOrWhitespace } from "../utils";
 import * as common from "../common";
 import * as itemCtrl from "../../Services/ItemController";
 import { list } from "./ItemTTTController";
@@ -122,12 +123,12 @@ class ItemKO extends dto.ItemKO
 
 	constructor($container:JQuery, model:dto.Item)
 	{
-		const required = [	common.utils.nameof<dto.ItemKO>('code'),
-							common.utils.nameof<dto.ItemKO>('name'),
-							common.utils.nameof<dto.ItemKO>('descriptionEN'),
-							common.utils.nameof<dto.ItemKO>('descriptionFR'),
-							common.utils.nameof<dto.ItemKO>('descriptionNL'),
-							common.utils.nameof<dto.ItemKO>('active') ];
+		const required = [	nameof<dto.ItemKO>('code'),
+							nameof<dto.ItemKO>('name'),
+							nameof<dto.ItemKO>('descriptionEN'),
+							nameof<dto.ItemKO>('descriptionFR'),
+							nameof<dto.ItemKO>('descriptionNL'),
+							nameof<dto.ItemKO>('active') ];
 		super( $container, model, required );
 		const self = this;
 		this.$container	= $container;
@@ -190,7 +191,7 @@ class ItemKO extends dto.ItemKO
 		let searchWords : string[] = [];
 		$.each( searchString.split(' '), function(i,word)
 			{
-				if( common.utils.stringIsNullOrWhitespace(word) )
+				if( stringIsNullOrWhitespace(word) )
 					return;
 				searchWords.push( word.trim() );
 			} );

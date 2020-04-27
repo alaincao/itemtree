@@ -1,4 +1,5 @@
 
+import { newGuid } from "../utils";
 import * as common from "../common";
 import * as dto from "../../DTOs/Item";
 import { ItemPicture } from "../../DTOs/ItemPicture";
@@ -327,7 +328,7 @@ export function scrambleUrl(url:string) : string
 		url = url + '&';
 	else
 		url = url + '?';
-	url = url + 'p=' + common.utils.newGuid();
+	url = url + 'p=' + newGuid();
 	return url;
 }
 
