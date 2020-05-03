@@ -11,6 +11,14 @@
 		$('#preParameters').html( JSON.stringify(ttt.common.pageParameters, null, 2) )
 	</script>
 }
+
+<tree-pageProperty path="./" property="title">
+	<strong>Page title:</strong> <input type="text" data-bind="value:value"/>
+</tree-pageProperty>
+<tree-pageProperty property="foo">
+	<strong>Foo:</strong> <input type="text" data-bind="value:value"/>
+</tree-pageProperty>
+
 <h2>Value from C#:</h2> '@blah'
 <h2>Value from database:</h2> '@ViewBag.Foo'
 <h2>HTML text from database:</h2> <span tree-html="./sometext"></span>

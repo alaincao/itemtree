@@ -1,22 +1,24 @@
 
+import { jsonParse } from "../Views/utils";
+import * as common from "../Views/common"
 import * as tree from "./TreeHelper";
 import * as ctrl from "./TreeController";
 import * as lng from "../Language";
-import * as common from "../Views/common"
 import { addKoTinymceEditor } from "../Views/Blog/Edit";
 
 const attributePath			= "tree-path";
 const attributeType			= "tree-type";
 const attributeParameters	= "tree-parameters";
 
-export function init()
+export async function init() : Promise<void>
 {
 	common.utils.log( 'tree.init()' );
 
-	const callbacks : {[key:string]:($e:JQuery,path:string)=>void} = {};
+	const callbacks : {[key:string]:($e:JQuery,path:string)=>Promise<void>} = {};
 	callbacks[ tree.Types.html ]			= HtmlComponent.create;
 	callbacks[ tree.Types.translatedHtml ]	= HtmlTranslatedComponent.create;
 	callbacks[ tree.Types.image ]			= initImage;
+	callbacks[ tree.Types.pageProperty ]	= TextPageProperty.create;
 
 	common.utils.log( 'tree.init(): Initialize components' );
 
@@ -30,7 +32,7 @@ export function init()
 		if( callback == null )
 			continue;
 
-		callback( $element, path );
+		await callback( $element, path );
 	}
 
 	common.utils.log( 'tree.init(): End' );
@@ -167,19 +169,13 @@ class HtmlTranslatedComponent implements tree.PageComponent
 		let values : {[key in lng.Language]:string};
 		try
 		{
-			const rv = await ctrl.operations([ {getNodeData:{path:self.path}} ]);
-			if(! rv.success )
-			{
-				common.utils.error( 'GetNodeData operation failed', { rv } );
-				common.html.showMessage( rv.errorMessage );
-				return;
-			}
-			const json = rv.responses[0].data;
-			values = JSON.parse( json );
+			const json = await ctrl.getNodeData( self.path );
+			values = jsonParse( json );
 		}
 		catch( ex )
 		{
-			common.utils.error( `Retreive of path '${self.path}' failed: ${ex}` );
+			common.utils.error( `Retreive of path '${self.path}' failed`, ex );
+			common.html.showMessage( `Retreive of path '${self.path}' failed` );
 			self.translation.resetValues();
 		}
 		finally
@@ -255,4 +251,31 @@ async function initImage($element:JQuery, path:string) : Promise<void>
 				} );
 			$input.click();
 		} );
+}
+
+//////////
+
+class TextPageProperty extends tree.PageProperty
+{
+	private static readonly	propertyAttributeName	= 'property';
+
+	protected readonly	value	: KnockoutObservable<string>;
+
+	constructor(template:string, value:KnockoutObservable<string>)
+	{
+		super( template );
+		this.value = value;
+	}
+
+	public static async create($element:JQuery, path:string) : Promise<void>
+	{
+		const member = $element.attr( TextPageProperty.propertyAttributeName );
+		common.utils.log( 'tree-pageProperty', { $element, path, member } );
+		const template = $element.text();
+
+		const pageManager = tree.getPageManager();
+		const value = await pageManager.getNodeMemberKO( path, member );
+		const instance = new TextPageProperty( template, value );
+		pageManager.registerProperty( instance );
+	}
 }

@@ -93,6 +93,16 @@ export function newGuid() : string
 	return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
 }
 
+// TODO: Replace those 2 functions by JSON5
+export function jsonParse(json:string) : any
+{
+	return JSON.parse( json );
+}
+export function jsonStringify(data:any) : string
+{
+	return JSON.stringify( data );
+}
+
 export function htmlEncode(txt:string|string[]) : string
 {
 	// TODO: Find a better way ?

@@ -56,6 +56,32 @@ namespace ItemTTT.Tree
 								rv.Add( new{ Path=path, Data=data } );
 							}
 						}
+						else if( operation.SetNodeData != null )
+						{
+							var op = operation.SetNodeData;
+							logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.SetNodeData)} ; Path:'{op.Path}' ; ExpectedType:'{op.ExpectedType}'" );
+
+							var data = op.Data as string;
+							if( data == null )
+								data = op.Data.ToString();
+
+							var expectedType = (TreeHelper.Types?)null;
+							if( op.ExpectedType != null )
+							{
+								expectedType = op.ExpectedType.TryParseEnum<TreeHelper.Types>();
+								if( expectedType == null )
+									throw new ArgumentException( $"Unknown expected type '{op.ExpectedType}'" );
+							}
+
+							using( Cwd.PushDisposable(op.Path) )
+							{
+								await Cwd.TreeHelper.SetNodeData( Cwd, data, expectedType );
+
+								var path = Cwd.Pwd();
+								logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.SetNodeData)} '{path}'" );
+								rv.Add( new{ Path=path } );
+							}
+						}
 						else if( operation.GetOrCreateNode != null )
 						{
 							var op = operation.GetOrCreateNode;
@@ -105,10 +131,17 @@ namespace ItemTTT.Tree
 		public class OperationsDTO
 		{
 			public GetNodeDataDTO		GetNodeData			{ get; set; } = null;
+			public SetNodeDataDTO		SetNodeData			{ get; set; } = null;
 			public GetOrCreateNodeDTO	GetOrCreateNode		{ get; set; } = null;
 			public class GetNodeDataDTO
 			{
 				public string	Path			{ get; set; }
+			}
+			public class SetNodeDataDTO
+			{
+				public string	Path			{ get; set; }
+				public string	ExpectedType	{ get; set; }
+				public object	Data			{ get; set; }
 			}
 			public class GetOrCreateNodeDTO
 			{

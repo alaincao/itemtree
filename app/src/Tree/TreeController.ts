@@ -27,6 +27,19 @@ export interface ImageSaveResult extends Result
 
 //////////
 
+export async function getNodeData(path:string) : Promise<string>
+{
+	const rv = await operations([{ getNodeData:{path} }]);
+	if(! rv.success )
+	{
+		common.utils.error( 'GetNodeData operation failed', { rv } );
+		throw `GetNodeData operation at '${path}' failed: ${rv.errorMessage}`;
+	}
+	return rv.responses[0].data;
+}
+
+//////////
+
 export async function operations(ops:operations.Operation[]) : Promise<OperationsResult>
 {
 	const response = await common.url.postRequestJSON<OperationsResult>( common.routes.api.tree.operations, ops );
@@ -46,6 +59,7 @@ export namespace operations
 	export interface Operation
 	{
 		getNodeData?		: GetNodeData;
+		setNodeData?		: SetNodeData;
 		getOrCreateNode?	: GetOrCreateNode;
 	}
 	export interface Response
@@ -57,6 +71,12 @@ export namespace operations
 	export interface GetNodeData
 	{
 		path			: string;
+	}
+	export interface SetNodeData
+	{
+		path			: string;
+		expectedType?	: string;
+		data			: any;
 	}
 	export interface GetOrCreateNode
 	{

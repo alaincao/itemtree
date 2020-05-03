@@ -1,4 +1,5 @@
 
+import { jsonParse, jsonStringify } from "./utils";
 import * as common from "./common";
 import { PageParameters } from "../PageHelper";
 import { Routes } from "../Routes";
@@ -179,11 +180,11 @@ export namespace utils
 			o = ko.observable<T>();
 
 		const obj = <TrackedObservable<T>>o;
-		const originalValue	= ko.observable( obj() );
+		const originalValue	= ko.observable( jsonStringify(obj()) );
 		(<any>obj)['originalValue'] = originalValue;  // nb: For debugging usage only: Render the 'originalValue' available to the JS console, but do not expose it to the TypeScript definitions
-		obj.hasChanges		= ko.computed( ()=> JSON.stringify(obj()) != JSON.stringify(originalValue()) );
-		obj.setInitial		= ()=>originalValue( obj() );
-		obj.reset			= ()=>obj( originalValue() );
+		obj.hasChanges	= ko.pureComputed( ()=> jsonStringify(obj()) != originalValue() );
+		obj.setInitial	= ()=>originalValue( jsonStringify(obj()) );
+		obj.reset		= ()=>obj( jsonParse(originalValue()) );
 		return obj;
 	}
 } // namespace utils
@@ -441,7 +442,7 @@ export namespace url
 			var value = decodeURIComponent( pairs[1] );
 
 			// Try parse JSON
-			try { value = JSON.parse(value); }
+			try { value = jsonParse(value); }
 			catch( ex ){/* Not JSON => Keep the string as-is*/}
 
 			dict[ key ] = value;
@@ -461,7 +462,7 @@ export namespace url
 					{/*Keep as-is*/}
 				else
 					// Convert to JSON
-					value = JSON.stringify( value );
+					value = jsonStringify( value );
 				value = encodeURIComponent( value );
 
 				pairs.push( key+"="+value );
@@ -563,7 +564,7 @@ export namespace url
 	export function postRequestJSON<T>(url:string, request:{[key:string]:any}) : Promise<T>
 	{
 		utils.log( 'postRequestJSON', { url, request } );
-		let requestStr = JSON.stringify( request );
+		let requestStr = jsonStringify( request );
 		return new Promise<T>( (resolve,reject)=>
 			{
 				$.ajax({	type		: 'POST',

@@ -1,10 +1,17 @@
 
-import { newGuid, strEnum } from "../Views/utils";
+import { newGuid, strEnum, jsonParse } from "../Views/utils";
 import * as common from "../Views/common"
 import * as ctrl from "./TreeController";
 import * as lng from "../Language";
 
-export const { e:Types, a:allTypes } = strEnum([ 'html', 'translatedHtml', 'image', 'view' ]);
+export const { e:Types, a:allTypes } = strEnum([
+												'html',
+												'translatedHtml',
+												'image',
+												'view',
+
+												'pageProperty',
+											]);
 export type Type = keyof typeof Types;
 
 const pageManagerTemplate = `
@@ -105,7 +112,12 @@ export class PageManager
 		}
 		return self.currentLanguage.current;
 	}
-	
+
+	public getNodeMemberKO(path:string, member:string) : Promise<KnockoutObservable<any>>
+	{
+		return NodeContentComponent.getNodeMemberKO( path, member );
+	}
+
 	protected async save() : Promise<void>
 	{
 		common.utils.log( 'PageManager.save()' );
@@ -192,5 +204,77 @@ class CurrentLanguageProperty extends PageProperty
 		super( currentLanguageTemplate );
 		this.allLanguages	= ko.observableArray( common.allLanguages );
 		this.current		= ko.observable( common.pageParameters.currentLanguage );
+	}
+}
+
+//////////
+
+class NodeContentComponent implements PageComponent
+{
+	private static	trackedNodes	: {[path:string]:NodeContentComponent};
+
+	private readonly	path			: string;
+	public readonly		trackedObject	: common.utils.TrackedObservable<{[key:string]:any}>;
+
+	constructor(path:string, initialValue:{[key:string]:any})
+	{
+		this.path			= path;
+		this.trackedObject	= common.utils.observable( ko.observable(initialValue) );
+	}
+
+	public static async getNodeMemberKO(path:string, member:string) : Promise<KnockoutObservable<any>>
+	{
+		if( NodeContentComponent.trackedNodes == null )
+			NodeContentComponent.trackedNodes = {};
+
+		let instance = NodeContentComponent.trackedNodes[ path ];
+		if( instance == null )
+		{
+			// Path not yet tracked => Create instance
+
+			let json = await ctrl.getNodeData( path );
+			if( json != null )
+				var initialValue = <{[key:string]:any}>jsonParse( json );
+			else
+				initialValue = {};
+			instance = new NodeContentComponent( path, initialValue );
+
+			NodeContentComponent.trackedNodes[ path ] = instance;
+			getPageManager().registerComponent( instance );
+		}
+
+		// Return an observable that tracks only a single member of the 'trackedObject'
+		const o = instance.trackedObject;
+		const rv = ko.pureComputed({
+						read : ()=>o()[ member ],
+						write : (value)=>
+							{
+								const a = o();
+								a[ member ] = value;
+								o( a );
+							},
+					})
+		return rv;
+	}
+
+	public async getOperation(): Promise<ctrl.operations.Operation>
+	{
+		const self = this;
+
+		const operation : ctrl.operations.SetNodeData = {
+				path	: self.path,
+				data	: self.trackedObject(),
+			};
+		return{ setNodeData:operation };
+	}
+
+	public async setOperationResponse(response: ctrl.operations.Response): Promise<void>
+	{
+		const self = this;
+
+		// Refresh data from server
+		const json = await ctrl.getNodeData( self.path );
+		self.trackedObject( jsonParse(json) );
+		self.trackedObject.setInitial();
 	}
 }

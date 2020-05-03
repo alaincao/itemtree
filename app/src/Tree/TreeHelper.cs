@@ -20,6 +20,8 @@ namespace ItemTTT.Tree
 			translatedHtml,
 			image,
 			view,
+
+			pageProperty,
 		}
 
 		internal readonly string	Root;
@@ -178,6 +180,32 @@ namespace ItemTTT.Tree
 				return null;
 
 			return node.Data;
+		}
+
+		internal async Task SetNodeData(Cwd cwd, string data, Types? expectedType=null)
+		{
+			Utils.Assert( cwd != null, nameof(SetNodeData), $"Missing parameter '{nameof(cwd)}'" );
+			Utils.Assert( data != null, nameof(SetNodeData), $"Missing parameter '{nameof(data)}'" );
+			var logHelper = cwd.LogHelper;
+			var path = cwd.Pwd();
+			var pathDb = cwd.PwdDb();
+			var dc = cwd.DataContext;
+
+			logHelper.AddLogMessage( $"{nameof(SetNodeData)}: Retreive '{pathDb}'" );
+			var node = await dc.TreeNodes.Where( v=>v.Path == pathDb ).SingleOrDefaultAsync();
+			if( node == null )
+				throw new Utils.TTTException( $"{nameof(TreeHelper)}: Node at '{path}' is not found" );
+
+			if( expectedType != null )
+			{
+				var dict = node.Meta.JSONDeserialize();
+				if( dict.TreeMetadata_Type() != ""+expectedType )
+					throw new Utils.TTTException( $"{nameof(TreeHelper)}: Node at '{path}' is not of expected type '{expectedType}'" );
+			}
+
+			logHelper.AddLogMessage( $"{nameof(SetNodeData)}: Update node's data" );
+			node.Data = data;
+			await dc.SaveChangesAsync();
 		}
 
 		internal async Task DelTree(Cwd cwd, bool included=true)

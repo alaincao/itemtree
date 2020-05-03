@@ -6,6 +6,7 @@ namespace ItemTTT.Tree
 {
 	public abstract class TagHelperBase : TagHelper
 	{
+		protected const string	CsTagPageProperty			= "tree-pageProperty";
 		protected const string	CsAttributeHtml				= "tree-html";
 		protected const string	CsAttributeHtmlTranslated	= "tree-htmlTranslated";
 		protected const string	CsAttributeImage			= "tree-image";
@@ -116,6 +117,46 @@ namespace ItemTTT.Tree
 				}
 			}
 			logHelper.AddLogMessage( $"{nameof(ImageTagHelper)}: END '{Path}'" );
+			return Task.FromResult(0);
+		}
+	}
+
+	[HtmlTargetElement(TagHelperBase.CsTagPageProperty, Attributes = CsAttributeProperty)]
+	public class PagePropertyTagHelper : TagHelperBase
+	{
+		private const string	CsAttributePath			= "path";
+		private const string	CsAttributeProperty		= "property";
+		private const string	JsAttributeProperty		= "property";
+
+		[HtmlAttributeName(CsAttributePath)]
+		public string		Path		{ get; set; }
+
+		[HtmlAttributeName(CsAttributeProperty)]
+		public string		Property	{ get; set; }
+
+		public PagePropertyTagHelper(PageHelper pageHelper, Models.ItemTTTContext dataContext, Tree.Cwd cwd) : base(pageHelper, dataContext, cwd)  {}
+
+		public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+		{
+			var logHelper = PageHelper.ScopeLogs;
+			logHelper.AddLogMessage( $"{nameof(PagePropertyTagHelper)}: Start '{Path}'" );
+
+			if(! PageHelper.IsAuthenticated )
+			{
+				// Simply discard output
+				output.SuppressOutput();
+				goto EXIT;
+			}
+
+			output.TagName = "script";
+			output.Attributes.Add( "type", "text/html" );
+			output.Attributes.Add( JsAttributeType, ""+TreeHelper.Types.pageProperty );
+			using( Cwd.PushDisposable(Path??".") )
+				output.Attributes.Add( JsAttributePath, Cwd.Pwd() );
+			output.Attributes.Add( JsAttributeProperty, Property );
+
+		EXIT:
+			logHelper.AddLogMessage( $"{nameof(PagePropertyTagHelper)}: END '{Path}'" );
 			return Task.FromResult(0);
 		}
 	}

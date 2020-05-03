@@ -1,5 +1,5 @@
 
-import { nameof, stringIsNullOrWhitespace } from "../utils";
+import { nameof, stringIsNullOrWhitespace, jsonParse } from "../utils";
 import * as common from "../common";
 import * as itemCtrl from "../../Services/ItemController";
 import { list } from "./ItemTTTController";
@@ -59,7 +59,7 @@ function reconstructItemsList() : void
 			// Find the JSON model's tag & set its parent element as the item's container
 			const $modelElement = $(e);
 			const $container = $modelElement.parent();
-			const model = <dto.Item>JSON.parse( $modelElement.text() );
+			const model = <dto.Item>jsonParse( $modelElement.text() );
 
 			// Remove the model tag (i.e. free memory ?)
 			$modelElement.remove();
