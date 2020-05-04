@@ -1,4 +1,5 @@
 @inherits ItemTTT.Views.BaseView
+@inject ItemTTT.Tree.Cwd cwd;
 @{
 	Init( PageHelper );
 
@@ -11,6 +12,31 @@
 		$('#preParameters').html( JSON.stringify(ttt.common.pageParameters, null, 2) )
 	</script>
 }
+
+<p><strong>PWD:</strong> @Tree_Pwd()</p>
+@using( Cwd.PushDisposable("/testlist") )
+{
+	<p><strong>PWD:</strong> @Tree_Pwd()</p>
+	@foreach( var item in (await Tree_GetNodeData() ) )
+	{
+		if( item["active"] == false )
+			continue;
+
+		<strong>name: </strong>@item["name"]<br/>
+	}
+
+	@foreach( var path in await Tree_GetChildNodeNames() )
+	{
+		@if( path == "image02" )
+			continue;
+
+		<span>@path</span>
+		<span>@Tree_Pwd(path)</span>
+		<img tree-image="@path/img"/><br/>
+	}
+	<p><strong>PWD:</strong> @Tree_Pwd()</p>
+}
+<p><strong>PWD:</strong> @Tree_Pwd()</p>
 
 <tree-pageProperty path="./" property="title">
 	<strong>Page title:</strong> <input type="text" data-bind="value:value"/>

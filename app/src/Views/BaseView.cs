@@ -1,5 +1,7 @@
 
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,11 +9,16 @@ namespace ItemTTT.Views
 {
 	public abstract class BaseView : Microsoft.AspNetCore.Mvc.Razor.RazorPage<object>
 	{
-		private PageHelper		PageHelper;
+		private PageHelper			PageHelper;
+		private LogHelper			LogHelper;
+		protected Tree.Cwd			Cwd			{ get; private set; }
+		protected Tree.TreeHelper	TreeHelper	{ get; private set; }
 
 		/// <summary>Tag parameter to add to scripts URLs so browsers' cache get refreshed</summary>
 		protected string		ScriptsTag		{ get { return scriptsTag ?? (scriptsTag = Guid.NewGuid().ToString().Replace("-", "")); } }
 		private static string	scriptsTag		= null;
+
+		protected bool	IsAuthenticated		=> PageHelper.IsAuthenticated;
 
 		protected bool	IsEN	{ get; private set; }
 		protected bool	IsFR	{ get; private set; }
@@ -22,14 +29,16 @@ namespace ItemTTT.Views
 
 		protected void Init(PageHelper pageHelper)
 		{
-			PageHelper = pageHelper;
+			pageHelper.ScopeLogs.AddLogMessage( $"{nameof(BaseView)}.{nameof(Init)}: START" );
 
-			var logHelper = pageHelper.ScopeLogs;
-			logHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Init)}: START" );
+			PageHelper	= pageHelper;
+			LogHelper	= pageHelper.ScopeLogs;
+			Cwd			= Context.RequestServices.GetRequiredService<Tree.Cwd>();
+			TreeHelper	= Cwd.TreeHelper;
 
 			if( string.IsNullOrWhiteSpace(pageHelper.Parameters.PageTitle) )
 			{
-				logHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Init)}: START" );
+				LogHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Init)}: Use default page title" );
 				var startup = this.Context.RequestServices.GetRequiredService<Startup>();
 				pageHelper.Parameters.PageTitle = startup.Configuration[ AppSettingsKeys.DefaultTitle ];
 			}
@@ -42,7 +51,7 @@ namespace ItemTTT.Views
 			UseMini = ( Utils.IsDebug == false );
 			UseMaxi = (! UseMini);
 
-			logHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Init)}: END" );
+			LogHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Init)}: END" );
 		}
 
 		protected string Resolve(string route, bool full=false)
@@ -60,6 +69,46 @@ namespace ItemTTT.Views
 			if( indented == null )
 				indented = ( Utils.IsDebug ? true : false );
 			return obj.JSONStringify( indented:indented.Value );
+		}
+
+		protected string Tree_Pwd(string path=null)
+		{
+			if( path == null )
+				return Cwd.Pwd();
+			using( Cwd.PushDisposable(path) )
+				return Cwd.Pwd();
+		}
+
+		protected async Task<string[]> Tree_GetChildNodeNames(string path=null)
+		{
+			LogHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Tree_GetChildNodeNames)}: '{path??Cwd.Pwd()}'" );
+			using( (path == null) ? null : Cwd.PushDisposable(path) )
+			{
+				return ( await TreeHelper.GetChildNodes(Cwd) ).Select( v=>
+					{
+						if( path == null )
+							// Use relative path
+							return v.B;
+						else
+							// Use absolute path
+							return v.A;
+					} ).ToArray();
+			}
+		}
+
+		protected async Task<dynamic> Tree_GetNodeData(string path=null)
+		{
+			LogHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Tree_GetNodeData)}: '{path??Cwd.Pwd()}'" );
+			using( (path == null) ? null : Cwd.PushDisposable(path) )
+			{
+				var json = await TreeHelper.GetNodeData( Cwd );
+				if( string.IsNullOrWhiteSpace(json) )
+				{
+					LogHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Tree_GetNodeData)}: Data not found" );
+					json = "{}";
+				}
+				return json.JSONDeserialize<object>();
+			}
 		}
 
 		protected string FormatPrice(int? price)

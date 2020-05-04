@@ -79,6 +79,25 @@ namespace ItemTTT.Tree
 			return node;
 		}
 
+		/** A:Absolute path ; B:Node name */
+		public async Task<Utils.CustomClass2<string,string>[]> GetChildNodes(Cwd cwd)
+		{
+			Utils.Assert( cwd != null, nameof(GetChildNodes), $"Missing parameter '{nameof(cwd)}'" );
+			var logHelper = cwd.LogHelper;
+			var dc = cwd.DataContext;
+			var pathDb = cwd.PwdDb();
+
+			logHelper.AddLogMessage( $"{nameof(GetChildNodes)}: Retreive child nodes of '{pathDb}'" );
+			var paths = await dc.TreeNodes.Where( v=>v.ParentPath == pathDb ).Select( v=>v.Path ).ToArrayAsync();
+			var items = paths.Select( (path)=>new Utils.CustomClass2<string,string>{ A=path, B=cwd.GetNodeName(path) } ).ToArray();
+
+			logHelper.AddLogMessage( $"{nameof(GetChildNodes)}: Remove DB's prefix from paths" );
+			foreach( var item in items )
+				item.A = cwd.Pwd( item.A );
+
+			return items;
+		}
+
 		internal async Task<Models.TreeNode> GetOrCreateNode(Cwd cwd, Types? expectedType=null, string data=null)
 		{
 			Utils.Assert( cwd != null, nameof(GetOrCreateNode), $"Missing parameter '{nameof(cwd)}'" );

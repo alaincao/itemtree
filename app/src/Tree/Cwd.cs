@@ -37,16 +37,33 @@ namespace ItemTTT.Tree
 			await transaction.CommitAsync();
 		}
 
-		internal void Cd(string path)
+		public void Cd(string path)
 		{
 			var segments = GetSegments( path );
 			Dirs.Pop();
 			Dirs.Push( segments );
 		}
 
-		internal string Pwd()
+		internal string GetNodeName(string path=null)
 		{
-			return GetPath( Dirs.Peek() );
+			string[] segments;
+			if( path == null )
+				segments = Dirs.Peek();
+			else
+				segments = GetSegments( path );
+
+			if( segments.Length == 0 )
+				// Root?
+				return null;
+			return segments[ segments.Length-1 ];
+		}
+
+		internal string Pwd(string dbPath=null)
+		{
+			if( dbPath == null )
+				return GetPath( Dirs.Peek() );
+
+			return GetPath( dbPath.Split(SeparatorC, StringSplitOptions.RemoveEmptyEntries) );
 		}
 		internal string PwdDb()
 		{
@@ -78,18 +95,18 @@ namespace ItemTTT.Tree
 			return parent;
 		}
 
-		internal void Pushd(string path)
+		public void Pushd(string path)
 		{
 			var segments = GetSegments( path );
 			Dirs.Push( segments );
 		}
 
-		internal string Popd()
+		public string Popd()
 		{
 			return GetPath( Dirs.Pop() );
 		}
 
-		internal IDisposable PushDisposable(string path)
+		public IDisposable PushDisposable(string path)
 		{
 			Pushd( path );
 			return Utils.NewDisposable( ()=>Popd() );
@@ -123,7 +140,7 @@ namespace ItemTTT.Tree
 		}
 		internal static string SanitizeName(string name)
 		{
-			// Same as 'Sanitize()', but replace separator also ...
+			// Same as 'SanitizePath()', but replace separator also ...
 			return SanitizePath( name ).Replace( SeparatorC, '_' );
 		}
 
