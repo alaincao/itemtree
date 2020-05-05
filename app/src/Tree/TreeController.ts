@@ -40,6 +40,18 @@ export async function getNodeData(path:string) : Promise<string>
 
 //////////
 
+export async function setNodeData(path:string, data:any) : Promise<void>
+{
+	const rv = await operations([{ setNodeData:{path,data} }]);
+	if(! rv.success )
+	{
+		common.utils.error( 'SetNodeData operation failed', { rv } );
+		throw `SetNodeData operation at '${path}' failed: ${rv.errorMessage}`;
+	}
+}
+
+//////////
+
 export async function operations(ops:operations.Operation[]) : Promise<OperationsResult>
 {
 	const response = await common.url.postRequestJSON<OperationsResult>( common.routes.api.tree.operations, ops );

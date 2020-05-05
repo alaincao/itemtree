@@ -375,6 +375,50 @@ namespace ItemTTT.Tree
 				return Utils.TTTServiceResult.LogAndNew( PageHelper, ex );
 			}
 		}
+
+		[HttpGet( Routes.TreeDownload )]
+		public async Task TreeDownload(string path)
+		{
+			var outputStarted = false;
+			try
+			{
+				Response.ContentType = "text/plain";
+				if(! PageHelper.IsAuthenticated )
+					throw new Utils.TTTException( "Not logged-in" );
+				if( string.IsNullOrWhiteSpace(path) )
+					throw new Utils.TTTException( $"Missing parameter '{nameof(path)}'" );
+				var logHelper = PageHelper.ScopeLogs;
+				logHelper.AddLogMessage( $"{nameof(TreeDownload)}: START '{path}'" );
+				Cwd.Cd( path );
+
+				var eol = System.Text.Encoding.UTF8.GetBytes( "\n" );
+				await foreach( var line in TreeHelper.SaveTree(Cwd) )
+				{
+					var bytes = System.Text.Encoding.UTF8.GetBytes( line );
+					await Response.Body.WriteAsync( bytes );
+					await Response.Body.WriteAsync( eol );
+					outputStarted = true;
+				}
+			}
+			catch( System.Exception ex )
+			{
+				if(! outputStarted )
+				{
+					Response.StatusCode = 500;
+				}
+				else
+				{
+					// Too late to change status code :-(
+					var errBytes = System.Text.Encoding.UTF8.GetBytes( $"\n\n*** ERROR ***\n\n" );  // nb: make a clear visual separation ...
+					await Response.Body.WriteAsync( errBytes );
+				}
+				var response = Utils.TTTServiceResult.LogAndNew( PageHelper, ex ).JSONStringify();
+				var bytes = System.Text.Encoding.UTF8.GetBytes( response );
+				await Response.Body.WriteAsync( bytes );
+			}
+			await Response.Body.FlushAsync();
+			Response.Body.Close();
+		}
 	}
 
 	internal static partial class ExtensionMethods

@@ -58,6 +58,7 @@ namespace ItemTTT
 		internal const string	TestimDeleteApi		= "/api/testimonial/delete";
 		internal const string	DynamicPageGetApi	= "/api/dynamicpage/get";
 		internal const string	DynamicPageUpdateApi= "/api/dynamicpage/update";
+		internal const string	TreeDownload		= "/tree/download";
 
 		// Internals ; i.e. not requested directly but used as routing endpoints
 		internal const string	Error				= "/error";

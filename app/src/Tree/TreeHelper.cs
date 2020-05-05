@@ -254,6 +254,30 @@ namespace ItemTTT.Tree
 			await dc.SaveChangesAsync();
 		}
 
+		internal static async IAsyncEnumerable<string> SaveTree(Cwd cwd)
+		{
+			Utils.Assert( cwd != null, nameof(SaveTree), $"Missing parameter '{nameof(cwd)}'" );
+			var logHelper = cwd.LogHelper;
+			var dc = cwd.DataContext;
+			var path = cwd.PwdDb();
+			logHelper.AddLogMessage( $"{nameof(SaveTree)}: START: '{path}'" );
+
+			var pathBase = path + Cwd.Separator;
+			var q = dc.TreeNodes.Where( v=> (v.Path == path) || v.Path.StartsWith(pathBase) )
+								.OrderBy( v=>v.Path )
+								.Select( v=>new{ v.Path, v.Meta, v.Data } );
+			await foreach( var node in q.AsAsyncEnumerable() )
+			{
+				var nodePath = node.Path.Substring( path.Length );
+				if( nodePath.Length == 0 )
+					// Base path => root
+					nodePath = Cwd.Separator;
+				logHelper.AddLogMessage( $"{nameof(SaveTree)}: At '{nodePath}'" );
+				var line = (new{ Path=nodePath, node.Meta, node.Data }).JSONStringify();
+				yield return line;
+			}
+		}
+
 		internal string TryGetRouteRedirection(Metadata metaData)
 		{
 			var nodeType = metaData.TreeMetadata_Type();
