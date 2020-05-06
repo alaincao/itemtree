@@ -110,6 +110,28 @@ namespace ItemTTT.Tree
 								rv.Add( new{ Path=path } );
 							}
 						}
+						else if( operation.DelTree != null )
+						{
+							var op = operation.DelTree;
+							logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.DelTree)} ; Path:'{op.Path}' ; Included:'{op.Included}'" );
+
+							using( Cwd.PushDisposable(op.Path) )
+							{
+								var c = await Cwd.TreeHelper.DelTree( Cwd, included:op.Included??true );
+								rv.Add( new{ Path=Cwd.Pwd(), AffectedRows=c } );
+							}
+						}
+						else if( operation.RestoreTree != null )
+						{
+							var op = operation.RestoreTree;
+							logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.RestoreTree)} ; Path:'{op.Path}' ; FilePath:'{op.FilePath}'" );
+
+							using( Cwd.PushDisposable(op.Path) )
+							{
+								await Cwd.TreeHelper.RestoreTree( Cwd, op.FilePath, createTransaction:false );
+								rv.Add( new{ Path=Cwd.Pwd() } );
+							}
+						}
 						else
 						{
 							throw new NotImplementedException( "Received unknown operation" );
@@ -133,6 +155,8 @@ namespace ItemTTT.Tree
 			public GetNodeDataDTO		GetNodeData			{ get; set; } = null;
 			public SetNodeDataDTO		SetNodeData			{ get; set; } = null;
 			public GetOrCreateNodeDTO	GetOrCreateNode		{ get; set; } = null;
+			public DelTreeDTO			DelTree				{ get; set; } = null;
+			public RestoreTreeDTO		RestoreTree			{ get; set; } = null;
 			public class GetNodeDataDTO
 			{
 				public string	Path			{ get; set; }
@@ -148,6 +172,16 @@ namespace ItemTTT.Tree
 				public string	Path			{ get; set; }
 				public string	ExpectedType	{ get; set; }
 				public object	Data			{ get; set; }
+			}
+			public class DelTreeDTO
+			{
+				public string	Path			{ get; set; }
+				public bool?	Included		{ get; set; }
+			}
+			public class RestoreTreeDTO
+			{
+				public string	Path			{ get; set; }
+				public string	FilePath		{ get; set; }
 			}
 		}
 

@@ -52,6 +52,32 @@ export async function setNodeData(path:string, data:any) : Promise<void>
 
 //////////
 
+export async function delTree(path:string, included?:boolean) : Promise<number>
+{
+	const rv = await operations([{ delTree:{path,included} }]);
+	if(! rv.success )
+	{
+		common.utils.error( 'DelTree operation failed', { rv } );
+		throw `DelTree operation at '${path}' failed: ${rv.errorMessage}`;
+	}
+	return rv.responses[0].affectedRows;
+}
+
+//////////
+
+export async function restoreTree(path:string, filePath:string) : Promise<string>
+{
+	const rv = await operations([{ restoreTree:{path,filePath} }]);
+	if(! rv.success )
+	{
+		common.utils.error( 'RestoreTree operation failed', { rv } );
+		throw `RestoreTree operation at '${path}' failed: ${rv.errorMessage}`;
+	}
+	return rv.responses[0].path;
+}
+
+//////////
+
 export async function operations(ops:operations.Operation[]) : Promise<OperationsResult>
 {
 	const response = await common.url.postRequestJSON<OperationsResult>( common.routes.api.tree.operations, ops );
@@ -73,11 +99,14 @@ export namespace operations
 		getNodeData?		: GetNodeData;
 		setNodeData?		: SetNodeData;
 		getOrCreateNode?	: GetOrCreateNode;
+		delTree?			: DelTree;
+		restoreTree?		: RestoreTree;
 	}
 	export interface Response
 	{
-		path	: string;
-		data?	: string;
+		path			: string;
+		data?			: string;
+		affectedRows?	: number;
 	}
 
 	export interface GetNodeData
@@ -95,5 +124,15 @@ export namespace operations
 		path			: string;
 		expectedType?	: string;
 		data?			: any;
+	}
+	export interface DelTree
+	{
+		path			: string;
+		included?		: boolean;
+	}
+	export interface RestoreTree
+	{
+		path			: string;
+		filePath		: string;
 	}
 }

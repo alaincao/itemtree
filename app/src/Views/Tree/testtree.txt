@@ -1,0 +1,4 @@
+{"path":"/","meta":"","data":"[ \t{ \t\t\"name\": \"foo\", \t\t\"active\": true \t}, \t{ \t\t\"name\": \"bar\", \t\t\"active\": false \t}, \t{ \t\t\"name\": \"baz\", \t\t\"active\": true \t} ]"}
+{"path":"/bar","meta":"","data":""}
+{"path":"/baz","meta":"","data":""}
+{"path":"/foo","meta":"","data":""}

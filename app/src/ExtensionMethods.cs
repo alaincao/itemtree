@@ -25,6 +25,12 @@ namespace ItemTTT
 			return (await list.ToListAsync()).ToArray();
 		}
 
+		internal static async IAsyncEnumerable<string> GetLineEnumerable(this System.IO.StreamReader stream)
+		{
+			for( var line = await stream.ReadLineAsync(); line != null; line = await stream.ReadLineAsync() )
+				yield return line;
+		}
+
 		internal static string JSONStringify(this object obj, bool indented=false)
 		{
 			Utils.Assert( obj != null, System.Reflection.MethodInfo.GetCurrentMethod(), $"Missing parameter {nameof(obj)}" );

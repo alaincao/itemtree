@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,6 +45,38 @@ namespace ItemTTT.Tree
 			RouteRedirections = routeRedirections;
 
 			logHelper.AddLogMessage( $"{nameof(TreeHelper)}: END" );
+		}
+
+		internal async Task CreateNode(Cwd cwd, string meta, string data)
+		{
+			Utils.Assert( cwd != null, nameof(CreateNode), $"Missing parameter '{nameof(cwd)}'" );
+			var logHelper = cwd.LogHelper;
+			var dc = cwd.DataContext;
+			var pathDb = cwd.PwdDb();
+			var pathParentDb = cwd.PwdParentDb();
+			meta = meta ?? "";
+			data = data ?? "";
+
+			logHelper.AddLogMessage( $"{nameof(CreateNode)}: Check '{pathDb}' and '{pathParentDb}'" );
+			{
+				var c = await dc.TreeNodes.Where( v=> (v.Path == pathDb) || (v.Path == pathParentDb) ).CountAsync();
+				if( c == 0 )
+					throw new Utils.TTTException( $"{nameof(CreateNode)}: Parent path '{cwd.PwdParent()}' does not exist" );
+				else if( c == 1 )
+					{/* Ok */}
+				else if( c == 2 )
+					throw new Utils.TTTException( $"{nameof(CreateNode)}: Path '{cwd.Pwd()}' already exists" );
+				else
+					throw new Utils.TTTException( $"{nameof(CreateNode)}: INTERNAL ERROR: Function returned {c} rows ; Expected only 1" );
+			}
+
+			logHelper.AddLogMessage( $"{nameof(CreateNode)}: Create node ; meta length: {meta.Length} ; data length: {data.Length}" );
+			var node = new Models.TreeNode{ Path		= pathDb,
+											ParentPath	= pathParentDb,
+											Meta		= meta,
+											Data		= data };
+			dc.TreeNodes.Add( node );
+			await dc.SaveChangesAsync();
 		}
 
 		internal async Task<Utils.CustomClass2<Metadata,Models.TreeNode>> GetNode(Cwd cwd)
@@ -227,7 +260,7 @@ namespace ItemTTT.Tree
 			await dc.SaveChangesAsync();
 		}
 
-		internal async Task DelTree(Cwd cwd, bool included=true)
+		internal async Task<int> DelTree(Cwd cwd, bool included=true)
 		{
 			Utils.Assert( cwd != null, nameof(DelTree), $"Missing parameter '{nameof(cwd)}'" );
 			var logHelper = cwd.LogHelper;
@@ -252,6 +285,8 @@ namespace ItemTTT.Tree
 				dc.TreeNodes.Remove( node );
 			}
 			await dc.SaveChangesAsync();
+
+			return ids.Count;
 		}
 
 		internal static async IAsyncEnumerable<string> SaveTree(Cwd cwd)
@@ -273,9 +308,63 @@ namespace ItemTTT.Tree
 					// Base path => root
 					nodePath = Cwd.Separator;
 				logHelper.AddLogMessage( $"{nameof(SaveTree)}: At '{nodePath}'" );
-				var line = (new{ Path=nodePath, node.Meta, node.Data }).JSONStringify();
+				var line = (new TreeNodeItem{ Path=nodePath, Meta=node.Meta, Data=node.Data }).JSONStringify( indented:false );  // nb: Must serialize on 1 line => Ensure 'indented:false'
 				yield return line;
 			}
+		}
+		internal async Task RestoreTree(Cwd cwd, string filePath, bool createTransaction=true)
+		{
+			Utils.Assert( cwd != null, nameof(RestoreTree), $"Missing parameter '{nameof(cwd)}'" );
+			if( string.IsNullOrWhiteSpace(filePath) )
+				throw new Utils.TTTException( $"{nameof(RestoreTree)}: Missing parameter '{nameof(filePath)}'" );
+			var logHelper = cwd.LogHelper;
+
+			logHelper.AddLogMessage( $"{nameof(RestoreTree)}: Validate path '{filePath}'" );
+			{
+				var segments = filePath.Split( new char[]{'\\','/'}, StringSplitOptions.RemoveEmptyEntries );
+				if( segments.Contains("..") )
+					throw new Utils.TTTException( $"{nameof(RestoreTree)}: Invalid path '{nameof(filePath)}'" );
+				filePath = System.IO.Path.Join( System.IO.Directory.GetCurrentDirectory(), Startup.ViewsLocation , string.Join(System.IO.Path.DirectorySeparatorChar, segments) );
+			}
+
+			logHelper.AddLogMessage( $"{nameof(RestoreTree)}: Open file '{filePath}'" );
+			using( var file = new System.IO.StreamReader(filePath) )
+			{
+				await RestoreTree( cwd, file.GetLineEnumerable(), createTransaction:createTransaction );
+			}
+		}
+		internal async Task RestoreTree(Cwd cwd, IAsyncEnumerable<string> lines, bool createTransaction=true)
+		{
+			Utils.Assert( cwd != null, nameof(RestoreTree), $"Missing parameter '{nameof(cwd)}'" );
+			Utils.Assert( lines != null, nameof(RestoreTree), $"Missing parameter '{nameof(lines)}'" );
+			var logHelper = cwd.LogHelper;
+			var dc = cwd.DataContext;
+			logHelper.AddLogMessage( $"{nameof(RestoreTree)}: START: '{cwd.Pwd()}' ; createTransaction:'{createTransaction}'" );
+
+			using( var transaction = (createTransaction ? await cwd.BeginTransaction() : null) )
+			{
+				await foreach( var json in lines )
+				{
+					var node = json.JSONDeserialize<TreeNodeItem>();
+					var path = node.Path.TrimStart( Cwd.SeparatorC );  // nb: use relative paths ...
+					using( (path.Length > 0) ? cwd.PushDisposable(path) : null )
+					{
+						logHelper.AddLogMessage( $"{nameof(RestoreTree)}: At path '{cwd.Pwd()}'" );
+
+						await cwd.TreeHelper.CreateNode( cwd, node.Meta, node.Data );
+						await cwd.DataContext.SaveChangesAsync();
+					}
+				}
+
+				if( transaction != null )
+					await cwd.CommitTransaction( transaction );
+			}
+		}
+		private class TreeNodeItem
+		{
+			public string Path { get; set; }
+			public string Meta { get; set; }
+			public string Data { get; set; }
 		}
 
 		internal string TryGetRouteRedirection(Metadata metaData)
