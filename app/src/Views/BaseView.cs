@@ -56,8 +56,11 @@ namespace ItemTTT.Views
 
 		protected string Resolve(string route, bool full=false)
 		{
-			Utils.Assert( !string.IsNullOrWhiteSpace(route), this, $"Missing parameter '{nameof(route)}'" );
-			route = route.Replace( Routes.LangParameter, ""+PageHelper.CurrentLanguage );
+			if( route == "" )
+				route = "~";
+			else if( route == null )
+				Utils.Fail( this, $"Missing parameter '{nameof(route)}'" );
+			route = route.Replace( Routes.LangParameter, Language.ToUrlValue[PageHelper.CurrentLanguage] );
 			route = PageHelper.ResolveRoute( route );
 			if( full )
 				route = $"{Context.Request.Scheme}://{Context.Request.Host}{route}";
