@@ -18,7 +18,7 @@ namespace ItemTTT.Views.Blog
 		{
 			Utils.Assert( blogPostID > 0, typeof(BlogController), $"Missing parameter '{nameof(blogPostID)}'" );
 			var url = Routes.BlogDetails
-								.Replace( Routes.LangParameter, ""+language )
+								.Replace( Routes.LangParameter, Language.ToUrlValue[language] )
 								.Replace( Routes.ItemIDParameter, ""+blogPostID );
 			return url;
 		}

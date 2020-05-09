@@ -48,7 +48,7 @@ namespace ItemTTT
 
 			var languageUrls = Enum.GetValues( typeof(Languages) ).Cast<Languages>()
 									.Select( v=>new{	lng	= v,
-														url	= languageInfo.RawRoutePlusQuery.Replace(Language.RouteParameter, ""+v) } )
+														url	= languageInfo.RawRoutePlusQuery.Replace(Language.RouteParameter, Language.ToUrlValue[v]) } )
 									.ToDictionary( v=>v.lng, v=>ResolveRoute(v.url) );
 
 			IsAuthenticated	= httpContext.User.Identity.IsAuthenticated;

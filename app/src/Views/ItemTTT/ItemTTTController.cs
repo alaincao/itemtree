@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +23,7 @@ namespace ItemTTT.Views
 		{
 			Utils.Assert( !string.IsNullOrWhiteSpace(itemCode), typeof(ItemTTTController), $"Missing parameter {nameof(itemCode)}" );
 			var url = Routes.ItemDetails
-								.Replace( Language.RouteParameter, ""+language )
+								.Replace( Language.RouteParameter, Language.ToUrlValue[language] )
 								.Replace( "{itemCode}", itemCode );
 			return url;
 		}

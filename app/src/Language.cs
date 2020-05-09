@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,6 +19,17 @@ namespace ItemTTT
 		internal const Languages	Default			= Languages.en;
 		internal const string		ConstraintName	= "lang";
 		internal const string		RouteParameter	= "{lang:"+ConstraintName+"}";
+
+		internal static readonly Dictionary<string,Languages>	ToEnumValue		= new Dictionary<string,Languages>{
+																						{ "en",		Languages.en	},
+																						{ "fr",		Languages.fr	},
+																						{ "nl",		Languages.nl	},
+																					};
+		internal static readonly Dictionary<Languages,string>	ToUrlValue		= new Dictionary<Languages,string>{
+																						{ Languages.en,	"en"	},
+																						{ Languages.fr,	"fr"	},
+																						{ Languages.nl,	"nl"	},
+																					};
 
 		public class Info
 		{
@@ -63,11 +75,12 @@ namespace ItemTTT
 
 			logHelper.AddLogMessage( $"{nameof(LanguageInfoMiddleware)}: Get from URL" );
 			{
-				if( Enum.TryParse(typeof(Languages), segments[0], ignoreCase:true, result:out var obj) )
+				var str = segments[0].ToLower();
+				if( ToEnumValue.ContainsKey(str) )
 				{
 					// Language found in the first segment of the URL
+					fromUrl = Language.ToEnumValue[ str ];
 					segments.RemoveAt( 0 );
-					fromUrl = (Languages)obj;
 				}
 				else
 				{
@@ -100,10 +113,10 @@ namespace ItemTTT
 
 			logHelper.AddLogMessage( $"{nameof(LanguageInfoMiddleware)}: Resolve paths" );
 			cleanPath = "/"+string.Join( "/", segments );
-			rawRoutePlusQuery = $"/{Language.RouteParameter}{cleanPath}{request.QueryString}";
-			if( endsWithSlash )
+			if( endsWithSlash && (cleanPath != "/") )
 				// Append trailing '/' as it was in the original URL
-				rawRoutePlusQuery += "/";
+				cleanPath += "/";
+			rawRoutePlusQuery = $"/{Language.RouteParameter}{cleanPath}{request.QueryString}";
 
 			info.FromUrl			= fromUrl;
 			info.FromCookie			= fromCookie;
@@ -128,7 +141,7 @@ namespace ItemTTT
 			{
 				// The language could not be determined from the URL
 				logHelper.AddLogMessage( $"{nameof(LanguageRedirectionMiddleware)}: Redirect to '{languageInfo.Current}' page" );
-				context.Response.Redirect( languageInfo.RawRoutePlusQuery.Replace(Language.RouteParameter, ""+languageInfo.Current) );
+				context.Response.Redirect( languageInfo.RawRoutePlusQuery.Replace(Language.RouteParameter, Language.ToUrlValue[languageInfo.Current]) );
 			}
 			else
 			{
@@ -151,7 +164,7 @@ namespace ItemTTT
 			if(! values.ContainsKey(Language.ConstraintName) )
 				return false;
 
-			return Enum.GetNames( typeof(Languages) ).Contains( ""+lang );
+			return Language.ToEnumValue.ContainsKey( (""+lang).ToLower() );
 		}
 	}
 }
