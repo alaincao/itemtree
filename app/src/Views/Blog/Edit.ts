@@ -63,7 +63,9 @@ export function addKoTinymceEditor() : void
 
 					(<any>$element).tinymce( {
 							inline	: true,
-							plugins	: 'image,code',
+							plugins	: 'print preview importcss searchreplace autolink save directionality visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons code',
+										// anavailable: powerpaste casechange tinydrive advcode mediaembed checklist tinymcespellchecker a11ychecker formatpainter permanentpen pageembed tinycomments mentions linkchecker advtable
+										// Unwanted: autosave(reload confirmation dialog)
 							setup	: function(ed:tmce.Editor)
 										{
 											ed.on( 'change', function()
