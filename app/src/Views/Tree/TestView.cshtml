@@ -14,7 +14,7 @@
 }
 
 <p><strong>PWD:</strong> @Tree_Pwd()</p>
-@using( Cwd.PushDisposable("/testlist") )
+@using( Cwd.PushDisposable("./zelist") )
 {
 	<p><strong>PWD:</strong> @Tree_Pwd()</p>
 	@foreach( var item in (await Tree_GetNodeData() ) )

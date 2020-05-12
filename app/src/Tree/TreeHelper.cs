@@ -301,6 +301,18 @@ namespace ItemTTT.Tree
 			var q = dc.TreeNodes.Where( v=> (v.Path == path) || v.Path.StartsWith(pathBase) )
 								.OrderBy( v=>v.Path )
 								.Select( v=>new{ v.Path, v.Meta, v.Data } );
+			Func<string,object> tryDeserialize = (data)=>
+				{
+					if( (data.Length > 0)
+					 && (	data[0] == '{'
+						||	data[0] == '[' ) )
+					{
+						// Try deserialize JSON
+						try { return data.JSONDeserialize<object>(); }
+						catch( System.Exception ) {}
+					}
+					return data;
+				};
 			await foreach( var node in q.AsAsyncEnumerable() )
 			{
 				var nodePath = node.Path.Substring( path.Length );
@@ -308,7 +320,12 @@ namespace ItemTTT.Tree
 					// Base path => root
 					nodePath = Cwd.Separator;
 				logHelper.AddLogMessage( $"{nameof(SaveTree)}: At '{nodePath}'" );
-				var line = (new TreeNodeItem{ Path=nodePath, Meta=node.Meta, Data=node.Data }).JSONStringify( indented:false );  // nb: Must serialize on 1 line => Ensure 'indented:false'
+
+				var line = (new TreeNodeItem {
+									Path = nodePath,
+									Meta = tryDeserialize( node.Meta ),
+									Data = tryDeserialize( node.Data ),
+								}).JSONStringify( indented:false );  // nb: Must serialize on 1 line => Ensure 'indented:false'
 				yield return line;
 			}
 		}
@@ -345,13 +362,15 @@ namespace ItemTTT.Tree
 			{
 				await foreach( var json in lines )
 				{
+					if( json.Length == 0 )
+						continue;
 					var node = json.JSONDeserialize<TreeNodeItem>();
 					var path = node.Path.TrimStart( Cwd.SeparatorC );  // nb: use relative paths ...
 					using( (path.Length > 0) ? cwd.PushDisposable(path) : null )
 					{
 						logHelper.AddLogMessage( $"{nameof(RestoreTree)}: At path '{cwd.Pwd()}'" );
 
-						await cwd.TreeHelper.CreateNode( cwd, node.Meta, node.Data );
+						await cwd.TreeHelper.CreateNode( cwd, node.Meta.ToString(), node.Data.ToString() );
 						await cwd.DataContext.SaveChangesAsync();
 					}
 				}
@@ -363,8 +382,8 @@ namespace ItemTTT.Tree
 		private class TreeNodeItem
 		{
 			public string Path { get; set; }
-			public string Meta { get; set; }
-			public string Data { get; set; }
+			public object Meta { get; set; }
+			public object Data { get; set; }
 		}
 
 		internal string TryGetRouteRedirection(Metadata metaData)

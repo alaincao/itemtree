@@ -1,4 +1,8 @@
-{"path":"/","meta":"","data":"[ \t{ \t\t\"name\": \"foo\", \t\t\"active\": true \t}, \t{ \t\t\"name\": \"bar\", \t\t\"active\": false \t}, \t{ \t\t\"name\": \"baz\", \t\t\"active\": true \t} ]"}
-{"path":"/bar","meta":"","data":""}
-{"path":"/baz","meta":"","data":""}
-{"path":"/foo","meta":"","data":""}
+{"path":"/","meta":{"type":"view","view":"TestView","title":"Title from database"},"data":{"bar":123,"title":"Ze title","foo":"foo / bar !","XXX":"aaa\nbbb"}}
+{"path":"/sometext","meta":{"type":"html"},"data":"<span style=\"font-size: 1rem;\">XXX </span><em style=\"font-size: 1rem;\">Y&eacute;&egrave;&ccedil;<span style=\"color: #222222; font-family: 'Noto Serif CJK SC', 'Noto Serif CJK TC', 'Noto Serif CJK JP', 'Noto Serif CJK KR', 'Noto Serif', 'Noto Serif Disp', serif, 'Noto Sans CJK SC', 'Noto Sans CJK TC', 'Noto Sans CJK JP', 'Noto Sans CJK KR', 'Noto Sans', 'Noto Sans Display', sans-serif; font-size: 20px; font-style: normal; text-align: center; white-space: pre;\">?</span>&agrave;Y<br /></em><strong style=\"font-size: 1rem;\">ZZZ</strong>"}
+{"path":"/sometranslatedtext","meta":{"type":"translatedHtml"},"data":{"en":"Hello<br />world!","fr":"Bonjour le monde!","nl":"Heeuuuu...."}}
+{"path":"/zelist","meta":"","data":"[ \t{ \t\t\"name\": \"foo\", \t\t\"active\": true \t}, \t{ \t\t\"name\": \"bar\", \t\t\"active\": false \t}, \t{ \t\t\"name\": \"baz\", \t\t\"active\": true \t} ]"}
+{"path":"/zelist/bar","meta":"","data":""}
+{"path":"/zelist/baz","meta":"","data":""}
+{"path":"/zelist/foo","meta":"","data":""}
+
