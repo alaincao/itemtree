@@ -1,9 +1,7 @@
-using System;
+
 using System.Collections.Generic;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ItemTTT.Models
 {

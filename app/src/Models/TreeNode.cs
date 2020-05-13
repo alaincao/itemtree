@@ -18,7 +18,7 @@ namespace ItemTTT.Models
 		[Required, MaxLength(4000)]
 		public string	Meta			{ get; set; }
 
-		[Required, Column(TypeName = "varchar(max)")]
+		[Required, Column(TypeName = "nvarchar(max)")]
 		public string	Data			{ get; set; }
 	}
 }
