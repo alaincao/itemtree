@@ -2,21 +2,21 @@
 import { stringIsNullOrWhitespace } from "../utils";
 import * as common from "../common";
 import * as loginCtrl from "../../Services/LoginController";
-import * as trnCtrl from "../../Services/TranslationController";
-import * as trnDto from "../../DTOs/Translation";
+// import * as trnCtrl from "../../Services/TranslationController";
+// import * as trnDto from "../../DTOs/Translation";
 
 const passwordsDontMatchMessage = 'Les 2 mots de passe ne concordent pas';
 const passwordChangedMessage = 'Password changed successfully';
 
 export var changePassword : ChangePassword;
-export var features : Features;
+//export var features : Features;
 
 export async function init(p:{	$passwordBlockingDiv : JQuery,
 								$featuresBlockingDiv : JQuery,
 							}) : Promise<void>
 {
 	changePassword	= new ChangePassword( p.$passwordBlockingDiv );
-	features		= new Features( p.$featuresBlockingDiv );
+//	features		= new Features( p.$featuresBlockingDiv );
 }
 
 class ChangePassword
@@ -65,7 +65,7 @@ class ChangePassword
 		return;
 	}
 }
-
+/*
 abstract class TranslationsBase
 {
 	private readonly	$blockingDiv	: JQuery;
@@ -172,7 +172,6 @@ class TranslationItem extends trnDto.TranslationItemKO
 		this.showReset = ko.computed( ()=>self.inTranslation() );
 	}
 }
-
 class Features extends TranslationsBase
 {
 	constructor($blockingDiv:JQuery)
@@ -180,3 +179,4 @@ class Features extends TranslationsBase
 		super( trnCtrl.TranslationTypes.feature, $blockingDiv );
 	}
 }
+*/
