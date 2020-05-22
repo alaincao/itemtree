@@ -13,31 +13,7 @@
 	</script>
 }
 
-<p><strong>PWD:</strong> @Tree_Pwd()</p>
-@using( Cwd.PushDisposable("./zelist") )
-{
-	<p><strong>PWD:</strong> @Tree_Pwd()</p>
-	@foreach( var item in (await Tree_GetNodeData() ) )
-	{
-		if( item["active"] == false )
-			continue;
-
-		<strong>name: </strong>@item["name"]<br/>
-	}
-
-	@foreach( var path in await Tree_GetChildNodeNames() )
-	{
-		@if( path == "image02" )
-			continue;
-
-		<span>@path</span>
-		<span>@Tree_Pwd(path)</span>
-		<img tree-image="@path/img"/><br/>
-	}
-	<p><strong>PWD:</strong> @Tree_Pwd()</p>
-}
-<p><strong>PWD:</strong> @Tree_Pwd()</p>
-
+@* Page properties are controls accessible only from top-right's admin's panel when legged-in *@
 <tree-pageProperty path="./" property="title">
 	<strong>Page title:</strong> <input type="text" data-bind="value:value"/>
 </tree-pageProperty>
@@ -45,13 +21,65 @@
 	<strong>Foo:</strong> <input type="text" data-bind="value:value"/>
 </tree-pageProperty>
 
-<h2>Value from C#:</h2> '@blah'
-<h2>Value from database:</h2> '@ViewBag.Foo'
-<h2>HTML text from database:</h2> <span tree-html="./sometext"></span>
-<h2>Translated HTML text from database:</h2> <span tree-htmlTranslated="./sometranslatedtext"></span>
-<div ttt-only-if="IsEN">IsEN</div>
-<div ttt-only-if="IsFR">IsFR</div>
-<div ttt-only-if="IsNL">IsNL</div>
-<img tree-image="image01"/>
-<img tree-image="image02" tree-parameters="height=60"/>
+<ul>
+	<li>
+		<strong>Value from C#:</strong> '@blah'
+	</li><li>
+		<strong>Value from database:</strong> '@ViewBag.Foo'
+	</li><li>
+		<strong>HTML text from database:</strong><br/>
+		<span tree-html="./sometext"></span>
+	</li><li>
+		<strong>Translated HTML text from database:</strong> <span tree-htmlTranslated="./sometranslatedtext"></span>
+	</li><li>
+		Current language:
+		<span ttt-only-if="IsEN">IsEN</span>
+		<span ttt-only-if="IsFR">IsFR</span>
+		<span ttt-only-if="IsNL">IsNL</span>
+	</li><li>
+		Image at '@Tree_Pwd()/image01': <img tree-image="image01"/>
+	</li><li>
+		Image at '@Tree_Pwd()/image02' (cropped): <img tree-image="image02" tree-parameters="height=60"/>
+	</li>
+</ul>
+
+@* Example 'PushDisposable()' => Current directory resumes to original at closing of the 'using' below *@
+<p><strong>PWD before pushd:</strong> @Tree_Pwd()</p>
+@using( Cwd.PushDisposable("./zelist") )
+{
+	<p><strong>PWD after pushd:</strong> @Tree_Pwd()</p>
+
+	<strong>Demo list from JSON data:</strong>
+	<ul>
+	@foreach( var item in (await Tree_GetNodeData() ) )
+	{
+		if( item["active"] == false )
+			continue;
+
+		<li>
+			<strong>list item: </strong><span>'@item["name"]'</span><br/>
+		</li>
+	}
+	</ul>
+
+	<strong>Demo browsing children of current node:</strong>
+	<ul>
+	@foreach( var childName in await Tree_GetChildNodeNames() )
+	{
+		@if( childName == "image02" )
+			continue;
+
+		<li>
+			<strong>At child: '@childName'</strong><br/>
+			<span>Image at '@Tree_Pwd(childName)' :</span>
+			<img tree-image="@(childName)/img"/><br/>
+		</li>
+	}
+	</ul>
+
+	<p><strong>PWD before popd:</strong> @Tree_Pwd()</p>
+}
+<p><strong>PWD after popd:</strong> @Tree_Pwd()</p>
+
+<strong>Debugging info:</strong>
 <pre id="preParameters"></pre>
