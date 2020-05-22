@@ -67,6 +67,7 @@ namespace ItemTTT
 		internal const string	TreeView			= "/tree/view";
 		internal const string	TreeHtml			= "/tree/html";
 		internal const string	TreeHtmlTranslated	= "/tree/html/translated";
+		internal const string	TreeFile			= "/tree/file";
 		internal const string	TreeImage			= "/tree/image";
 
 		/// <summary>Set PageParameters routes for client-side</summary>
@@ -139,6 +140,7 @@ namespace ItemTTT
 								},
 							Tree = new {
 									Operations	= tr( TreeOperations ),
+									File		= tr( TreeFile ),
 									Image		= tr( TreeImage ),
 								},
 						},

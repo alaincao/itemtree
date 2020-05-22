@@ -101,7 +101,7 @@ export function init(p:{ pageParameters:PageParameters })
 					},
 		};
 
-	utils.log( 'common.init(): Replace KnockoutHandler template engine' );
+	utils.log( 'common.init(): Replace Knockout template engine' );
 	{
 		ko.setTemplateEngine( html.newKoTemplateSource() );
 	}

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ItemTTT.Tree
 {
-	using Metadata = IDictionary<string,object>;
+	using MetaData = IDictionary<string,object>;
 
 	public class TreeController : Views.BaseController
 	{
@@ -43,7 +43,21 @@ namespace ItemTTT.Tree
 					{
 						logHelper.AddLogMessage( $"{nameof(Operations)}: Operation {i+1} of {operations.Count}" );
 						var operation = operations[ i ];
-						if( operation.GetNodeData != null )
+
+						if( operation.GetNodeMetaData != null )
+						{
+							var op = operation.GetNodeMetaData;
+							logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.GetNodeMetaData)} ; Path:'{op.Path}'" );
+							using( Cwd.PushDisposable(op.Path) )
+							{
+								(await Cwd.TreeHelper.GetNodeMetaData( Cwd )).R( out var _, out var meta );
+
+								var path = Cwd.Pwd();
+								logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.GetNodeMetaData)} 'path':'{path}'" );
+								rv.Add( new{ Path=path, MetaData=meta } );
+							}
+						}
+						else if( operation.GetNodeData != null )
 						{
 							var op = operation.GetNodeData;
 							logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.GetNodeData)} ; Path:'{op.Path}'" );
@@ -152,11 +166,16 @@ namespace ItemTTT.Tree
 		}
 		public class OperationsDTO
 		{
+			public GetNodeMetaDataDTO	GetNodeMetaData		{ get; set; } = null;
 			public GetNodeDataDTO		GetNodeData			{ get; set; } = null;
 			public SetNodeDataDTO		SetNodeData			{ get; set; } = null;
 			public GetOrCreateNodeDTO	GetOrCreateNode		{ get; set; } = null;
 			public DelTreeDTO			DelTree				{ get; set; } = null;
 			public RestoreTreeDTO		RestoreTree			{ get; set; } = null;
+			public class GetNodeMetaDataDTO
+			{
+				public string	Path			{ get; set; }
+			}
 			public class GetNodeDataDTO
 			{
 				public string	Path			{ get; set; }
@@ -278,6 +297,95 @@ namespace ItemTTT.Tree
 			return data;
 		}
 
+		[HttpPost( Routes.TreeFile )]
+		public async Task<Utils.TTTServiceResult> FileSave(string path, Microsoft.AspNetCore.Http.IFormFile file, string contentType=null)
+		{
+			try
+			{
+				if(! PageHelper.IsAuthenticated )
+					throw new Utils.TTTException( "Not logged-in" );
+				var logHelper = PageHelper.ScopeLogs;
+				path = path ?? Cwd.Pwd();
+				logHelper.AddLogMessage( $"{nameof(FileSave)}: START '{path}'" );
+
+				var fileName = file.FileName;
+				if( contentType == null )
+				{
+					logHelper.AddLogMessage( $"{nameof(FileSave)}: Get content type from file name '{fileName}'" );
+					contentType = Utils.Files.GetContentType( fileName );
+				}
+				logHelper.AddLogMessage( $"{nameof(FileSave)}: File name: '{fileName}' ; Content type: '{contentType}'" );
+
+				(await Utils.Files.GetBase64String( logHelper, file )).R( out var contentBase64, out var _ );
+
+				string name, dir;
+				using( var transaction = await Cwd.BeginTransaction() )
+				using( Cwd.PushDisposable(path) )
+				{
+					var baseNode = await Cwd.TreeHelper.GetOrCreateNode( Cwd, expectedType:TreeHelper.Types.file, data:contentBase64 );
+
+					logHelper.AddLogMessage( $"{nameof(FileSave)}: Add file name & content type to node's meta data" );
+					var meta = baseNode.Meta.JSONDeserialize();
+					meta.TreeMetadata_FileName( fileName );
+					meta.TreeMetadata_ContentType( contentType );
+					baseNode.Meta = meta.JSONStringify();
+					await Cwd.DataContext.SaveChangesAsync();
+
+					await Cwd.CommitTransaction( transaction );
+
+					path = Cwd.Pwd();
+					dir = Cwd.PwdParent();
+					name = path.Substring( dir.Length );
+					contentType = meta.TreeMetadata_ContentType();  // nb: Refresh from actually saved to the database ...
+				}
+
+				logHelper.AddLogMessage( $"{nameof(FileSave)}: END '{path}'" );
+				return Utils.TTTServiceResult.New( PageHelper, new{ Name=name, Dir=dir, Path=path, FileName=fileName, ContentType=contentType } );
+			}
+			catch( System.Exception ex )
+			{
+				return Utils.TTTServiceResult.LogAndNew( PageHelper, ex );
+			}
+		}
+
+		[HttpGet( Routes.TreeFile )]
+		public async Task<IActionResult> FileGet(string path, bool forDownload=true)
+		{
+			if( path != null )
+				Cwd.Cd( path );
+			var logHelper = PageHelper.ScopeLogs;
+			logHelper.AddLogMessage( $"{nameof(FileGet)}: START '{Cwd.Pwd()}'" );
+
+			int nodeID;
+			MetaData metadata;
+			{
+				var item = await Cwd.TreeHelper.GetNodeMetaData( Cwd, expectedType:TreeHelper.Types.file );
+				if( item == null )
+					return ObjectNotFound();
+				nodeID = item.A;
+				metadata = item.B;
+			}
+
+			logHelper.AddLogMessage( $"{nameof(FileGet)}: Get file data" );
+			var fileStr = await Cwd.DataContext.TreeNodes.Where( v=>v.ID == nodeID ).Select( v=>v.Data ).SingleAsync();
+			var fileBytes = Convert.FromBase64String( fileStr );
+
+			var contentType = metadata.TreeMetadata_ContentType();
+			if( forDownload )
+			{
+				logHelper.AddLogMessage( $"{nameof(FileGet)}: Get file name'" );
+				var fileName = metadata.TreeMetadata_FileName();
+
+				logHelper.AddLogMessage( $"{nameof(FileGet)}: Output using contentType:'{contentType}' ; fileName:'{fileName}'" );
+				return File( new System.IO.MemoryStream(fileBytes), contentType, fileName );
+			}
+			else
+			{
+				logHelper.AddLogMessage( $"{nameof(FileGet)}: Output using contentType:'{contentType}'" );
+				return File( new System.IO.MemoryStream(fileBytes), contentType );
+			}
+		}
+
 		[HttpGet( Routes.TreeImage )]
 		public async Task<IActionResult> ImageGet(string path, int? height=null, bool forDownload=false)
 		{
@@ -287,9 +395,9 @@ namespace ItemTTT.Tree
 			logHelper.AddLogMessage( $"{nameof(ImageGet)}: START '{Cwd.Pwd()}'" );
 
 			int nodeID;
-			Metadata metadata;
+			MetaData metadata;
 			{
-				var item = await Cwd.TreeHelper.GetNodeMetadata( Cwd, expectedType:TreeHelper.Types.image );
+				var item = await Cwd.TreeHelper.GetNodeMetaData( Cwd, expectedType:TreeHelper.Types.image );
 				if( item == null )
 					return ObjectNotFound();
 				nodeID = item.A;
@@ -331,7 +439,7 @@ namespace ItemTTT.Tree
 						{
 							var scaleHToW = Services.ItemPictureController.ScaleHToW;  // TODO: Manage resize/crop(?)/ratio
 							var scaleWToH = Services.ItemPictureController.ScaleWToH;
-							var newImage = Services.ItemPictureController.CropResize( originalBitmap, destinationHeight:(double)height.Value, scaleHToW:scaleHToW, scaleWToH:scaleWToH );
+							var newImage = Utils.Images.CropResize( originalBitmap, destinationHeight:(double)height.Value, scaleHToW:scaleHToW, scaleWToH:scaleWToH );
 							newImage.Save( resizedStream, System.Drawing.Imaging.ImageFormat.Jpeg );
 							imgBytes = resizedStream.ToArray();
 						}
@@ -349,7 +457,7 @@ namespace ItemTTT.Tree
 			}
 
 			logHelper.AddLogMessage( $"{nameof(ImageGet)}: Parse image content" );
-			Services.ItemPictureController.GetImageType( imgBytes, out var contentType, out var fileExtension );
+			Utils.Images.GetImageType( imgBytes, out var contentType, out var fileExtension );
 
 			if( forDownload )
 			{
@@ -377,7 +485,7 @@ namespace ItemTTT.Tree
 				path = path ?? Cwd.Pwd();
 				logHelper.AddLogMessage( $"{nameof(ImageSave)}: START '{path}'" );
 
-				var imageData = await Services.ItemPictureController.GetImageBase64String( logHelper, file );
+				var imageData = await Utils.Images.GetImageBase64String( logHelper, file );
 
 				string name, dir;
 				using( var transaction = await Cwd.BeginTransaction() )
@@ -457,24 +565,32 @@ namespace ItemTTT.Tree
 
 	internal static partial class ExtensionMethods
 	{
-		internal static string TreeMetadata_ViewName(this Metadata metadata)
+		internal static string TreeMetadata_ViewName(this MetaData metadata)
 		{
 			Utils.Assert( metadata != null, nameof(TreeMetadata_ViewName), $"Missing parameter '{nameof(metadata)}'" );
 			return (string)metadata.TryGet( "view" );
 		}
 
-		internal static string TreeMetadata_ContentType(this Metadata metadata)
+		internal static string TreeMetadata_ContentType(this MetaData metadata)
 		{
 			Utils.Assert( metadata != null, nameof(TreeMetadata_FileName), $"Missing parameter '{nameof(metadata)}'" );
 			return (string)metadata.TryGet( "contentType" );
 		}
+		internal static void TreeMetadata_ContentType(this MetaData metadata, string contentType)
+		{
+			Utils.Assert( metadata != null, nameof(TreeMetadata_ContentType), $"Missing parameter '{nameof(metadata)}'" );
+			if( string.IsNullOrWhiteSpace(contentType) )
+				metadata.Remove( "contentType" );
+			else
+				metadata[ "contentType" ] = contentType.ToLower().Trim();
+		}
 
-		internal static string TreeMetadata_FileName(this Metadata metadata)
+		internal static string TreeMetadata_FileName(this MetaData metadata)
 		{
 			Utils.Assert( metadata != null, nameof(TreeMetadata_FileName), $"Missing parameter '{nameof(metadata)}'" );
 			return (string)metadata.TryGet( "fileName" );
 		}
-		internal static void TreeMetadata_FileName(this Metadata metadata, string fileName)
+		internal static void TreeMetadata_FileName(this MetaData metadata, string fileName)
 		{
 			Utils.Assert( metadata != null, nameof(TreeMetadata_FileName), $"Missing parameter '{nameof(metadata)}'" );
 			if( string.IsNullOrWhiteSpace(fileName) )

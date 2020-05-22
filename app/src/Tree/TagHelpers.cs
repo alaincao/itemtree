@@ -9,6 +9,7 @@ namespace ItemTTT.Tree
 		protected const string	CsTagPageProperty			= "tree-pageProperty";
 		protected const string	CsAttributeHtml				= "tree-html";
 		protected const string	CsAttributeHtmlTranslated	= "tree-htmlTranslated";
+		protected const string	CsAttributeFile				= "tree-file";
 		protected const string	CsAttributeImage			= "tree-image";
 		protected const string	JsAttributePath				= "tree-path";
 		protected const string	JsAttributeType				= "tree-type";
@@ -83,6 +84,34 @@ namespace ItemTTT.Tree
 				output.Content.SetHtmlContent( content );
 			}
 			logHelper.AddLogMessage( $"{nameof(HtmlTranslatedTagHelper)}: END '{Path}'" );
+		}
+	}
+
+	[HtmlTargetElement(Attributes = TagHelperBase.CsAttributeFile)]
+	public class FileTagHelper : TagHelperBase
+	{
+		[HtmlAttributeName(TagHelperBase.CsAttributeFile)]
+		public string		Path		{ get; set; }
+
+		public FileTagHelper(PageHelper pageHelper, Models.ItemTTTContext dataContext, Tree.Cwd cwd) : base(pageHelper, dataContext, cwd)  {}
+
+		public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+		{
+			var logHelper = PageHelper.ScopeLogs;
+			logHelper.AddLogMessage( $"{nameof(FileTagHelper)}: Start '{Path}'" );
+
+			using( Cwd.PushDisposable(Path) )
+			{
+				var src = Cwd.Pwd();
+
+				if( PageHelper.IsAuthenticated )
+				{
+					output.Attributes.Add( JsAttributeType, ""+TreeHelper.Types.file );
+					output.Attributes.Add( JsAttributePath, Cwd.Pwd() );
+				}
+			}
+			logHelper.AddLogMessage( $"{nameof(FileTagHelper)}: END '{Path}'" );
+			return Task.FromResult(0);
 		}
 	}
 

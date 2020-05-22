@@ -165,7 +165,7 @@ namespace ItemTTT.Services
 
 				logHelper.AddLogMessage( $"TestimonialUploadPicture: Crop/resize" );
 				var bitmap = new System.Drawing.Bitmap( imageStream );
-				var newImage = ItemPictureController.CropResize( bitmap, destinationHeight:(double)DestinationHeight, scaleHToW:ScaleHToW, scaleWToH:ScaleWToH );
+				var newImage = Utils.Images.CropResize( bitmap, destinationHeight:(double)DestinationHeight, scaleHToW:ScaleHToW, scaleWToH:ScaleWToH );
 				string newImageString;
 				using( var ms = new System.IO.MemoryStream() )
 				{

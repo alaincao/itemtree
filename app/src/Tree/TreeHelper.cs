@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ItemTTT.Tree
 {
-	using Metadata = IDictionary<string,object>;
+	using MetaData = IDictionary<string,object>;
 	using NewMetadata = Dictionary<string,object>;
 
 	public class TreeHelper
@@ -19,6 +19,7 @@ namespace ItemTTT.Tree
 		{
 			html,
 			translatedHtml,
+			file,
 			image,
 			view,
 
@@ -41,6 +42,7 @@ namespace ItemTTT.Tree
 			routeRedirections[""+Types.view]			= Routes.TreeView;
 			routeRedirections[""+Types.html]			= Routes.TreeHtml;
 			routeRedirections[""+Types.translatedHtml]	= Routes.TreeHtmlTranslated;
+			routeRedirections[""+Types.file]			= Routes.TreeFile;
 			routeRedirections[""+Types.image]			= Routes.TreeImage;
 			RouteRedirections = routeRedirections;
 
@@ -79,7 +81,7 @@ namespace ItemTTT.Tree
 			await dc.SaveChangesAsync();
 		}
 
-		internal async Task<Utils.CustomClass2<Metadata,Models.TreeNode>> GetNode(Cwd cwd)
+		internal async Task<Utils.CustomClass2<MetaData,Models.TreeNode>> GetNode(Cwd cwd)
 		{
 			Utils.Assert( cwd != null, nameof(GetNode), $"Missing parameter '{nameof(cwd)}'" );
 			var logHelper = cwd.LogHelper;
@@ -91,16 +93,16 @@ namespace ItemTTT.Tree
 			if( node == null )
 				return null;
 
-			Metadata meta;
+			MetaData meta;
 			if(! node.Meta.StartsWith('{') )
 				// Not JSON
 				meta = null;
 			else
 				meta = node.Meta.JSONDeserialize();
 
-			return new Utils.CustomClass2<Metadata, Models.TreeNode>{ A=meta, B=node };
+			return new Utils.CustomClass2<MetaData, Models.TreeNode>{ A=meta, B=node };
 		}
-		internal async Task<Utils.CustomClass2<Metadata,Models.TreeNode>> GetNode(Cwd cwd, Types expectedType)
+		internal async Task<Utils.CustomClass2<MetaData,Models.TreeNode>> GetNode(Cwd cwd, Types expectedType)
 		{
 			var node = await GetNode( cwd );
 			if( node == null )
@@ -193,15 +195,15 @@ namespace ItemTTT.Tree
 			return node;
 		}
 
-		internal async Task<Utils.CustomClass2<int,Metadata>> GetNodeMetadata(Cwd cwd, Types? expectedType=null)
+		internal async Task<Utils.CustomClass2<int,MetaData>> GetNodeMetaData(Cwd cwd, Types? expectedType=null)
 		{
-			Utils.Assert( cwd != null, nameof(GetNodeMetadata), $"Missing parameter '{nameof(cwd)}'" );
+			Utils.Assert( cwd != null, nameof(GetNodeMetaData), $"Missing parameter '{nameof(cwd)}'" );
 			var logHelper = cwd.LogHelper;
 			var path = cwd.Pwd();
 			var pathDb = cwd.PwdDb();
 			var dc = cwd.DataContext;
 
-			logHelper.AddLogMessage( $"{nameof(GetNodeMetadata)}: Retreive '{pathDb}'" );
+			logHelper.AddLogMessage( $"{nameof(GetNodeMetaData)}: Retreive '{pathDb}'" );
 			var node = await dc.TreeNodes.Where( v=>v.Path == pathDb ).Select( v=>new{ v.ID, v.Meta } ).SingleOrDefaultAsync();
 			if( node == null )
 				return null;
@@ -209,13 +211,13 @@ namespace ItemTTT.Tree
 				// Metadata not JSON
 				return null;
 
-			logHelper.AddLogMessage( $"{nameof(GetNodeMetadata)}: Parse node's metadata" );
+			logHelper.AddLogMessage( $"{nameof(GetNodeMetaData)}: Parse node's metadata" );
 			var dict = node.Meta.JSONDeserialize();
 			if( expectedType != null )
 				if( dict.TreeMetadata_Type() != ""+expectedType )
 					throw new Utils.TTTException( $"{nameof(TreeHelper)}: Node at '{path}' is not of expected type '{expectedType}'" );
 
-			return new Utils.CustomClass2<int,Metadata>{ A=node.ID, B=dict };
+			return new Utils.CustomClass2<int,MetaData>{ A=node.ID, B=dict };
 		}
 
 		internal async Task<string> GetNodeData(Cwd cwd)
@@ -386,7 +388,7 @@ namespace ItemTTT.Tree
 			public object Data { get; set; }
 		}
 
-		internal string TryGetRouteRedirection(Metadata metaData)
+		internal string TryGetRouteRedirection(MetaData metaData)
 		{
 			var nodeType = metaData.TreeMetadata_Type();
 			return RouteRedirections.TryGet( nodeType );
@@ -395,12 +397,12 @@ namespace ItemTTT.Tree
 
 	internal static partial class ExtensionMethods
 	{
-		internal static string TreeMetadata_Type(this Metadata metadata)
+		internal static string TreeMetadata_Type(this MetaData metadata)
 		{
 			Utils.Assert( metadata != null, nameof(TreeMetadata_Type), $"Missing parameter '{nameof(metadata)}'" );
 			return (string)metadata.TryGet( "type" );
 		}
-		internal static void TreeMetadata_Type(this Metadata metadata, string value)
+		internal static void TreeMetadata_Type(this MetaData metadata, string value)
 		{
 			Utils.Assert( metadata != null, nameof(TreeMetadata_Type), $"Missing parameter '{nameof(metadata)}'" );
 			if( value == null )

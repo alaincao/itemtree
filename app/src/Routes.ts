@@ -54,6 +54,7 @@ export interface Routes
 				},
 			tree : {
 					operations	: string,
+					file		: string,
 					image		: string,
 				},
 		},

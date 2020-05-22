@@ -2,6 +2,37 @@
 import * as common from "../Views/common"
 import Result from "../Utils/TTTServiceResult";
 
+export async function fileSave(path:string, file:File, contentType?:string) : Promise<FileSaveResult>
+{
+	const url = common.routes.api.tree.file;
+	const formData = new FormData();
+	formData.append( 'path', path );
+	formData.append( 'file', file );
+	if( contentType )
+		formData.append( 'contentType', contentType );
+	const response = await common.url.postRequestFormData<FileSaveResult>( url, formData );
+	if( response.success )
+	{
+		response.name			= response.result.name;
+		response.dir			= response.result.dir;
+		response.path			= response.result.path;
+		response.fileName		= response.result.fileName;
+		response.contentType	= response.result.contentType;
+		delete response.result;
+	}
+	return response;
+}
+export interface FileSaveResult extends Result
+{
+	name		: string;
+	dir			: string;
+	path		: string;
+	fileName	: string;
+	contentType	: string;
+}
+
+//////////
+
 export async function imageSave(path:string, file:File) : Promise<ImageSaveResult>
 {
 	const url = common.routes.api.tree.image;
@@ -23,6 +54,19 @@ export interface ImageSaveResult extends Result
 	name	: string;
 	dir		: string;
 	path	: string;
+}
+
+//////////
+
+export async function getNodeMetaData(path:string) : Promise<{[key:string]:any}>
+{
+	const rv = await operations([{ getNodeMetaData:{path} }]);
+	if(! rv.success )
+	{
+		common.utils.error( 'GetNodeMetaData operation failed', { rv } );
+		throw `GetNodeMetaData operation at '${path}' failed: ${rv.errorMessage}`;
+	}
+	return rv.responses[0].metaData;
 }
 
 //////////
@@ -96,6 +140,7 @@ export namespace operations
 {
 	export interface Operation
 	{
+		getNodeMetaData?	: GetNodeMetaData;
 		getNodeData?		: GetNodeData;
 		setNodeData?		: SetNodeData;
 		getOrCreateNode?	: GetOrCreateNode;
@@ -105,10 +150,15 @@ export namespace operations
 	export interface Response
 	{
 		path			: string;
+		metaData?		: {[key:string]:any};
 		data?			: string;
 		affectedRows?	: number;
 	}
 
+	export interface GetNodeMetaData
+	{
+		path			: string;
+	}
 	export interface GetNodeData
 	{
 		path			: string;

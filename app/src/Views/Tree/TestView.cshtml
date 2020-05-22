@@ -28,9 +28,10 @@
 		<strong>Value from database:</strong> '@ViewBag.Foo'
 	</li><li>
 		<strong>HTML text from database:</strong><br/>
-		<span tree-html="./sometext"></span>
+		<div tree-html="./sometext"></div>
 	</li><li>
-		<strong>Translated HTML text from database:</strong> <span tree-htmlTranslated="./sometranslatedtext"></span>
+		<strong>Translated HTML text from database:</strong>
+		<div tree-htmlTranslated="./sometranslatedtext"></div>
 	</li><li>
 		Current language:
 		<span ttt-only-if="IsEN">IsEN</span>
@@ -40,6 +41,18 @@
 		Image at '@Tree_Pwd()/image01': <img tree-image="image01"/>
 	</li><li>
 		Image at '@Tree_Pwd()/image02' (cropped): <img tree-image="image02" tree-parameters="height=60"/>
+	</li><li>
+		@{	var someFileMetaData = await Tree_GetNodeMetaData( "./somefile" ) ?? new Dictionary<string,object>(); }
+
+		File at '@Tree_Pwd()/somefile': <a href="@Tree_Pwd("./somefile")">'@someFileMetaData.TryGet("fileName")' (type: '@someFileMetaData.TryGet("contentType")')</a>
+		<div ttt-only-if="PageHelper.IsAuthenticated" tree-file="./somefile" style="background-color:green"
+					ondragover="$(this).css('background-color','red'); return false"
+					ondrop="$(this).css('background-color','green'); return false"
+					ondragleave="$(this).css('background-color','green'); return false">  @* nb: all "return false" mandatory here! *@
+			File drop zone<br/>
+			fileName: <span data-bind="text:fileName"></span><br/>
+			contentType: <span data-bind="text:contentType"></span>
+		</div>
 	</li>
 </ul>
 

@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -96,6 +97,16 @@ namespace ItemTTT.Views
 							// Use absolute path
 							return v.A;
 					} ).ToArray();
+			}
+		}
+
+		protected async Task<IDictionary<string,object>> Tree_GetNodeMetaData(string path=null)
+		{
+			LogHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Tree_GetNodeMetaData)}: '{path??Cwd.Pwd()}'" );
+			using( (path == null) ? null : Cwd.PushDisposable(path) )
+			{
+				(await TreeHelper.GetNodeMetaData( Cwd )).R( out var _, out var meta );
+				return meta;
 			}
 		}
 

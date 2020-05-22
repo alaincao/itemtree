@@ -6,6 +6,21 @@ namespace ItemTTT
 {
 	public static partial class ExtensionMethods
 	{
+		/// <summary>Utility function to name CustomClass's fields</summary>
+		public static void R<TA,TB>(this Utils.CustomClass2<TA,TB> self, out TA A, out TB B)
+		{
+			if( self == null )
+			{
+				A = default;
+				B = default;
+			}
+			else
+			{
+				A = self.A;
+				B = self.B;
+			}
+		}
+
 		// Those are not(i.e. removed from v2.2) in standard libs!
 		// cf. https://github.com/dotnet/efcore/issues/18124   Major design headache! ;-)
 		public static async IAsyncEnumerable<U> SelectAsync<T,U>(this IAsyncEnumerable<T> list, Func<T,U> selector)
@@ -25,13 +40,13 @@ namespace ItemTTT
 			return (await list.ToListAsync()).ToArray();
 		}
 
-		internal static async IAsyncEnumerable<string> GetLineEnumerable(this System.IO.StreamReader stream)
+		public static async IAsyncEnumerable<string> GetLineEnumerable(this System.IO.StreamReader stream)
 		{
 			for( var line = await stream.ReadLineAsync(); line != null; line = await stream.ReadLineAsync() )
 				yield return line;
 		}
 
-		internal static string JSONStringify(this object obj, bool indented=false)
+		public static string JSONStringify(this object obj, bool indented=false)
 		{
 			Utils.Assert( obj != null, System.Reflection.MethodInfo.GetCurrentMethod(), $"Missing parameter {nameof(obj)}" );
 
@@ -41,21 +56,21 @@ namespace ItemTTT
 			return Newtonsoft.Json.JsonConvert.SerializeObject( obj, settings );
 		}
 
-		internal static IDictionary<string,object> JSONDeserialize(this string json)
+		public static IDictionary<string,object> JSONDeserialize(this string json)
 		{
 			if( string.IsNullOrWhiteSpace(json) )
 				return null;
 			return Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>( json );
 		}
 
-		internal static T JSONDeserialize<T>(this string json)
+		public static T JSONDeserialize<T>(this string json)
 		{
 			if( string.IsNullOrWhiteSpace(json) )
 				return default(T);
 			return Newtonsoft.Json.JsonConvert.DeserializeObject<T>( json );
 		}
 
-		internal static V TryGet<K,V>(this IDictionary<K,V> dict, K key)
+		public static V TryGet<K,V>(this IDictionary<K,V> dict, K key)
 		{
 			V value;
 			if( dict.TryGetValue(key, out value) )
@@ -63,7 +78,7 @@ namespace ItemTTT
 			return default( V );
 		}
 
-		internal static System.Nullable<T> TryParseEnum<T>(this string str) where T : struct, IConvertible
+		public static System.Nullable<T> TryParseEnum<T>(this string str) where T : struct, IConvertible
 		{
 			if( string.IsNullOrWhiteSpace(str) )
 				return null;
@@ -74,18 +89,18 @@ namespace ItemTTT
 			return rv;
 		}
 
-		internal static string ToIsoDate(this DateTime? dt)
+		public static string ToIsoDate(this DateTime? dt)
 		{
 			if( dt == null )
 				return null;
 			return ToIsoDate( dt.Value );
 		}
-		internal static string ToIsoDate(this DateTime dt)
+		public static string ToIsoDate(this DateTime dt)
 		{
 			return dt.ToString( "yyyy-MM-dd" );
 		}
 
-		internal static DateTime? FromIsoDate(this string isoDate)
+		public static DateTime? FromIsoDate(this string isoDate)
 		{
 			if( string.IsNullOrWhiteSpace(isoDate) )
 				return null;

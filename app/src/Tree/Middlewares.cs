@@ -73,7 +73,7 @@ namespace ItemTTT.Tree
 				var langInfo = services.GetRequiredService<Language.Info>();
 				var cwd = services.GetRequiredService<Cwd>();
 				cwd.Cd( langInfo.CleanPath );
-				var node = await cwd.TreeHelper.GetNodeMetadata( cwd );
+				var node = await cwd.TreeHelper.GetNodeMetaData( cwd );
 				if( node == null )
 					// Nothing found => Continue to 404
 					goto NEXT;

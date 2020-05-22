@@ -7,6 +7,7 @@ import * as lng from "../Language";
 export const { e:Types, a:allTypes } = strEnum([
 												'html',
 												'translatedHtml',
+												'file',
 												'image',
 												'view',
 

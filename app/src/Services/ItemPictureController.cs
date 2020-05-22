@@ -125,7 +125,7 @@ namespace ItemTTT.Services
 				if( string.IsNullOrWhiteSpace(itemCode) )
 					throw new ArgumentNullException( $"{nameof(itemCode)}" );
 
-				var imageString = await GetImageBase64String( logHelper, file );
+				var imageString = await Utils.Images.GetImageBase64String( logHelper, file );
 
 				logHelper.AddLogMessage( $"ItemPicUpload: Open transaction" );
 				var dc = DataContext;
@@ -231,7 +231,7 @@ namespace ItemTTT.Services
 
 				using( var ms = new System.IO.MemoryStream() )
 				{
-					var newImage = CropResize( originalBitmap, destinationHeight:(double)height.Value, scaleHToW:ScaleHToW, scaleWToH:ScaleWToH );
+					var newImage = Utils.Images.CropResize( originalBitmap, destinationHeight:(double)height.Value, scaleHToW:ScaleHToW, scaleWToH:ScaleWToH );
 					newImage.Save( ms, ResizedFormat );
 					var bytes = ms.ToArray();
 					newImageString = Convert.ToBase64String( bytes );
@@ -281,7 +281,7 @@ namespace ItemTTT.Services
 					logHelper.AddLogMessage( $"ItemPicDownload: Create image bitmap to determine the uploaded format" );
 					var ms = new System.IO.MemoryStream( outputBytes );  // NB: Do NOT dispose the stream ; The constructor below does NOT load the image entirely. ; Counting on the garbage collector here ...
 					var bitmap = new Bitmap( ms );
-					GetImageType( bitmap, out contentType, out fileExtension );
+					Utils.Images.GetImageType( bitmap, out contentType, out fileExtension );
 				}
 			}
 			var fileName = (height == null) ? $"{itemCode}.{number}{fileExtension}" : $"{itemCode}.{number}.x{height}{fileExtension}";
@@ -505,123 +505,6 @@ namespace ItemTTT.Services
 			{
 				return Utils.TTTServiceResult.LogAndNew( PageHelper, ex );
 			}
-		}
-
-		internal static async Task<string> GetImageBase64String(LogHelper logHelper, Microsoft.AspNetCore.Http.IFormFile file)
-		{
-			logHelper.AddLogMessage( $"{nameof(GetImageBase64String)}: Create MemoryStream" );
-			var ms = new System.IO.MemoryStream();
-			await file.CopyToAsync( ms );
-
-			logHelper.AddLogMessage( $"{nameof(GetImageBase64String)}: Test resize ({ms.Length} bytes)" );
-			{
-				var imageFull = System.Drawing.Image.FromStream( ms );
-				var imageResized = (System.Drawing.Image)new System.Drawing.Bitmap( imageFull, 640, 480 );
-
-				ms.Position = 0;  // Rewind stram
-			}
-
-			logHelper.AddLogMessage( $"{nameof(GetImageBase64String)}: Create base64 string" );
-			var imageString = Convert.ToBase64String( ms.GetBuffer() );
-			return imageString;
-		}
-
-		internal static void GetImageType(byte[] bytes, out string contentType, out string fileExtension)
-		{
-			using( var ms = new System.IO.MemoryStream(bytes) )
-			{
-				var bitmap = new Bitmap( ms );
-				GetImageType( bitmap, out contentType, out fileExtension );
-			}
-		}
-		internal static void GetImageType(Bitmap bitmap, out string contentType, out string fileExtension)
-		{
-			var guid = bitmap.RawFormat.Guid;
-			if( guid == ImageFormat.Bmp.Guid )
-			{
-				contentType = "image/x-ms-bmp";
-				fileExtension = ".bmp";
-			}
-			else if( guid == ImageFormat.Jpeg.Guid )
-			{
-				contentType = "image/jpeg";
-				fileExtension = ".jpg";
-			}
-			else if( guid == ImageFormat.Gif.Guid )
-			{
-				contentType = "image/gif";
-				fileExtension = ".gif";
-			}
-			else if( guid == ImageFormat.Png.Guid )
-			{
-				contentType = "image/png";
-				fileExtension = ".png";
-			}
-			else  // WTF is this ???
-			{
-				contentType = "application/octet-stream";
-				fileExtension = "";
-			}
-		}
-
-		internal static Bitmap CropResize(Bitmap image, double destinationHeight, double scaleHToW, double scaleWToH)
-		{
-			Utils.Assert( destinationHeight > 0, typeof(ItemPictureController), "Invalid parameter 'destinationHeight'" );
-
-			double destinationWidth = destinationHeight * scaleHToW;
-			double sourceWidth = image.Width;
-			double sourceHeight = image.Height;
-
-			// Crop image
-			{
-				double sourceScaleWToH = sourceHeight / sourceWidth;
-				int cropWidth, cropHeight;
-				if( sourceScaleWToH == scaleWToH )
-				{
-					// No crop needed
-					goto NO_CROP;
-				}
-				else if( sourceScaleWToH > scaleWToH )
-				{
-					// Crop on height
-					cropWidth = (int)sourceWidth;
-					cropHeight = (int)(sourceWidth * scaleWToH );
-					if( cropHeight == sourceHeight )
-						// Nothing changes after math roundings ...
-						goto NO_CROP;
-					Utils.Assert( cropHeight < sourceHeight, typeof(ItemPictureController), "Logic error: Cropped is supposed to be smaller than source ..." );
-				}
-				else // sourceRatioHW < RatioHW
-				{
-					// Crop on width
-					cropHeight = (int)sourceHeight;
-					cropWidth = (int)(sourceHeight*scaleHToW);
-					if( cropWidth == sourceWidth )
-						// Nothing changes after math roundings ...
-						goto NO_CROP;
-					Utils.Assert( cropWidth < sourceWidth, typeof(ItemPictureController), "Logic error: Cropped is supposed to be smaller than source ..." );
-				}
-
-				// Replace 'image' with the cropped one
-				var cropRect = new Rectangle(	x:		(int)( (sourceWidth - cropWidth) / 2 ),
-												y:		(int)( (sourceHeight - cropHeight) / 2 ),
-												width:	cropWidth,
-												height:	cropHeight );
-				image = image.Clone( cropRect, image.PixelFormat );
-			}
-		NO_CROP:
-
-			// Resized image
-			if( (image.Height == destinationHeight) && (image.Width == destinationWidth) )
-			{
-				// No resize needed
-			}
-			else
-			{
-				image = new Bitmap( image, (int)destinationWidth, (int)destinationHeight );
-			}
-
-			return image;
 		}
 	}
 }

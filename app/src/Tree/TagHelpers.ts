@@ -17,6 +17,7 @@ export async function init() : Promise<void>
 	const callbacks : {[key:string]:($e:JQuery,path:string)=>Promise<void>} = {};
 	callbacks[ tree.Types.html ]			= HtmlComponent.create;
 	callbacks[ tree.Types.translatedHtml ]	= HtmlTranslatedComponent.create;
+	callbacks[ tree.Types.file ]			= FileUpload.create;
 	callbacks[ tree.Types.image ]			= initImage;
 	callbacks[ tree.Types.pageProperty ]	= TextPageProperty.create;
 
@@ -206,9 +207,161 @@ class HtmlTranslatedComponent implements tree.PageComponent
 
 //////////
 
+class FileUpload
+{
+	private readonly	path			: string;
+	private readonly	$blockingDiv	: JQuery;
+	private readonly	$element		: JQuery;
+
+	private readonly	fileName	: KnockoutObservable<string>;
+	private readonly	contentType	: KnockoutObservable<string>;
+
+	private constructor(path:string, $element:JQuery)
+	{
+		this.path			= path;
+		this.$blockingDiv	= $element.parent();
+		this.$element		= $element;
+
+		this.fileName		= ko.observable( '' );
+		this.contentType	= ko.observable( '' );
+	}
+
+	public static async create($element:JQuery, path:string) : Promise<void>
+	{
+		common.utils.log( 'tree-file', { $element, path } );
+
+		// Create new instance & invoke 'refresh()' to get initial values
+		const self = new FileUpload( path, $element );
+		await self.refresh();
+
+		// Bind JQuery event
+		self.$element.click( ()=>self.onClick() );
+		self.$element.on( 'drop', (evt)=>self.onDrop(evt) );
+
+		// Register 'self' as JQuery data if ever needed ...
+		self.$element.data( 'ttt-uploader', self );
+
+		// Define bindings
+		ko.applyBindings( self, $element[0] );
+	}
+
+	protected onClick() : void
+	{
+		const self = this;
+		common.utils.log( 'FileUpload.onClick', {self} );
+
+		const $input = $('<input type="file" />');
+		const input = <HTMLInputElement>$input[0];
+		$input.change( ()=>
+			{
+				if( input.files.length < 1 )
+					// No file selected
+					return;
+				const file = input.files[0];
+				if( file != null )
+					self.sendFile( file );  // nb: no need for await
+			} );
+		$input.click();
+	}
+
+	protected onDrop(evt:JQuery.DropEvent) : boolean
+	{
+		const self = this;
+		try
+		{
+			common.utils.log( 'FileUpload.onDrop', {self, evt} );
+			const file = evt.originalEvent.dataTransfer.files[0];
+			if( file != null )
+				self.sendFile( file );  // nb: no need for await
+		}
+		catch( e )
+		{
+			common.utils.error( e );
+		}
+		return false;  // nb: whatever happens, 'return false' is required to avoid the browser to open the file ...
+	}
+
+	private async refresh() : Promise<void>
+	{
+		common.utils.log( 'FileUpload.refresh()' );
+		const self = this;
+
+		const meta = await ctrl.getNodeMetaData( self.path );
+		if( meta == null )
+		{
+			// Node not available
+			self.fileName( '' );
+			self.contentType( '' );
+			return;
+		}
+
+		self.fileName( meta['fileName'] );
+		self.contentType( meta['contentType'] );
+	}
+
+	private async sendFile(file:File) : Promise<void>
+	{
+		common.utils.log( 'FileUpload.sendFile', file );
+		const self = this;
+
+		common.html.block( self.$blockingDiv );
+		let rc : ctrl.FileSaveResult;
+		try
+		{
+			rc = await ctrl.fileSave( self.path, file );
+		}
+		finally
+		{
+			common.html.unblock( self.$blockingDiv );
+		}
+		if(! rc.success )
+		{
+			common.utils.error( 'FileUpload.sendFile: File upload error', { rc } );
+			common.html.showMessage( rc.errorMessage );
+			return;
+		}
+
+		await self.refresh();
+
+		// common.utils.log( 'FileUpload.sendFile: Show success message' );
+		// common.html.showMessage( `File '${rc.fileName}' has been saved (${rc.contentType})` );
+	}
+}
+
+//////////
+
 async function initImage($element:JQuery, path:string) : Promise<void>
 {
 	common.utils.log( 'tree-image: init', { $element, path } );
+	const $blockingDiv = $element.parent();
+
+	const sendFile = async (file:File)=>
+		{
+			common.utils.log( 'tree-image: Post file' );
+			common.html.block( $blockingDiv );
+			let rc : ctrl.ImageSaveResult;
+			try
+			{
+				rc = await ctrl.imageSave( path, file );
+			}
+			finally
+			{
+				common.html.unblock( $blockingDiv );
+			}
+			if(! rc.success )
+			{
+				common.utils.error( 'Image upload error', { rc } );
+				common.html.showMessage( rc.errorMessage );
+				return;
+			}
+
+			let src = rc.path;
+			const parms = common.url.parseParameters( $element.attr(attributeParameters) ?? '' );
+			parms[ 'refresh' ] = ''+Date.now();  // nb: to bypass browser's cache
+			src = src+'?'+common.url.stringifyParameters( parms );
+			common.utils.log( 'tree-image: Refresh image', {src} );
+			$element.attr( 'src', src );
+		};
 
 	$element.click( ()=>
 		{
@@ -216,38 +369,14 @@ async function initImage($element:JQuery, path:string) : Promise<void>
 
 			const $input = $('<input type="file" />');
 			const input = <HTMLInputElement>$input[0];
-			$input.change( async ()=>
+			$input.change( ()=>
 				{
 					if( input.files.length < 1 )
 						// No file selected
 						return;
 					const file = input.files[0];
-					const $blockingDiv = $element.parent();
-
-					common.utils.log( 'tree-image: Post file' );
-					common.html.block( $blockingDiv );
-					let rc : ctrl.ImageSaveResult;
-					try
-					{
-						rc = await ctrl.imageSave( path, file );
-					}
-					finally
-					{
-						common.html.unblock( $blockingDiv );
-					}
-					if(! rc.success )
-					{
-						common.utils.error( 'Image upload error', { rc } );
-						common.html.showMessage( rc.errorMessage );
-						return;
-					}
-
-					let src = rc.path;
-					const parms = common.url.parseParameters( $element.attr(attributeParameters) ?? '' );
-					parms[ 'refresh' ] = ''+Date.now();  // nb: to bypass browser's cache
-					src = src+'?'+common.url.stringifyParameters( parms );
-					common.utils.log( 'tree-image: Refresh image', {src} );
-					$element.attr( 'src', src );
+					if( file != null )
+						sendFile( file );  // nb: no need for await
 				} );
 			$input.click();
 		} );
