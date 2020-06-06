@@ -301,7 +301,7 @@ export namespace html
 	{
 		// Bootstrap style:
 		const html = `<div class="modal" tabindex="-1" role="dialog">
-						<div class="modal-dialog" role="document">
+						<div class="modal-dialog modal-dialog-centered" role="document">
 							<div class="modal-content">
 								<div class="modal-body">
 									<!-- Text content here -->
@@ -326,7 +326,7 @@ export namespace html
 	{
 		// Bootstrap style:
 		const html = `<div class="modal" tabindex="-1" role="dialog">
-						<div class="modal-dialog" role="document">
+						<div class="modal-dialog modal-dialog-centered" role="document">
 							<div class="modal-content">
 								<div class="modal-body">
 									<!-- Text content here -->
@@ -346,7 +346,7 @@ export namespace html
 				$div.find( '.btn-primary' ).click( ()=>
 					{
 						confirmed = true;
-						$div.modal( 'hide' );
+						$div.remove();
 						resolve( true );
 					} );
 				$div.on( 'hidden.bs.modal', (e)=>
@@ -356,6 +356,7 @@ export namespace html
 							// nb: should not happen, but in case ...
 							return;
 						// Manually closed => Cancel
+						$div.remove();
 						resolve( false );
 					} );
 				$div.modal();
@@ -524,6 +525,11 @@ export namespace url
 	const onChangedEvent = 'onUrlChanged';
 	var onChangedCallbacks = $({});
 	var onChangedCallbacksRegistered = false;
+
+	export function refresh()
+	{
+		window.location.reload();
+	}
 
 	export function redirect(url:string)
 	{
