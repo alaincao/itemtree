@@ -143,7 +143,10 @@ namespace ItemTTT
 			}
 
 			InitializationLog.AddLogMessage( $"{nameof(Startup)}.{nameof(Configure)}: Configure the content's pipeline" );
-			app.UseStaticFiles();
+			app.UseStaticFiles( new StaticFileOptions
+				{
+					ServeUnknownFileTypes = true,
+				} );
 
 			app.UseAuthentication();
 			app.UseCookiePolicy();
