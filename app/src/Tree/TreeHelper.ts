@@ -114,7 +114,7 @@ export class PageManager
 		return self.currentLanguage.current;
 	}
 
-	public getNodeMemberKO(path:string, member:string) : Promise<KnockoutObservable<any>>
+	public getNodeMemberKO<T>(path:string, member:string) : Promise<KnockoutObservable<T>>
 	{
 		return NodeContentComponent.getNodeMemberKO( path, member );
 	}

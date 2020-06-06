@@ -236,6 +236,32 @@ namespace ItemTTT.Tree
 			return node.Data;
 		}
 
+		internal async Task SetNodeMetaData(Cwd cwd, MetaData meta, Types? expectedType=null)
+		{
+			Utils.Assert( cwd != null, nameof(SetNodeMetaData), $"Missing parameter '{nameof(cwd)}'" );
+			Utils.Assert( meta != null, nameof(SetNodeMetaData), $"Missing parameter '{nameof(meta)}'" );
+			var logHelper = cwd.LogHelper;
+			var path = cwd.Pwd();
+			var pathDb = cwd.PwdDb();
+			var dc = cwd.DataContext;
+
+			logHelper.AddLogMessage( $"{nameof(SetNodeMetaData)}: Retreive '{pathDb}'" );
+			var node = await dc.TreeNodes.Where( v=>v.Path == pathDb ).SingleOrDefaultAsync();
+			if( node == null )
+				throw new Utils.TTTException( $"{nameof(TreeHelper)}: Node at '{path}' is not found" );
+
+			if( expectedType != null )
+			{
+				var dict = node.Meta.JSONDeserialize();
+				if( dict.TreeMetadata_Type() != ""+expectedType )
+					throw new Utils.TTTException( $"{nameof(TreeHelper)}: Node at '{path}' is not of expected type '{expectedType}'" );
+			}
+
+			logHelper.AddLogMessage( $"{nameof(SetNodeData)}: Update node's meta data" );
+			node.Meta = meta.JSONStringify();
+			await dc.SaveChangesAsync();
+		}
+
 		internal async Task SetNodeData(Cwd cwd, string data, Types? expectedType=null)
 		{
 			Utils.Assert( cwd != null, nameof(SetNodeData), $"Missing parameter '{nameof(cwd)}'" );
@@ -291,7 +317,7 @@ namespace ItemTTT.Tree
 			return ids.Count;
 		}
 
-		internal static async IAsyncEnumerable<string> SaveTree(Cwd cwd)
+		internal static async IAsyncEnumerable<string> SaveTree(Cwd cwd, bool excludeImages=false)
 		{
 			Utils.Assert( cwd != null, nameof(SaveTree), $"Missing parameter '{nameof(cwd)}'" );
 			var logHelper = cwd.LogHelper;
@@ -317,15 +343,28 @@ namespace ItemTTT.Tree
 				};
 			await foreach( var node in q.AsAsyncEnumerable() )
 			{
+				var meta = tryDeserialize( node.Meta );
+				var metaDict = meta as Newtonsoft.Json.Linq.JObject;
+
 				var nodePath = node.Path.Substring( path.Length );
 				if( nodePath.Length == 0 )
 					// Base path => root
 					nodePath = Cwd.Separator;
 				logHelper.AddLogMessage( $"{nameof(SaveTree)}: At '{nodePath}'" );
 
+				if( excludeImages && (metaDict != null) )
+				{
+					if( metaDict.TreeMetadata_Type() == ""+Types.image )
+					{
+						logHelper.AddLogMessage( $"{nameof(SaveTree)}: Type {Types.image} => Discard" );
+						// Discard
+						continue;
+					}
+				}
+
 				var line = (new TreeNodeItem {
 									Path = nodePath,
-									Meta = tryDeserialize( node.Meta ),
+									Meta = meta,
 									Data = tryDeserialize( node.Data ),
 								}).JSONStringify( indented:false );  // nb: Must serialize on 1 line => Ensure 'indented:false'
 				yield return line;
@@ -391,12 +430,19 @@ namespace ItemTTT.Tree
 		internal string TryGetRouteRedirection(MetaData metaData)
 		{
 			var nodeType = metaData.TreeMetadata_Type();
+			if( nodeType == null )
+				return null;
 			return RouteRedirections.TryGet( nodeType );
 		}
 	}
 
 	internal static partial class ExtensionMethods
 	{
+		internal static string TreeMetadata_Type(this Newtonsoft.Json.Linq.JObject metadata)
+		{
+			Utils.Assert( metadata != null, nameof(TreeMetadata_Type), $"Missing parameter '{nameof(metadata)}'" );
+			return (string)metadata.TryGet( "type" );
+		}
 		internal static string TreeMetadata_Type(this MetaData metadata)
 		{
 			Utils.Assert( metadata != null, nameof(TreeMetadata_Type), $"Missing parameter '{nameof(metadata)}'" );

@@ -1,6 +1,16 @@
 
 import * as common from "../Views/common"
+import * as helper from "./TreeHelper";
 import Result from "../Utils/TTTServiceResult";
+
+export interface MetaData
+{
+	type?	: helper.Type;
+
+	[key:string]:any;
+}
+
+//////////
 
 export async function fileSave(path:string, file:File, contentType?:string) : Promise<FileSaveResult>
 {
@@ -84,6 +94,19 @@ export async function getNodeData(path:string) : Promise<string>
 
 //////////
 
+export async function setNodeMetaData(path:string, metaData:MetaData, expectedType?:string) : Promise<string>
+{
+	const rv = await operations([{ setNodeMetaData:{path,metaData,expectedType} }]);
+	if(! rv.success )
+	{
+		common.utils.error( 'SetNodeMetaData operation failed', { rv } );
+		throw `SetNodeMetaData operation at '${path}' failed: ${rv.errorMessage}`;
+	}
+	return rv.responses[0].path;
+}
+
+//////////
+
 export async function setNodeData(path:string, data:any) : Promise<void>
 {
 	const rv = await operations([{ setNodeData:{path,data} }]);
@@ -92,6 +115,19 @@ export async function setNodeData(path:string, data:any) : Promise<void>
 		common.utils.error( 'SetNodeData operation failed', { rv } );
 		throw `SetNodeData operation at '${path}' failed: ${rv.errorMessage}`;
 	}
+}
+
+//////////
+
+export async function getOrCreateNode(path:string, expectedType?:string, data?:any) : Promise<string>
+{
+	const rv = await operations([{ getOrCreateNode:{path,expectedType,data} }]);
+	if(! rv.success )
+	{
+		common.utils.error( 'GetOrCreateNode operation failed', { rv } );
+		throw `GetOrCreateNode operation at '${path}' failed: ${rv.errorMessage}`;
+	}
+	return rv.responses[0].path;
 }
 
 //////////
@@ -142,6 +178,7 @@ export namespace operations
 	{
 		getNodeMetaData?	: GetNodeMetaData;
 		getNodeData?		: GetNodeData;
+		setNodeMetaData?	: SetNodeMetaData;
 		setNodeData?		: SetNodeData;
 		getOrCreateNode?	: GetOrCreateNode;
 		delTree?			: DelTree;
@@ -162,6 +199,12 @@ export namespace operations
 	export interface GetNodeData
 	{
 		path			: string;
+	}
+	export interface SetNodeMetaData
+	{
+		path			: string;
+		expectedType?	: string;
+		metaData		: MetaData;
 	}
 	export interface SetNodeData
 	{

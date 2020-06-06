@@ -24,6 +24,7 @@ export async function init() : Promise<void>
 	common.utils.log( 'tree.init(): Initialize components' );
 
 	const elements = $(`[${attributeType}]`);
+	const tasks : Promise<void>[] = [];
 	for( let i=0; i<elements.length; ++i  )
 	{
 		const $element = $(elements[i]);
@@ -33,8 +34,9 @@ export async function init() : Promise<void>
 		if( callback == null )
 			continue;
 
-		await callback( $element, path );
+		tasks.push( callback($element, path) );
 	}
+	await Promise.all( tasks );
 
 	common.utils.log( 'tree.init(): End' );
 }
@@ -403,7 +405,7 @@ class TextPageProperty extends tree.PageProperty
 		const template = $element.text();
 
 		const pageManager = tree.getPageManager();
-		const value = await pageManager.getNodeMemberKO( path, member );
+		const value = await pageManager.getNodeMemberKO<string>( path, member );
 		const instance = new TextPageProperty( template, value );
 		pageManager.registerProperty( instance );
 	}

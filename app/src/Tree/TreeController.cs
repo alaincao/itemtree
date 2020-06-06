@@ -70,6 +70,33 @@ namespace ItemTTT.Tree
 								rv.Add( new{ Path=path, Data=data } );
 							}
 						}
+						else if( operation.SetNodeMetaData != null )
+						{
+							var op = operation.SetNodeMetaData;
+							logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.SetNodeMetaData)} ; Path:'{op.Path}'" );
+
+							var strMeta = op.MetaData as string;
+							if( strMeta == null )
+								strMeta = op.MetaData.ToString();
+							var meta = strMeta.JSONDeserialize();
+
+							var expectedType = (TreeHelper.Types?)null;
+							if( op.ExpectedType != null )
+							{
+								expectedType = op.ExpectedType.TryParseEnum<TreeHelper.Types>();
+								if( expectedType == null )
+									throw new ArgumentException( $"Unknown expected type '{op.ExpectedType}'" );
+							}
+
+							using( Cwd.PushDisposable(op.Path) )
+							{
+								await Cwd.TreeHelper.SetNodeMetaData( Cwd, meta, expectedType );
+
+								var path = Cwd.Pwd();
+								logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.SetNodeMetaData)} '{path}'" );
+								rv.Add( new{ Path=path } );
+							}
+						}
 						else if( operation.SetNodeData != null )
 						{
 							var op = operation.SetNodeData;
@@ -168,6 +195,7 @@ namespace ItemTTT.Tree
 		{
 			public GetNodeMetaDataDTO	GetNodeMetaData		{ get; set; } = null;
 			public GetNodeDataDTO		GetNodeData			{ get; set; } = null;
+			public SetNodeMetaDataDTO	SetNodeMetaData		{ get; set; } = null;
 			public SetNodeDataDTO		SetNodeData			{ get; set; } = null;
 			public GetOrCreateNodeDTO	GetOrCreateNode		{ get; set; } = null;
 			public DelTreeDTO			DelTree				{ get; set; } = null;
@@ -179,6 +207,12 @@ namespace ItemTTT.Tree
 			public class GetNodeDataDTO
 			{
 				public string	Path			{ get; set; }
+			}
+			public class SetNodeMetaDataDTO
+			{
+				public string	Path			{ get; set; }
+				public string	ExpectedType	{ get; set; }
+				public object	MetaData		{ get; set; }
 			}
 			public class SetNodeDataDTO
 			{
@@ -519,12 +553,16 @@ namespace ItemTTT.Tree
 		}
 
 		[HttpGet( Routes.TreeDownload )]
-		public async Task TreeDownload(string path)
+		public async Task TreeDownload(string path, bool excludeImages=false, bool forDownload=false)
 		{
 			var outputStarted = false;
 			try
 			{
-				Response.ContentType = "text/plain";
+				if( forDownload )
+					Response.ContentType = "application/octet-stream";
+				else
+					Response.ContentType = "text/plain";
+
 				if(! PageHelper.IsAuthenticated )
 					throw new Utils.TTTException( "Not logged-in" );
 				if( string.IsNullOrWhiteSpace(path) )
@@ -534,7 +572,7 @@ namespace ItemTTT.Tree
 				Cwd.Cd( path );
 
 				var eol = System.Text.Encoding.UTF8.GetBytes( "\n" );
-				await foreach( var line in TreeHelper.SaveTree(Cwd) )
+				await foreach( var line in TreeHelper.SaveTree(Cwd, excludeImages:excludeImages) )
 				{
 					var bytes = System.Text.Encoding.UTF8.GetBytes( line );
 					await Response.Body.WriteAsync( bytes );

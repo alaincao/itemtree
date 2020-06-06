@@ -75,12 +75,23 @@ namespace ItemTTT.Views
 			return obj.JSONStringify( indented:indented.Value );
 		}
 
-		protected string Tree_Pwd(string path=null)
+		protected string Tree_Pwd(string path=null, bool full=false)
 		{
+			string pwd;
 			if( path == null )
-				return Cwd.Pwd();
-			using( Cwd.PushDisposable(path) )
-				return Cwd.Pwd();
+			{
+				pwd = Cwd.Pwd();
+			}
+			else
+			{
+				using( Cwd.PushDisposable(path) )
+					pwd = Cwd.Pwd();
+			}
+
+			if( full )
+				pwd = $"{Context.Request.Scheme}://{Context.Request.Host}{pwd}";
+
+			return pwd;
 		}
 
 		protected async Task<string[]> Tree_GetChildNodeNames(string path=null)
