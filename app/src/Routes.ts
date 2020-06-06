@@ -53,6 +53,8 @@ export interface Routes
 					update	: string,
 				},
 			tree : {
+					sanitizePath: string,
+					sanitizeName: string,
 					operations	: string,
 					file		: string,
 					image		: string,

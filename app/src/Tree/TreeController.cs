@@ -22,6 +22,28 @@ namespace ItemTTT.Tree
 			Cwd = cwd;
 		}
 
+		[HttpGet( Routes.TreeSanitizePath )]
+		[HttpPost( Routes.TreeSanitizePath )]
+		public string SanitizePath(string path)
+		{
+			var logHelper = PageHelper.ScopeLogs;
+			logHelper.AddLogMessage( $"{nameof(SanitizePath)}: START '{path}'" );
+			if( string.IsNullOrWhiteSpace(path) )
+				return "";
+			return Cwd.SanitizePath( path );
+		}
+
+		[HttpGet( Routes.TreeSanitizeName )]
+		[HttpPost( Routes.TreeSanitizeName )]
+		public string SanitizeName(string name)
+		{
+			var logHelper = PageHelper.ScopeLogs;
+			logHelper.AddLogMessage( $"{nameof(SanitizeName)}: START '{name}'" );
+			if( string.IsNullOrWhiteSpace(name) )
+				return "";
+			return Cwd.SanitizeName( name );
+		}
+
 		[HttpPost( Routes.TreeOperations )]
 		public async Task<Utils.TTTServiceResult<List<object>>> Operations([FromBody]List<OperationsDTO> operations)
 		{

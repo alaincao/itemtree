@@ -12,6 +12,18 @@ export interface MetaData
 
 //////////
 
+export function sanitizeName(name:string) : Promise<string>
+{
+	return common.url.getRequest( common.pageParameters.routes.api.tree.sanitizeName, {name} )
+}
+
+export function sanitizePath(path:string) : Promise<string>
+{
+	return common.url.getRequest( common.pageParameters.routes.api.tree.sanitizePath, {path} )
+}
+
+//////////
+
 export async function fileSave(path:string, file:File, contentType?:string) : Promise<FileSaveResult>
 {
 	const url = common.routes.api.tree.file;

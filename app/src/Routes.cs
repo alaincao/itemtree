@@ -58,12 +58,14 @@ namespace ItemTTT
 		internal const string	TestimDeleteApi		= "/api/testimonial/delete";
 		internal const string	DynamicPageGetApi	= "/api/dynamicpage/get";
 		internal const string	DynamicPageUpdateApi= "/api/dynamicpage/update";
+		internal const string	TreeSanitizePath	= "/tree/sanitizepath";
+		internal const string	TreeSanitizeName	= "/tree/sanitizename";
 		internal const string	TreeDownload		= "/tree/download";
+		internal const string	TreeOperations		= "/tree/operations";
 
 		// Internals ; i.e. not requested directly but used as routing endpoints
 		internal const string	Error				= "/error";
 		internal const string	ErrorStatus			= "/error/{status}";
-		internal const string	TreeOperations		= "/tree/operations";
 		internal const string	TreeView			= "/tree/view";
 		internal const string	TreeHtml			= "/tree/html";
 		internal const string	TreeHtmlTranslated	= "/tree/html/translated";
@@ -139,6 +141,8 @@ namespace ItemTTT
 									Update	= tr( DynamicPageUpdateApi ),
 								},
 							Tree = new {
+									SanitizePath= tr( TreeSanitizePath ),
+									SanitizeName= tr( TreeSanitizeName ),
 									Operations	= tr( TreeOperations ),
 									File		= tr( TreeFile ),
 									Image		= tr( TreeImage ),
