@@ -22,12 +22,11 @@ namespace ItemTTT
 				await file.CopyToAsync( ms );
 
 				logHelper.AddLogMessage( $"{nameof(GetBase64String)}: Create base64 string" );
-				var base64 = Convert.ToBase64String( ms.GetBuffer() );
+				var base64 = Convert.ToBase64String( ms.ToArray() );
 
 				ms.Position = 0;
 				return new CustomClass2<string, System.IO.MemoryStream>{ A=base64, B=ms };
 			}
-
 
 			public static string GetContentType(string fileName)
 			{
