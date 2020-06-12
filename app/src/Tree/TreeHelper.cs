@@ -409,7 +409,7 @@ namespace ItemTTT.Tree
 				yield return line;
 			}
 		}
-		internal async Task RestoreTree(Cwd cwd, string filePath, bool createTransaction=true)
+		internal async Task RestoreTree(Cwd cwd, string filePath, bool createTransaction=true, bool overwrite=false)
 		{
 			Utils.Assert( cwd != null, nameof(RestoreTree), $"Missing parameter '{nameof(cwd)}'" );
 			if( string.IsNullOrWhiteSpace(filePath) )
@@ -427,10 +427,10 @@ namespace ItemTTT.Tree
 			logHelper.AddLogMessage( $"{nameof(RestoreTree)}: Open file '{filePath}'" );
 			using( var file = new System.IO.StreamReader(filePath) )
 			{
-				await RestoreTree( cwd, file.GetLineEnumerable(), createTransaction:createTransaction );
+				await RestoreTree( cwd, file.GetLineEnumerable(), createTransaction:createTransaction, overwrite:overwrite );
 			}
 		}
-		internal async Task RestoreTree(Cwd cwd, IAsyncEnumerable<string> lines, bool createTransaction=true)
+		internal async Task RestoreTree(Cwd cwd, IAsyncEnumerable<string> lines, bool createTransaction=true, bool overwrite=false)
 		{
 			Utils.Assert( cwd != null, nameof(RestoreTree), $"Missing parameter '{nameof(cwd)}'" );
 			Utils.Assert( lines != null, nameof(RestoreTree), $"Missing parameter '{nameof(lines)}'" );
@@ -449,6 +449,17 @@ namespace ItemTTT.Tree
 					using( (path.Length > 0) ? cwd.PushDisposable(path) : null )
 					{
 						logHelper.AddLogMessage( $"{nameof(RestoreTree)}: At path '{cwd.Pwd()}'" );
+
+						if( overwrite )
+						{
+							var dbPath = cwd.PwdDb();
+							var id = await cwd.DataContext.TreeNodes.Where( v=>v.Path == dbPath ).Select( v=>(int?)v.ID ).SingleOrDefaultAsync();
+							if( id != null )
+							{
+								// Node already exists
+								await DelTree( cwd, included:true );
+							}
+						}
 
 						await cwd.TreeHelper.CreateNode( cwd, node.Meta.ToString(), node.Data.ToString() );
 						await cwd.DataContext.SaveChangesAsync();

@@ -157,9 +157,9 @@ export async function delTree(path:string, included?:boolean) : Promise<number>
 
 //////////
 
-export async function restoreTree(path:string, filePath:string) : Promise<string>
+export async function restoreTree(path:string, filePath:string, overwrite?:boolean) : Promise<string>
 {
-	const rv = await operations([{ restoreTree:{path,filePath} }]);
+	const rv = await operations([{ restoreTree:{path,filePath,overwrite} }]);
 	if(! rv.success )
 	{
 		common.utils.error( 'RestoreTree operation failed', { rv } );
@@ -239,5 +239,6 @@ export namespace operations
 	{
 		path			: string;
 		filePath		: string;
+		overwrite?		: boolean;
 	}
 }

@@ -191,7 +191,7 @@ namespace ItemTTT.Tree
 
 							using( Cwd.PushDisposable(op.Path) )
 							{
-								await Cwd.TreeHelper.RestoreTree( Cwd, op.FilePath, createTransaction:false );
+								await Cwd.TreeHelper.RestoreTree( Cwd, op.FilePath, createTransaction:false, overwrite:op.Overwrite??false );
 								rv.Add( new{ Path=Cwd.Pwd() } );
 							}
 						}
@@ -257,6 +257,7 @@ namespace ItemTTT.Tree
 			{
 				public string	Path			{ get; set; }
 				public string	FilePath		{ get; set; }
+				public bool?	Overwrite		{ get; set; }
 			}
 		}
 
