@@ -3,10 +3,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ItemTTT.Models
 {
-	[Table("TreeNode")]
+	[Table(TableName)]
 	public class TreeNode
 	{
-		[Key, Column("TreeNodeID")]
+		internal const string	TableName		= "TreeNode";
+		internal const string	IDColumnName	= "TreeNodeID";
+		internal const string	PathColumnName	= nameof(Path);
+		internal const string	DataColumnName	= nameof(Data);
+
+		[Key, Column(IDColumnName)]
 		public int		ID				{ get; set; }
 
 		[Required, MaxLength(4000)]

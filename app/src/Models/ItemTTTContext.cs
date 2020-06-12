@@ -22,6 +22,14 @@ namespace ItemTTT.Models
 
 		public ItemTTTContext(DbContextOptions options) : base(options)  {}
 
+		/// <remarks>Constructor for specific uses</remarks>
+		internal static ItemTTTContext New(string connectionString)
+		{
+			var optionsBuilder = new DbContextOptionsBuilder<Models.ItemTTTContext>()
+											.UseSqlServer( connectionString );
+			return new Models.ItemTTTContext( optionsBuilder.Options );
+		}
+
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 		}

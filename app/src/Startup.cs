@@ -22,6 +22,7 @@ namespace ItemTTT
 		internal LogHelper						InitializationLog;
 		internal readonly IConfigurationRoot	Configuration;
 		internal static string					ContentRootPath		{ get; private set; }
+		internal string							ConnectionString	{ get; private set; }
 
 		public Startup(IWebHostEnvironment env)
 		{
@@ -88,10 +89,10 @@ namespace ItemTTT
 			services.Configure<RouteOptions>( opt=>opt.ConstraintMap.Add(Language.ConstraintName, typeof(LanguageRouteConstraint)) );
  
 			InitializationLog.AddLogMessage( $"{nameof(Startup)}.{nameof(ConfigureServices)}: Add database service" );
-			var connectionString = Configuration[ AppSettingsKeys.ConnectionStrings.ItemTTT ];
+			ConnectionString = Configuration[ AppSettingsKeys.ConnectionStrings.ItemTTT ];
 			services.AddDbContext<Models.ItemTTTContext>( options=>
 				{
-					options.UseSqlServer( connectionString );
+					options.UseSqlServer( ConnectionString );
 				} );
 
 			InitializationLog.AddLogMessage( $"{nameof(Startup)}.{nameof(ConfigureServices)}: Add custom services" );

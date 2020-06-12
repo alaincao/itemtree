@@ -423,7 +423,7 @@ namespace ItemTTT.Tree
 			}
 
 			logHelper.AddLogMessage( $"{nameof(FileGet)}: Get file data" );
-			var fileStr = await Cwd.DataContext.TreeNodes.Where( v=>v.ID == nodeID ).Select( v=>v.Data ).SingleAsync();
+			var fileStr = await TreeHelper.GetNodeDataFast( Cwd.DataContext, nodeID:nodeID );
 			var fileBytes = Convert.FromBase64String( fileStr );
 
 			var contentType = metadata.TreeMetadata_ContentType();
@@ -465,7 +465,7 @@ namespace ItemTTT.Tree
 			{
 				logHelper.AddLogMessage( $"{nameof(ImageGet)}: Request original size" );
 
-				var imgStr = await Cwd.DataContext.TreeNodes.Where( v=>v.ID == nodeID ).Select( v=>v.Data ).SingleAsync();
+				var imgStr = await TreeHelper.GetNodeDataFast( Cwd.DataContext, nodeID:nodeID );
 				imgBytes = Convert.FromBase64String( imgStr );
 			}
 			else
@@ -475,7 +475,7 @@ namespace ItemTTT.Tree
 				var resizedNodeName = $"height_{height.Value}";
 				using( Cwd.PushDisposable( resizedNodeName ) )
 				{
-					resizedStr = await Cwd.TreeHelper.GetNodeData( Cwd );
+					resizedStr = await TreeHelper.GetNodeDataFast( Cwd.DataContext, path:Cwd.PwdDb() );
 				}
 
 				if( resizedStr != null )
@@ -594,7 +594,7 @@ namespace ItemTTT.Tree
 				Cwd.Cd( path );
 
 				var eol = System.Text.Encoding.UTF8.GetBytes( "\n" );
-				await foreach( var line in TreeHelper.SaveTree(Cwd, excludeImages:excludeImages) )
+				await foreach( var line in Cwd.TreeHelper.SaveTree(Cwd, excludeImages:excludeImages) )
 				{
 					var bytes = System.Text.Encoding.UTF8.GetBytes( line );
 					await Response.Body.WriteAsync( bytes );

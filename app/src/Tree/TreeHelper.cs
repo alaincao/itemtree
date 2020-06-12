@@ -27,11 +27,13 @@ namespace ItemTTT.Tree
 		}
 
 		internal readonly string	Root;
+		private readonly string		ConnectionString;
 
 		public TreeHelper(Startup startup)
 		{
 			var logHelper = startup.InitializationLog;
 			logHelper.AddLogMessage( $"{nameof(TreeHelper)}: START" );
+			ConnectionString = startup.ConnectionString;
 
 			logHelper.AddLogMessage( $"{nameof(TreeHelper)}: Get tree root" );
 			Root = startup.Configuration[ AppSettingsKeys.TreeRoot ];
@@ -236,6 +238,35 @@ namespace ItemTTT.Tree
 			return node.Data;
 		}
 
+		/// <summary>Use direct ADO access to the database to avoid performance issues with EntityFramework and large values</summary>
+		internal static async Task<string> GetNodeDataFast(Models.ItemTTTContext dc, string path=null, int? nodeID=null)
+		{
+			Utils.Assert( dc != null, nameof(GetNodeDataFast), $"Missing parameter '{nameof(dc)}'" );
+			Utils.Assert( (path == null) != (nodeID == null), nameof(GetNodeDataFast), $"One and only one of '{nameof(path)}' and '{nameof(nodeID)}' parameters must be set" );
+
+			using( var co = await Utils.ConnectionOpenner.New(dc.Database.GetDbConnection()) )
+			using( var comm = co.Connection.CreateCommand() )
+			{
+				if( nodeID != null )
+					comm.CommandText = $"select \"{Models.TreeNode.DataColumnName}\" from \"{Models.TreeNode.TableName}\" where \"{Models.TreeNode.IDColumnName}\" = {nodeID.Value}";
+				else
+					comm.CommandText = $"select \"{Models.TreeNode.DataColumnName}\" from \"{Models.TreeNode.TableName}\" where \"{Models.TreeNode.PathColumnName}\" = '{path}'";
+
+				using( var rdr = await comm.ExecuteReaderAsync() )
+				{
+					var rc = rdr.Read();
+					if( ! rc )
+						// Not found
+						return null;
+
+					using( var tr = rdr.GetTextReader(0) )
+					{
+						return await tr.ReadToEndAsync();
+					}
+				}
+			}
+		}
+
 		internal async Task SetNodeMetaData(Cwd cwd, MetaData meta, Types? expectedType=null)
 		{
 			Utils.Assert( cwd != null, nameof(SetNodeMetaData), $"Missing parameter '{nameof(cwd)}'" );
@@ -317,7 +348,7 @@ namespace ItemTTT.Tree
 			return ids.Count;
 		}
 
-		internal static async IAsyncEnumerable<string> SaveTree(Cwd cwd, bool excludeImages=false)
+		internal async IAsyncEnumerable<string> SaveTree(Cwd cwd, bool excludeImages=false)
 		{
 			Utils.Assert( cwd != null, nameof(SaveTree), $"Missing parameter '{nameof(cwd)}'" );
 			var logHelper = cwd.LogHelper;
@@ -328,7 +359,7 @@ namespace ItemTTT.Tree
 			var pathBase = path + Cwd.Separator;
 			var q = dc.TreeNodes.Where( v=> (v.Path == path) || v.Path.StartsWith(pathBase) )
 								.OrderBy( v=>v.Path )
-								.Select( v=>new{ v.Path, v.Meta, v.Data } );
+								.Select( v=>new{ v.ID, v.Path, v.Meta } );
 			Func<string,object> tryDeserialize = (data)=>
 				{
 					if( (data.Length > 0)
@@ -341,6 +372,10 @@ namespace ItemTTT.Tree
 					}
 					return data;
 				};
+
+			// nb: With the 'foreach()', there will be an open DataReader on the main DataContext during the whole streaming
+			//		=> Using a separate one to retreive the 'Data' fields
+			using( var dataDC = Models.ItemTTTContext.New(ConnectionString) )
 			await foreach( var node in q.AsAsyncEnumerable() )
 			{
 				var meta = tryDeserialize( node.Meta );
@@ -362,10 +397,14 @@ namespace ItemTTT.Tree
 					}
 				}
 
+				// Retreive the data using a separate SQL connection
+				var data = await GetNodeDataFast( dataDC, nodeID:node.ID );
+
+				// Output the line
 				var line = (new TreeNodeItem {
 									Path = nodePath,
 									Meta = meta,
-									Data = tryDeserialize( node.Data ),
+									Data = tryDeserialize( data ),
 								}).JSONStringify( indented:false );  // nb: Must serialize on 1 line => Ensure 'indented:false'
 				yield return line;
 			}
