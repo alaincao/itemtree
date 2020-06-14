@@ -80,6 +80,19 @@ export interface ImageSaveResult extends Result
 
 //////////
 
+export async function getChildNodes(path:string) : Promise<{[key:string]:any}>
+{
+	const rv = await operations([{ getChildNodes:{path} }]);
+	if(! rv.success )
+	{
+		common.utils.error( 'GetChildNodes operation failed', { rv } );
+		throw `GetChildNodes operation at '${path}' failed: ${rv.errorMessage}`;
+	}
+	return rv.responses[0].childNodes;
+}
+
+//////////
+
 export async function getNodeMetaData(path:string) : Promise<{[key:string]:any}>
 {
 	const rv = await operations([{ getNodeMetaData:{path} }]);
@@ -188,6 +201,7 @@ export namespace operations
 {
 	export interface Operation
 	{
+		getChildNodes?		: GetChildNodes;
 		getNodeMetaData?	: GetNodeMetaData;
 		getNodeData?		: GetNodeData;
 		setNodeMetaData?	: SetNodeMetaData;
@@ -199,11 +213,16 @@ export namespace operations
 	export interface Response
 	{
 		path			: string;
+		childNodes?		: string[];
 		metaData?		: {[key:string]:any};
 		data?			: string;
 		affectedRows?	: number;
 	}
 
+	export interface GetChildNodes
+	{
+		path			: string;
+	}
 	export interface GetNodeMetaData
 	{
 		path			: string;

@@ -66,7 +66,20 @@ namespace ItemTTT.Tree
 						logHelper.AddLogMessage( $"{nameof(Operations)}: Operation {i+1} of {operations.Count}" );
 						var operation = operations[ i ];
 
-						if( operation.GetNodeMetaData != null )
+						if( operation.GetChildNodes != null )
+						{
+							var op = operation.GetChildNodes;
+							logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.GetChildNodes)} ; Path:'{op.Path}'" );
+							using( Cwd.PushDisposable(op.Path) )
+							{
+								var childNodes = (await Cwd.TreeHelper.GetChildNodes( Cwd )).Select( v=>v.B ).ToArray();
+
+								var path = Cwd.Pwd();
+								logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.GetChildNodes)} Path:'{path}' ; length:'{childNodes.Length}'" );
+								rv.Add( new{ Path=path, ChildNodes=childNodes } );
+							}
+						}
+						else if( operation.GetNodeMetaData != null )
 						{
 							var op = operation.GetNodeMetaData;
 							logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.GetNodeMetaData)} ; Path:'{op.Path}'" );
@@ -215,6 +228,7 @@ namespace ItemTTT.Tree
 		}
 		public class OperationsDTO
 		{
+			public GetChildNodesDTO		GetChildNodes		{ get; set; } = null;
 			public GetNodeMetaDataDTO	GetNodeMetaData		{ get; set; } = null;
 			public GetNodeDataDTO		GetNodeData			{ get; set; } = null;
 			public SetNodeMetaDataDTO	SetNodeMetaData		{ get; set; } = null;
@@ -222,6 +236,10 @@ namespace ItemTTT.Tree
 			public GetOrCreateNodeDTO	GetOrCreateNode		{ get; set; } = null;
 			public DelTreeDTO			DelTree				{ get; set; } = null;
 			public RestoreTreeDTO		RestoreTree			{ get; set; } = null;
+			public class GetChildNodesDTO
+			{
+				public string	Path			{ get; set; }
+			}
 			public class GetNodeMetaDataDTO
 			{
 				public string	Path			{ get; set; }
