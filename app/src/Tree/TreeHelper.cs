@@ -270,7 +270,6 @@ namespace ItemTTT.Tree
 		internal async Task SetNodeMetaData(Cwd cwd, MetaData meta, Types? expectedType=null)
 		{
 			Utils.Assert( cwd != null, nameof(SetNodeMetaData), $"Missing parameter '{nameof(cwd)}'" );
-			Utils.Assert( meta != null, nameof(SetNodeMetaData), $"Missing parameter '{nameof(meta)}'" );
 			var logHelper = cwd.LogHelper;
 			var path = cwd.Pwd();
 			var pathDb = cwd.PwdDb();
@@ -289,7 +288,7 @@ namespace ItemTTT.Tree
 			}
 
 			logHelper.AddLogMessage( $"{nameof(SetNodeData)}: Update node's meta data" );
-			node.Meta = meta.JSONStringify();
+			node.Meta = ( meta?.JSONStringify() ) ?? "";
 			await dc.SaveChangesAsync();
 		}
 

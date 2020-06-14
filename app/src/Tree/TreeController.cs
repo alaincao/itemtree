@@ -112,8 +112,8 @@ namespace ItemTTT.Tree
 
 							var strMeta = op.MetaData as string;
 							if( strMeta == null )
-								strMeta = op.MetaData.ToString();
-							var meta = strMeta.JSONDeserialize();
+								strMeta = op.MetaData?.ToString();
+							var meta = strMeta?.JSONDeserialize();
 
 							var expectedType = (TreeHelper.Types?)null;
 							if( op.ExpectedType != null )
