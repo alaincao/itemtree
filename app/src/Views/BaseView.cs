@@ -94,6 +94,20 @@ namespace ItemTTT.Views
 			return pwd;
 		}
 
+		protected string Tree_SanitizeName(string str)
+		{
+			return ItemTTT.Tree.Cwd.SanitizeName( str );
+		}
+		protected string Tree_SanitizePath(string str)
+		{
+			return ItemTTT.Tree.Cwd.SanitizePath( str );
+		}
+
+		protected string Tree_GetNodeName(string path=null)
+		{
+			return Cwd.GetNodeName( path );
+		}
+
 		protected async Task<string[]> Tree_GetChildNodeNames(string path=null)
 		{
 			LogHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Tree_GetChildNodeNames)}: '{path??Cwd.Pwd()}'" );
