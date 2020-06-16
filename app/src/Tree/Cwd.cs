@@ -133,7 +133,9 @@ namespace ItemTTT.Tree
 										return (char)( c-('A'-'a') );  // Lower case
 									if( (c == SeparatorC) || (c == '-') || (c == '.') )
 										return c;  // Ok
-									return '_';  // Invalid => Replace by '_'
+									if( c == ' ' )
+										return '-';  // Replace spaces by '-'
+									return '_';  // Others => Replace by '_'
 								} )
 							.ToArray();
 			return new string( chars );
