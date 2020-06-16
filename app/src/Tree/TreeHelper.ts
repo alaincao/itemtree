@@ -67,28 +67,30 @@ export class PageProperty
 
 export class PageManager
 {
-	public readonly		$container		: JQuery;
-	public readonly		$blockingDiv	: JQuery;
-	private readonly	pageComponents	: KnockoutObservableArray<PageComponent>;
-	protected readonly	pageProperties	: KnockoutObservableArray<PageProperty>;
-	public readonly		hasChanges		: KnockoutComputed<boolean>;
+	public readonly		$container				: JQuery;
+	public readonly		$blockingDiv			: JQuery;
+	private readonly	pageComponents			: KnockoutObservableArray<PageComponent>;
+	protected readonly	pageProperties			: KnockoutObservableArray<PageProperty>;
+	public readonly		hasChanges				: KnockoutComputed<boolean>;
+	public readonly		refreshPageAfterSave	: KnockoutObservable<boolean>;
 
-	private				currentLanguage	: CurrentLanguageProperty = null;
+	private				currentLanguage			: CurrentLanguageProperty = null;
 
 	constructor($container:JQuery)
 	{
 		const self = this;
-		this.$container		= $container;
-		this.$blockingDiv	= $('body');
-		this.pageComponents	= ko.observableArray();
-		this.pageProperties	= ko.observableArray();
-		this.hasChanges		= ko.pureComputed( ()=>
-								{
-									for( const obj of self.pageComponents() )
-										if( obj.trackedObject.hasChanges() )
-											return true;
-									return false;
-								} );
+		this.$container				= $container;
+		this.$blockingDiv			= $('body');
+		this.pageComponents			= ko.observableArray();
+		this.pageProperties			= ko.observableArray();
+		this.hasChanges				= ko.pureComputed( ()=>
+										{
+											for( const obj of self.pageComponents() )
+												if( obj.trackedObject.hasChanges() )
+													return true;
+											return false;
+										} );
+		this.refreshPageAfterSave	= ko.observable( false );
 	}
 
 	public async registerComponent(component:PageComponent) : Promise<void>
@@ -176,6 +178,12 @@ export class PageManager
 
 		common.utils.log( 'Wait for tasks to terminate' );
 		await Promise.all( tasks );
+
+		if( self.refreshPageAfterSave() == true )
+		{
+			common.utils.log( 'Refresh page' );
+			common.url.refresh();
+		}
 	}
 }
 var pageManagerInstance : PageManager = null;
