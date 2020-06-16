@@ -16,7 +16,7 @@ namespace ItemTTT
 
 	public static class Language
 	{
-		internal const Languages	Default			= Languages.en;
+		public const Languages		Default			= Languages.en;
 		internal const string		ConstraintName	= "lang";
 		internal const string		RouteParameter	= "{lang:"+ConstraintName+"}";
 
