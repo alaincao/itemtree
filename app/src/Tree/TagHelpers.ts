@@ -24,7 +24,6 @@ export async function init() : Promise<void>
 	common.utils.log( 'tree.init(): Initialize components' );
 
 	const elements = $(`[${attributeType}]`);
-	const tasks : Promise<void>[] = [];
 	for( let i=0; i<elements.length; ++i  )
 	{
 		const $element = $(elements[i]);
@@ -34,9 +33,8 @@ export async function init() : Promise<void>
 		if( callback == null )
 			continue;
 
-		tasks.push( callback($element, path) );
+		await callback( $element, path );
 	}
-	await Promise.all( tasks );
 
 	common.utils.log( 'tree.init(): End' );
 }
