@@ -150,6 +150,16 @@ namespace ItemTTT.Views
 			}
 		}
 
+		protected async Task<string> Tree_GetTranslatedContent(string path=null)
+		{
+			LogHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Tree_GetTranslatedContent)}: '{path??Cwd.Pwd()}'" );
+			using( (path == null) ? null : Cwd.PushDisposable(path) )
+			{
+				var json = await Cwd.TreeHelper.GetNodeData( Cwd );
+				return string.IsNullOrWhiteSpace(json) ? "" : Tree.TreeController.GetTranslatedNodeText( PageHelper, json );
+			}
+		}
+
 		protected string FormatPrice(int? price)
 		{
 			if( price == null )
