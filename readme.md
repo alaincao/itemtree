@@ -54,6 +54,7 @@ Create database:
 Cheatsheet:
 ===========
 ```bash
+$ dotnet tool install --global dotnet-ef
 $ cd app/
 $ dotnet ef migrations add <migration>
 $ dotnet ef database update
