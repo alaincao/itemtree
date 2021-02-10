@@ -11,6 +11,9 @@ namespace ItemTTT.Models
 		internal const string	PathColumnName	= nameof(Path);
 		internal const string	DataColumnName	= nameof(Data);
 
+		// Suffixes for "system" roots
+		internal const string	RootUsersSuffix	= ".users";
+
 		[Key, Column(IDColumnName)]
 		public int		ID				{ get; set; }
 

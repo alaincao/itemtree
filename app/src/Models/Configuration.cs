@@ -7,8 +7,6 @@ namespace ItemTTT.Models
 	[Table("Configuration")]
 	public class Configuration
 	{
-		internal const string	Key_PasswordHash			= "AdminPasswordHash";
-
 		[Key]
 		[Column("ConfigurationID")]
 		public int		ID		{ get; set; }

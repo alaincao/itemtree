@@ -25,7 +25,7 @@ namespace ItemTTT
 				logHelper.AddLogMessage( $"{nameof(Main)}: Get Startup service" );
 				var startup = scope.ServiceProvider.GetRequiredService<Startup>();
 				logHelper.AddLogMessage( $"{nameof(Main)}: Launch 'Startup.Initialize()'" );
-				startup.Initialize( logHelper, scope.ServiceProvider );
+				startup.Initialize( logHelper, scope.ServiceProvider ).Wait();
 			}
 
 			logHelper.AddLogMessage( $"{nameof(Main)}: Start web host" );

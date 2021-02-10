@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -163,7 +164,7 @@ namespace ItemTTT
 			InitializationLog.AddLogMessage( $"{nameof(Startup)}.{nameof(Configure)} END" );
 		}
 
-		internal void Initialize(LogHelper logHelper, IServiceProvider initializationServices)
+		internal async Task Initialize(LogHelper logHelper, IServiceProvider initializationServices)
 		{
 			logHelper.AddLogMessage( $"{nameof(Startup)}.{nameof(Initialize)} START" );
 
@@ -171,7 +172,14 @@ namespace ItemTTT
 			logHelper.Merge( InitializationLog );
 			InitializationLog = logHelper;
 
-			Services.LoginController.Initialize( logHelper, initializationServices );
+			foreach( var suffix in new string[]{ null, Models.TreeNode.RootUsersSuffix } )
+			{
+				logHelper.AddLogMessage( $"{nameof(Startup)}.{nameof(Initialize)}: Check tree root '{suffix}'" );
+				var cwd = Tree.Cwd.New( logHelper, initializationServices, rootSuffix:suffix );
+				await cwd.EnsureRootFolder( rootSuffix:suffix );
+			}
+
+			await Services.LoginController.Initialize( logHelper, initializationServices );
 
 			logHelper.AddLogMessage( $"{nameof(Startup)}.{nameof(Initialize)} END" );
 		}

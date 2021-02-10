@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ItemTTT.Tree
@@ -19,13 +20,43 @@ namespace ItemTTT.Tree
 		internal readonly TreeHelper			TreeHelper;
 		private readonly Stack<string[]>		Dirs;
 
-		public Cwd(IServiceProvider services)
+		public Cwd(IServiceProvider services) : this(	logHelper	: services.GetScopeLog(),
+														dataContext	: services.GetRequiredService<Models.ItemTTTContext>(),
+														treeHelper	: services.GetRequiredService<TreeHelper>() )
 		{
-			LogHelper = services.GetScopeLog();
-			DataContext = services.GetRequiredService<Models.ItemTTTContext>();
-			TreeHelper = services.GetRequiredService<TreeHelper>();
+		}
+
+		private Cwd(LogHelper logHelper, Models.ItemTTTContext dataContext, TreeHelper treeHelper)
+		{
+			LogHelper = logHelper;
+			DataContext = dataContext;
+			TreeHelper = treeHelper;
 			Dirs = new Stack<string[]>();
 			Dirs.Push( new[]{ TreeHelper.Root } );
+		}
+
+		internal static Cwd New(LogHelper logHelper, IServiceProvider services, string rootSuffix=null)
+		{
+			var startup = services.GetRequiredService<Startup>();
+			var dataContext = services.GetRequiredService<Models.ItemTTTContext>();
+			var root = startup.Configuration[ AppSettingsKeys.TreeRoot ] + rootSuffix;
+			var treeHelper = new Tree.TreeHelper( logHelper, startup.ConnectionString, root );
+			var cwd = new Tree.Cwd( logHelper, dataContext, treeHelper );
+			return cwd;
+		}
+
+		/// <summary>Ensure root folder node exists</summary>
+		internal async Task EnsureRootFolder(string rootSuffix=null)
+		{
+			var rootPathDb = PwdDb( "/" );
+			var rootNode = await DataContext.TreeNodes.Where( v=>v.Path == rootPathDb ).SingleOrDefaultAsync();
+			if( rootNode != null )
+				// Already exists
+				return;
+			// Does not exist => Create it
+			rootNode = new Models.TreeNode{ Path=rootPathDb, Meta="", Data="" };
+			DataContext.Add( rootNode );
+			await DataContext.SaveChangesAsync();
 		}
 
 		internal Task<Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction> BeginTransaction()
