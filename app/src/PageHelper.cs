@@ -33,6 +33,7 @@ namespace ItemTTT
 		private readonly string			WebPathBase;  // e.g.: "" or "/foobar" ; i.e. without the trailing '/'
 		public readonly PageParameters	Parameters;
 		public readonly Languages		CurrentLanguage;
+		public readonly string			UserName;
 		public readonly bool			IsAuthenticated;
 
 		public PageHelper(IServiceProvider services, Language.Info languageInfo)
@@ -52,6 +53,7 @@ namespace ItemTTT
 									.ToDictionary( v=>v.lng, v=>ResolveRoute(v.url) );
 
 			IsAuthenticated	= httpContext.User.Identity.IsAuthenticated;
+			UserName		= httpContext.User.Identity.Name;
 			CurrentLanguage	= languageInfo.Current;
 			var routes		= Routes.GetPageParameterRoutes( this );
 			Parameters		= new PageParameters( IsAuthenticated, CurrentLanguage, languageUrls, routes );

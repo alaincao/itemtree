@@ -29,14 +29,19 @@ namespace ItemTTT.Tree
 		internal readonly string	Root;
 		private readonly string		ConnectionString;
 
-		public TreeHelper(Startup startup)
+		public TreeHelper(Startup startup) : this(	logHelper			: startup.InitializationLog,
+													connectionString	: startup.ConnectionString,
+													root				: startup.Configuration[ AppSettingsKeys.TreeRoot ] )
 		{
-			var logHelper = startup.InitializationLog;
+		}
+
+		internal TreeHelper(LogHelper logHelper, string connectionString, string root)
+		{
 			logHelper.AddLogMessage( $"{nameof(TreeHelper)}: START" );
-			ConnectionString = startup.ConnectionString;
+			ConnectionString = connectionString;
 
 			logHelper.AddLogMessage( $"{nameof(TreeHelper)}: Get tree root" );
-			Root = startup.Configuration[ AppSettingsKeys.TreeRoot ];
+			Root = root;
 			logHelper.AddLogMessage( $"{nameof(TreeHelper)}: {nameof(Root)}: '{Root}'" );
 
 			logHelper.AddLogMessage( $"{nameof(TreeHelper)}: Load route handlers" );

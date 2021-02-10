@@ -60,5 +60,18 @@ namespace ItemTTT
 				return sb.ToString();
 			}
 		}
+
+		internal static string GetRandomString(int length, string charset="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+		{
+			var data = new char[length];
+			var charSetLength = charset.Length;
+			for( var i=0; i<length; ++i )
+			{
+				var idx = System.Security.Cryptography.RandomNumberGenerator.GetInt32( charSetLength );
+				var c = charset[ idx ];
+				data[ i ] = c;
+			}
+			return new string( data );
+		}
 	}
 }
