@@ -117,6 +117,9 @@ namespace ItemTTT.Tree
 	[HtmlTargetElement(Attributes = TagHelperBase.CsAttributeImage)]
 	public class ImageTagHelper : TagHelperBase
 	{
+		internal const double	ScaleHToW	= (double)1920/1200;  // 1.6
+		internal const double	ScaleWToH	= (double)1200/1920;  // 0.625
+
 		[HtmlAttributeName(TagHelperBase.CsAttributeImage)]
 		public string		Path		{ get; set; }
 		[HtmlAttributeName(TagHelperBase.AttributeParameters)]
