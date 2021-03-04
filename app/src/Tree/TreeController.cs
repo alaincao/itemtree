@@ -512,8 +512,8 @@ namespace ItemTTT.Tree
 						var originalBitmap = new System.Drawing.Bitmap( originalStream );
 						using( var resizedStream = new System.IO.MemoryStream() )
 						{
-							var scaleHToW = Services.ItemPictureController.ScaleHToW;  // TODO: Manage resize/crop(?)/ratio
-							var scaleWToH = Services.ItemPictureController.ScaleWToH;
+							var scaleHToW = Tree.ImageTagHelper.ScaleHToW;  // TODO: Manage resize/crop(?)/ratio
+							var scaleWToH = Tree.ImageTagHelper.ScaleWToH;
 							var newImage = Utils.Images.CropResize( originalBitmap, destinationHeight:(double)height.Value, scaleHToW:scaleHToW, scaleWToH:scaleWToH );
 							newImage.Save( resizedStream, System.Drawing.Imaging.ImageFormat.Jpeg );
 							imgBytes = resizedStream.ToArray();

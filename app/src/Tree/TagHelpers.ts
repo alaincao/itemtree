@@ -4,7 +4,7 @@ import * as common from "../Views/common"
 import * as tree from "./TreeHelper";
 import * as ctrl from "./TreeController";
 import * as lng from "../Language";
-import { addKoTinymceEditor } from "../Views/Blog/Edit";
+import { addKoTinymceEditor } from "../Views/Shared/Layout";
 
 const attributePath			= "tree-path";
 const attributeType			= "tree-type";

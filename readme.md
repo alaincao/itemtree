@@ -34,28 +34,12 @@ Create database:
     $ dotnet ef database update
     $ exit
   ```
-- Set admin password
-  ```sql
-  -- Set password here:
-  delete from dbo.Configuration where "Key" = 'AdminPasswordHash'
-  insert into dbo.Configuration("Key", "Value") values ('AdminPasswordHash', '123')
-
-  -- Append seed as specified in file 'app/src/Services/LoginController.cs':
-  update dbo.Configuration set "Value" = "Value"+'ItemTTT'
-  where "Key" = 'AdminPasswordHash'
-
-  update dbo.Configuration set "Value" = convert( varchar(32), HashBytes('MD5', "Value"), 2 )
-  where "Key" = 'AdminPasswordHash'
-
-  update dbo.Configuration set "Value" = lower("Value")
-  where "Key" = 'AdminPasswordHash'
-  ```
 
 Cheatsheet:
 ===========
 ```bash
 $ dotnet tool install --global dotnet-ef
 $ cd app/
-$ dotnet ef migrations add <migration>
-$ dotnet ef database update
+$ ~/.dotnet/tools/dotnet-ef migrations add <migration>
+$ ~/.dotnet/tools/dotnet-ef database update
 ```
