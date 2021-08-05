@@ -235,26 +235,19 @@ export namespace utils
 										canBeZero?:boolean,
 										canBeNull?:boolean }) : void
 	{
-		if( p.canBeZero == null )
-			p.canBeZero = true;
-		if( p.canBeNull == null )
-			p.canBeNull = false;
-		if( p.fallbackValue == null )
-		{
-			if( p.canBeZero )
-				p.fallbackValue = 0;
-			else
-				p.fallbackValue = 1;
-		}
+		const observable		= p.observable;
+		const mustBePositive	= (p.mustBePositive == null) ? false : p.mustBePositive;
+		const canBeZero			= (p.canBeZero == null) ? true : p.canBeZero;
+		const canBeNull			= (p.canBeNull == null) ? false : p.canBeNull;
+		const fallbackValue		= (p.fallbackValue != null) ? p.fallbackValue : (canBeZero) ? 0 : 1;
 
-		let canBeNull = p.canBeNull;
-		p.observable.subscribe( function(value:number)
+		observable.subscribe( function(value:number)
 			{
 				if( canBeNull )
 				{
 					if( (<any>value == '') || (value == null) )
 					{
-						p.observable( null );
+						observable( null );
 						return;
 					}
 				}
@@ -262,15 +255,57 @@ export namespace utils
 				var newValue = parseInt( <any>value );
 
 				if( isNaN(newValue) )
-					newValue = p.fallbackValue;
-				else if( (!p.canBeZero) && (value == 0) )
-					newValue = p.fallbackValue;
-				else if( (p.mustBePositive) && (value < 0) )
-					newValue = p.fallbackValue;
+					newValue = fallbackValue;
+				else if( (!canBeZero) && (value == 0) )
+					newValue = fallbackValue;
+				else if( (mustBePositive) && (value < 0) )
+					newValue = fallbackValue;
 
 				if( value !== newValue )
 					// Value must be changed
-					p.observable( newValue );
+					observable( newValue );
+			} );
+	}
+
+	export function ensureString(p:{	observable	: KnockoutObservable<string>,
+										canBeNull?	: boolean,
+								}) : void
+	{
+		const observable	= p.observable;
+		const canBeNull		= (p.canBeNull == null) ? true : p.canBeNull;
+
+		observable.subscribe( (value:any)=>
+			{
+				if( typeof(value) == 'string' )
+					// OK
+					return;
+				if( canBeNull && (value === null) )
+					// OK
+					return;
+				// KO => Force as string
+				observable( ''+value );
+			} );
+	}
+
+	export function ensureBoolean(p:{	observable		: KnockoutObservable<boolean>,
+										canBeNull?		: boolean,
+										fallbackValue?	: boolean,
+								}) : void
+	{
+		const observable	= p.observable;
+		const canBeNull		= (p.canBeNull == null) ? false : p.canBeNull;
+		const fallbackValue	= (p.fallbackValue == null) ? false : p.fallbackValue;
+
+		observable.subscribe( (value:any)=>
+			{
+				if( typeof(value) == 'boolean' )
+					// OK
+					return;
+				if( canBeNull && (value === null) )
+					// OK
+					return;
+				// KO => Force as string
+				observable( fallbackValue );
 			} );
 	}
 

@@ -1,0 +1,28 @@
+@inherits ItemTTT.Views.BaseView
+@{
+	Init( PageHelper );
+}
+@section Scripts
+{
+<script type="text/javascript">
+	ttt.admin.redirections.init( {
+			$blockingDiv : $('#95572uhi'),
+		} );
+	ko.applyBindings( ttt.admin.redirections, $('#95572uhi')[0] );
+</script>
+}
+
+<div id="95572uhi" data-bind="visible:true" style="display:none">
+
+	<ul data-bind="foreach:redirections">
+		<li>
+			<label>Source: <input type="text" data-bind="value:source"/></label>
+			<label>Destination: <input type="text" data-bind="value:destination"/></label>
+			<label>RegEx: <input type="checkbox" data-bind="checked:useRegex"/></label>
+			<button data-bind="click:clear">Clear</button>
+		</li>
+	</ul>
+	<button data-bind="click:addNew">Add new</button>
+	<button data-bind="click:save">Save</button>
+
+</div>

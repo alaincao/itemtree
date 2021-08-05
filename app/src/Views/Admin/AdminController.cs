@@ -1,11 +1,8 @@
 using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ItemTTT.Views
 {
@@ -64,6 +61,14 @@ namespace ItemTTT.Views
 			var rv = await ( new Services.LoginController(DataContext, PageHelper){ ControllerContext=ControllerContext } )
 												.Logout();
 			return Redirect( Routes.Home1 );
+		}
+
+		[HttpGet( Routes.Redirections )]
+		public IActionResult Redirections()
+		{
+			if(! PageHelper.IsAuthenticated )
+				return NotAuthenticated();
+			return View();
 		}
 	}
 }

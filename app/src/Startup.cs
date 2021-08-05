@@ -102,6 +102,7 @@ namespace ItemTTT
 			services.AddScopedHttpContextReference();
 			services.AddScoped<Language.Info>();
 			services.AddScoped<PageHelper>();
+			services.AddSingleton<Services.Redirections>();
 			services.AddScoped<Views.Shared.LayoutHelper>();
 			Tree.Middlewares.ConfigureServices( InitializationLog, services );
 
@@ -159,6 +160,7 @@ namespace ItemTTT
 			app.UseRouting();
 			app.Use( Tree.Middlewares.AfterRoutingMiddleWare );
 			app.UseEndpoints( endpoints=>endpoints.MapControllers() );
+			app.Use( Services.Redirections.Middleware );
 			app.Use( Language.LanguageRedirectionMiddleware );
 
 			InitializationLog.AddLogMessage( $"{nameof(Startup)}.{nameof(Configure)} END" );

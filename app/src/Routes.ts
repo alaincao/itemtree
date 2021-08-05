@@ -9,6 +9,7 @@ export interface Routes
 			login			: string,
 			logout			: string,
 			changePassword	: string,
+			redirections	: string,
 			tree : {
 					sanitizePath: string,
 					sanitizeName: string,
