@@ -349,15 +349,16 @@ namespace ItemTTT.Tree
 			return Content( data, contentType );
 		}
 
-		internal static string GetTranslatedNodeText(PageHelper pageHelper, string json)
+		internal static string GetTranslatedNodeText(PageHelper pageHelper, string json, Languages? lang=null)
 		{
 			var logHelper = pageHelper.ScopeLogs;
+			lang = lang ?? pageHelper.CurrentLanguage;
 
 			logHelper.AddLogMessage( $"{nameof(GetTranslatedNodeText)}: Parse data JSON" );
 			var dict = json.JSONDeserialize();
 
-			logHelper.AddLogMessage( $"{nameof(GetTranslatedNodeText)}: Try get language '{pageHelper.CurrentLanguage}'" );
-			var data = (string)dict.TryGet( ""+pageHelper.CurrentLanguage );
+			logHelper.AddLogMessage( $"{nameof(GetTranslatedNodeText)}: Try get language '{lang}'" );
+			var data = (string)dict.TryGet( ""+lang );
 			if( data == null )
 			{
 				logHelper.AddLogMessage( $"{nameof(GetTranslatedNodeText)}: Try get language '{Language.Default}'" );

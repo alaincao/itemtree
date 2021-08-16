@@ -55,13 +55,17 @@ namespace ItemTTT.Views
 			LogHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Init)}: END" );
 		}
 
-		protected string Resolve(string route, bool full=false)
+		protected string Resolve(string route, bool full=false, Languages? lang=null)
 		{
 			if( route == "" )
 				route = "~";
 			else if( route == null )
 				Utils.Fail( this, $"Missing parameter '{nameof(route)}'" );
-			route = route.Replace( Routes.LangParameter, Language.ToUrlValue[PageHelper.CurrentLanguage] );
+
+			if( lang == null )
+				lang = PageHelper.CurrentLanguage;
+
+			route = route.Replace( Routes.LangParameter, Language.ToUrlValue[lang.Value] );
 			route = PageHelper.ResolveRoute( route );
 			if( full )
 				route = $"{Context.Request.Scheme}://{Context.Request.Host}{route}";
@@ -75,7 +79,7 @@ namespace ItemTTT.Views
 			return obj.JSONStringify( indented:indented.Value );
 		}
 
-		protected string Tree_Pwd(string path=null, bool full=false)
+		protected string Tree_Pwd(string path=null, bool full=false, Languages? languagePrefix=null)
 		{
 			string pwd;
 			if( path == null )
@@ -88,8 +92,12 @@ namespace ItemTTT.Views
 					pwd = Cwd.Pwd();
 			}
 
+			var langStr = "";
+			if( languagePrefix != null )
+				langStr = $"/{Language.ToUrlValue[languagePrefix.Value]}";
+
 			if( full )
-				pwd = $"{Context.Request.Scheme}://{Context.Request.Host}{pwd}";
+				pwd = $"{Context.Request.Scheme}://{Context.Request.Host}{langStr}{pwd}";
 
 			return pwd;
 		}
@@ -150,13 +158,13 @@ namespace ItemTTT.Views
 			}
 		}
 
-		protected async Task<string> Tree_GetTranslatedContent(string path=null)
+		protected async Task<string> Tree_GetTranslatedContent(string path=null, Languages? lang=null)
 		{
 			LogHelper.AddLogMessage( $"{nameof(BaseView)}.{nameof(Tree_GetTranslatedContent)}: '{path??Cwd.Pwd()}'" );
 			using( (path == null) ? null : Cwd.PushDisposable(path) )
 			{
 				var json = await Cwd.TreeHelper.GetNodeData( Cwd );
-				return string.IsNullOrWhiteSpace(json) ? "" : Tree.TreeController.GetTranslatedNodeText( PageHelper, json );
+				return string.IsNullOrWhiteSpace(json) ? "" : Tree.TreeController.GetTranslatedNodeText( PageHelper, json, lang:lang );
 			}
 		}
 

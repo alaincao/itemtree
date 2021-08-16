@@ -115,9 +115,9 @@ namespace ItemTTT
 			InitializationLog.AddLogMessage( $"{nameof(Startup)}.{nameof(Configure)} START" );
 
 			InitializationLog.AddLogMessage( $"{nameof(Startup)}.{nameof(Configure)}: Add handler for internal errors (i.e. status 500)" );
-			//if( Utils.IsDebug )
-			//	app.UseDeveloperExceptionPage();  <<== nb: even in prod env, the error page is still more useful than the developer's page (cf. JS's console) ...
-			//else
+			if( Utils.IsDebug )
+				app.UseDeveloperExceptionPage();
+			else
 				app.UseExceptionHandler( Routes.Error );
 			InitializationLog.AddLogMessage( $"{nameof(Startup)}.{nameof(Configure)}: Add handler for other errors (e.g. 404)" );
 			app.UseStatusCodePagesWithReExecute( Routes.ErrorStatus.Replace("{status}", "{0}") );

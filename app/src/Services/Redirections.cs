@@ -209,7 +209,8 @@ namespace ItemTTT.Services
 			if( destination != null )
 			{
 				logHelper.AddLogMessage( $"{nameof(Redirections)}: END ; Redirectig to: {destination}" );
-				context.Response.Redirect( destination );
+				var permanent = ( pageHelper.IsAuthenticated ? false : true );  // nb: Use temporary redirections when logged in so it's easier to debug ...
+				context.Response.Redirect( destination, permanent );
 			}
 			else
 			{
