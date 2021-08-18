@@ -19,6 +19,7 @@ namespace ItemTTT
 		public const string		Login				= "/admin/login";
 		public const string		Logout				= "/admin/logout";
 		internal const string	Redirections		= "/admin/redirections";
+		internal const string	TreeBrowse			= "/admin/tree";
 
 		// APIs
 		internal const string	LoginAPI			= "/api/login";

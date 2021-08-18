@@ -70,5 +70,13 @@ namespace ItemTTT.Views
 				return NotAuthenticated();
 			return View();
 		}
+
+		[HttpGet( Routes.TreeBrowse )]
+		public IActionResult TreeBrowse()
+		{
+			if(! PageHelper.IsAuthenticated )
+				return NotAuthenticated();
+			return View();
+		}
 	}
 }

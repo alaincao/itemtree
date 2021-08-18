@@ -1,0 +1,32 @@
+@inherits ItemTTT.Views.BaseView
+@{
+	Init( PageHelper );
+}
+@section Scripts
+{
+<script type="text/javascript">
+	ttt.admin.tree.init( {
+			$blockingDiv : $('#eyxrdpxw'),
+		} );
+	ko.applyBindings( ttt.admin.tree, $('#eyxrdpxw')[0] );
+</script>
+}
+
+<div id="eyxrdpxw" data-bind="visible:true" style="display:none">
+
+	<div data-bind="template:{ name:'ydqcdwwy', data:rootNode }"></div>
+
+</div>
+
+<script id="ydqcdwwy" type="text/html">
+
+	<a href="#" data-bind="text:name,click:toggleFolded"></a> (<span data-bind="text:path"></span>)
+	<a href="#" data-bind="click:showMetadata">meta</a>
+
+	<!-- ko if:hasChildren -->
+	<ul data-bind="foreach:children">
+		<li data-bind="template:{ name:'ydqcdwwy', data:$data }"></li>
+	</ul>
+	<!-- /ko -->
+
+</script>

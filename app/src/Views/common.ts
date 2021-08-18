@@ -357,6 +357,26 @@ export namespace html
 		// $div.dialog()
 	}
 
+	export function showHtml(content:string) : void
+	{
+		// Bootstrap style:
+		const html = `<div class="modal" tabindex="-1" role="dialog">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<div class="modal-body">
+									<!-- Text content here -->
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>`;
+		const $div = $(html);
+		$div.find( '.modal-body' ).html( content );
+		$div.modal();
+	}
+
 	export function confirm(msg:string) : Promise<boolean>
 	{
 		// Bootstrap style:

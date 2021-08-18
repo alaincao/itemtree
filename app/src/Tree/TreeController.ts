@@ -3,11 +3,29 @@ import * as common from "../Views/common"
 import * as helper from "./TreeHelper";
 import Result from "../Utils/TTTServiceResult";
 
+export const pathSeparator = '/';
+
 export interface MetaData
 {
 	type?	: helper.Type;
 
 	[key:string]:any;
+}
+
+//////////
+
+export function getPathSegments(path:string) : string[]
+{
+	if( path == null )
+		path = '';
+	if( path.indexOf(pathSeparator) == 0 )
+		// Remove first '/'
+		path = path.substring( 1 );
+	const segments = path.split( pathSeparator );
+	if( (segments.length == 1) && (segments[0] == '') )
+		// Root path
+		return [];
+	return segments;
 }
 
 //////////
@@ -80,7 +98,7 @@ export interface ImageSaveResult extends Result
 
 //////////
 
-export async function getChildNodes(path:string) : Promise<{[key:string]:any}>
+export async function getChildNodes(path:string) : Promise<string[]>
 {
 	const rv = await operations([{ getChildNodes:{path} }]);
 	if(! rv.success )
