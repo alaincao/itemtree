@@ -400,19 +400,15 @@ export namespace html
 				let confirmed = false;
 				$div.find( '.btn-primary' ).on( 'click', ()=>
 					{
+						// 'Ok' clicked
 						confirmed = true;
-						$div.remove();
-						resolve( true );
+						$div.modal( 'hide' );
+						$div.modal( 'dispose' );
 					} );
 				$div.on( 'hidden.bs.modal', (e)=>
 					{
-						if( confirmed )
-							// Clicked on 'Save' => NOOP
-							// nb: should not happen, but in case ...
-							return;
-						// Manually closed => Cancel
-						$div.remove();
-						resolve( false );
+						// Dialog closed
+						resolve( confirmed );
 					} );
 				$div.modal();
 			} );
