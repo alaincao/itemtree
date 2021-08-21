@@ -398,7 +398,7 @@ export namespace html
 		return new Promise<boolean>( (resolve)=>
 			{
 				let confirmed = false;
-				$div.find( '.btn-primary' ).click( ()=>
+				$div.find( '.btn-primary' ).on( 'click', ()=>
 					{
 						confirmed = true;
 						$div.remove();

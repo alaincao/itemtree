@@ -235,7 +235,7 @@ class FileUpload
 		await self.refresh();
 
 		// Bind JQuery event
-		self.$element.click( ()=>self.onClick() );
+		self.$element.on( 'click', ()=>self.onClick() );
 		self.$element.on( 'drop', (evt)=>self.onDrop(evt) );
 
 		// Register 'self' as JQuery data if ever needed ...
@@ -252,7 +252,7 @@ class FileUpload
 
 		const $input = $('<input type="file" />');
 		const input = <HTMLInputElement>$input[0];
-		$input.change( ()=>
+		$input.on( 'change', ()=>
 			{
 				if( input.files.length < 1 )
 					// No file selected
@@ -261,7 +261,7 @@ class FileUpload
 				if( file != null )
 					self.sendFile( file );  // nb: no need for await
 			} );
-		$input.click();
+		$input.trigger( 'click' );
 	}
 
 	protected onDrop(evt:JQuery.DropEvent) : boolean
@@ -363,13 +363,13 @@ async function initImage($element:JQuery, path:string) : Promise<void>
 			$element.attr( 'src', src );
 		};
 
-	$element.click( ()=>
+	$element.on( 'click', ()=>
 		{
 			common.utils.log( 'tree-image: Click', {$element} );
 
 			const $input = $('<input type="file" />');
 			const input = <HTMLInputElement>$input[0];
-			$input.change( ()=>
+			$input.on( 'change', ()=>
 				{
 					if( input.files.length < 1 )
 						// No file selected
@@ -378,7 +378,7 @@ async function initImage($element:JQuery, path:string) : Promise<void>
 					if( file != null )
 						sendFile( file );  // nb: no need for await
 				} );
-			$input.click();
+			$input.trigger( 'click' );
 		} );
 }
 
