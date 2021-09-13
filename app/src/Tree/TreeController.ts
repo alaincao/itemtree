@@ -28,8 +28,6 @@ export function getPathSegments(path:string) : string[]
 	return segments;
 }
 
-//////////
-
 export function sanitizeName(name:string) : Promise<string>
 {
 	return common.url.getRequest( common.pageParameters.routes.api.tree.sanitizeName, {name} )
@@ -38,6 +36,11 @@ export function sanitizeName(name:string) : Promise<string>
 export function sanitizePath(path:string) : Promise<string>
 {
 	return common.url.getRequest( common.pageParameters.routes.api.tree.sanitizePath, {path} )
+}
+
+export function getDownloadUrl(p:{ path:string, excludeImages?:boolean, forDownload?:boolean }) : string
+{
+	return common.url.createUrl({ pathname:common.routes.api.tree.download, parameters:p });
 }
 
 //////////
@@ -94,6 +97,26 @@ export interface ImageSaveResult extends Result
 	name	: string;
 	dir		: string;
 	path	: string;
+}
+
+//////////
+
+export async function tempUpload(file:File) : Promise<TempUploadResult>
+{
+	const url = common.routes.api.tree.tempUpload;
+	const formData = new FormData();
+	formData.append( 'file', file );
+	const response = await common.url.postRequestFormData<TempUploadResult>( url, formData );
+	if( response.success )
+	{
+		response.fileID	= response.result.fileID;
+		delete response.result;
+	}
+	return response;
+}
+export interface TempUploadResult extends Result
+{
+	fileID	: string;
 }
 
 //////////
@@ -188,13 +211,13 @@ export async function delTree(path:string, included?:boolean) : Promise<number>
 
 //////////
 
-export async function restoreTree(path:string, filePath:string, overwrite?:boolean) : Promise<string>
+export async function restoreTree(p:{ path:string, filePath?:string, tempFileID?:string, overwrite?:boolean }) : Promise<string>
 {
-	const rv = await operations([{ restoreTree:{path,filePath,overwrite} }]);
+	const rv = await operations([{ restoreTree:{path:p.path,filePath:p.filePath,tempFileID:p.tempFileID,overwrite:p.overwrite} }]);
 	if(! rv.success )
 	{
 		common.utils.error( 'RestoreTree operation failed', { rv } );
-		throw `RestoreTree operation at '${path}' failed: ${rv.errorMessage}`;
+		throw `RestoreTree operation at '${p.path}' failed: ${rv.errorMessage}`;
 	}
 	return rv.responses[0].path;
 }
@@ -275,7 +298,8 @@ export namespace operations
 	export interface RestoreTree
 	{
 		path			: string;
-		filePath		: string;
+		filePath?		: string;
+		tempFileID?		: string;
 		overwrite?		: boolean;
 	}
 }

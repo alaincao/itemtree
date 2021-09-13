@@ -6,7 +6,9 @@
 {
 <script type="text/javascript">
 	ttt.admin.tree.init( {
-			$blockingDiv : $('#eyxrdpxw'),
+			$blockingDiv				: $('#eyxrdpxw'),
+			$nodeDetailsDialogTemplate	: $('#rnlwldpb'),
+			$nodeUploadDialogTemplate	: $('#uakblczs'),
 		} );
 	ko.applyBindings( ttt.admin.tree, $('#eyxrdpxw')[0] );
 </script>
@@ -14,19 +16,100 @@
 
 <div id="eyxrdpxw" data-bind="visible:true" style="display:none">
 
+	<button data-bind="click:()=>rootNode.setExpanded(true,true)">Expand all</button>
+
+	@* Root node *@
 	<div data-bind="template:{ name:'ydqcdwwy', data:rootNode }"></div>
 
 </div>
 
+@* Node template *@
 <script id="ydqcdwwy" type="text/html">
 
-	<a href="#" data-bind="text:name,click:toggleFolded"></a> (<span data-bind="text:path"></span>)
-	<a href="#" data-bind="click:showMetadata">meta</a>
+	<a href="#" data-bind="click:toggleExpanded">
+		<i data-bind="css:isExpanded()?'fa-minus-square':'fa-plus-square'" class="fa" aria-hidden="true"></i>
+		<span data-bind="text:name"></span>
+	</a>
+	(<span data-bind="text:path"></span><span data-bind="text:(type() == null ? '' : ' ; '+type())"></span>)
+	<a href="#" title="Refresh" data-bind="click:refresh"><i class="fa fa-refresh" aria-hidden="true"></i></a>
+	<a href="#" title="Show meta data" data-bind="click:showMetadata"><i class="fa fa-info" aria-hidden="true"></i></a>
+	<a href="#" title="Download tree to file" data-bind="attr:{href:downloadPath}"><i class="fa fa-download" aria-hidden="true"></i></a>
+	<a href="#" title="Upload tree from file" data-bind="click:showUpload"><i class="fa fa-upload" aria-hidden="true"></i></a>
+	<a href="#" title="Delete node and all its children" data-bind="click:delTree"><i class="fa fa-trash" aria-hidden="true"></i></a>
 
 	<!-- ko if:hasChildren -->
 	<ul data-bind="foreach:children">
 		<li data-bind="template:{ name:'ydqcdwwy', data:$data }"></li>
 	</ul>
 	<!-- /ko -->
+
+</script>
+
+@* Node details dialog template *@
+<script id="rnlwldpb" type="text/html">
+
+	<div class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" style="max-width:90%" role="document">
+			<div class="modal-content">
+				<div class="modal-body">
+
+					<h3>Node content</h3>
+
+					<div>
+						Meta data:
+						<button data-bind="click:saveMetadata,css:metadataChanged()?'btn-primary':'btn-secondary'" class="btn">Save</button>
+						<textarea data-bind="value:metadata" style="width:100%;min-height:200px"></textarea>
+					</div>
+
+					<div>
+						Data:
+						<button data-bind="click:saveData,css:dataChanged()?'btn-primary':'btn-secondary'" class="btn">Save</button>
+						<textarea data-bind="value:data" style="width:100%;min-height:200px"></textarea>
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</script>
+
+@* Node upload dialog template *@
+<script id="uakblczs" type="text/html">
+
+	<div class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" style="max-width:90%" role="document">
+			<div class="modal-content">
+				<div class="modal-body">
+
+					<h3>Upload node tree from file</h3>
+
+					<input type="file" data-bind="ttt_file:selectedFiles"/><br/>
+					<label>
+						Create child: <input type="checkbox" data-bind="checked:uploadToChild"/>
+					</label><br/>
+
+					<div data-bind="visible:uploadToChild">
+						<label>
+							Child node name: <input type="text" data-bind="value:childName"/>
+						</label>
+						<label>
+							Overwrite if exists: <input type="checkbox" data-bind="checked:overwriteChild"/>
+						</label>
+					</div>
+
+					Destination node: <span data-bind="text:destinationPath"></span>
+
+				</div>
+				<div class="modal-footer">
+					<button data-bind="click:upload,enable:canUpload" class="btn btn-primary">Save</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 </script>

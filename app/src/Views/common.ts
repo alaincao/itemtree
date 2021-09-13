@@ -101,6 +101,19 @@ export function init(p:{ pageParameters:PageParameters })
 					},
 		};
 
+	// https://stackoverflow.com/questions/16930869/how-to-access-file-input-with-knockout-binding
+	ko.bindingHandlers.ttt_file =
+		{
+			init: (element,valueAccessor)=>
+					{
+						const unwrapped = valueAccessor()
+						ko.utils.registerEventHandler( element, "change", ()=>
+							{
+								unwrapped( element.files );
+							} );
+					}
+		};
+
 	utils.log( 'common.init(): Replace Knockout template engine' );
 	{
 		ko.setTemplateEngine( html.newKoTemplateSource() );
@@ -415,6 +428,34 @@ export namespace html
 
 		// JQuery style:
 		// TODO ...
+	}
+
+	/**
+	 * WARNING: Function does not return when no file is chosen (ie. resolve() not invoked)
+	 */
+	export function showFileSelector() : Promise<File>
+	{
+		return new Promise<File>( (resolve)=>
+			{
+				const $input = $('<input type="file" />');
+				const input = <HTMLInputElement>$input[0];
+				$input.on( 'change', ()=>
+					{
+						if( input.files.length < 1 )
+						{
+							resolve( null );
+							return;
+						}
+						const file = input.files[0];
+						if( file == null )
+						{
+							resolve( null );
+							return;
+						}
+						resolve( file );
+					} );
+				$input.trigger( 'click' );
+			} );
 	}
 
 	/** Invoke jQuery.blockUI's '.block()' on the specified element but supports multiple invokation on the same element */

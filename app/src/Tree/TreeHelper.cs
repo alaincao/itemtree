@@ -130,7 +130,7 @@ namespace ItemTTT.Tree
 			var pathDb = cwd.PwdDb();
 
 			logHelper.AddLogMessage( $"{nameof(GetChildNodes)}: Retreive child nodes of '{pathDb}'" );
-			var paths = await dc.TreeNodes.Where( v=>v.ParentPath == pathDb ).Select( v=>v.Path ).ToArrayAsync();
+			var paths = await dc.TreeNodes.Where( v=>v.ParentPath == pathDb ).Select( v=>v.Path ).OrderBy( v=>v ).ToArrayAsync();
 			var items = paths.Select( (path)=>new Utils.CustomClass2<string,string>{ A=path, B=cwd.GetNodeName(path) } ).ToArray();
 
 			logHelper.AddLogMessage( $"{nameof(GetChildNodes)}: Remove DB's prefix from paths" );
@@ -425,7 +425,11 @@ namespace ItemTTT.Tree
 				var segments = filePath.Split( new char[]{'\\','/'}, StringSplitOptions.RemoveEmptyEntries );
 				if( segments.Contains("..") )
 					throw new Utils.TTTException( $"{nameof(RestoreTree)}: Invalid path '{nameof(filePath)}'" );
-				filePath = System.IO.Path.Join( System.IO.Directory.GetCurrentDirectory(), Startup.ViewsLocation , string.Join(System.IO.Path.DirectorySeparatorChar, segments) );
+				if( filePath.StartsWith(TreeController.TempUploadPrefix) )
+					{}// Temporary uploaded file => Leave the filepath as is
+				else
+					// Registered template => Prefix with the Views's directory
+					filePath = System.IO.Path.Join( System.IO.Directory.GetCurrentDirectory(), Startup.ViewsLocation , string.Join(System.IO.Path.DirectorySeparatorChar, segments) );
 			}
 
 			logHelper.AddLogMessage( $"{nameof(RestoreTree)}: Open file '{filePath}'" );

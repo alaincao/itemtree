@@ -98,9 +98,12 @@ export function jsonParse(json:string) : any
 {
 	return JSON.parse( json );
 }
-export function jsonStringify(data:any) : string
+export function jsonStringify(data:any, indented?:boolean) : string
 {
-	return JSON.stringify( data );
+	if( indented != true )
+		return JSON.stringify( data );
+	else
+		return JSON.stringify( data, null, '\t' );
 }
 
 export function htmlEncode(txt:string|string[]) : string

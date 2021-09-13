@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,6 +14,9 @@ namespace ItemTTT.Tree
 
 	public class TreeController : Views.BaseController
 	{
+		private const string				TempFileNamePrefix		= "ttt_tempfile_";
+		internal static readonly string		TempUploadPrefix		= Path.Join( Path.GetTempPath(), TempFileNamePrefix );
+
 		private readonly PageHelper	PageHelper;
 		private readonly Cwd		Cwd;
 
@@ -200,11 +204,21 @@ namespace ItemTTT.Tree
 						else if( operation.RestoreTree != null )
 						{
 							var op = operation.RestoreTree;
-							logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.RestoreTree)} ; Path:'{op.Path}' ; FilePath:'{op.FilePath}'" );
+							logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.RestoreTree)} ; Path:'{op.Path}' ; TempFileID:'{op.TempFileID??"<NULL>"}' ; FilePath:'{op.FilePath??"<NULL>"}'" );
 
 							using( Cwd.PushDisposable(op.Path) )
 							{
-								await Cwd.TreeHelper.RestoreTree( Cwd, op.FilePath, createTransaction:false, overwrite:op.Overwrite??false );
+								var filePath = op.FilePath;
+								if( op.TempFileID != null )
+								{
+									Utils.Assert( op.FilePath == null, nameof(Operations), $"One and only one of '{nameof(op.FilePath)}' and '{nameof(op.TempFileID)}' parameters must be specified" );
+									logHelper.AddLogMessage( $"{nameof(Operations)}: {nameof(operation.RestoreTree)} ; Check file ID" );
+									filePath = TempUploadPrefix + op.TempFileID;
+									if( System.IO.Path.GetFileName(filePath) != (TempFileNamePrefix+op.TempFileID) )  // Security: path traversal mitigation
+										throw new Utils.TTTException( $"{nameof(Operations)}: Invalid file ID" );
+								}
+
+								await Cwd.TreeHelper.RestoreTree( Cwd, filePath, createTransaction:false, overwrite:op.Overwrite??false );
 								rv.Add( new{ Path=Cwd.Pwd() } );
 							}
 						}
@@ -275,6 +289,7 @@ namespace ItemTTT.Tree
 			{
 				public string	Path			{ get; set; }
 				public string	FilePath		{ get; set; }
+				public string	TempFileID		{ get; set; }
 				public bool?	Overwrite		{ get; set; }
 			}
 		}
@@ -640,6 +655,31 @@ namespace ItemTTT.Tree
 			}
 			await Response.Body.FlushAsync();
 			Response.Body.Close();
+		}
+
+		[HttpPost( Routes.TreeTempUpload )]
+		public async Task<Utils.TTTServiceResult> TempUpload(Microsoft.AspNetCore.Http.IFormFile file)
+		{
+			try
+			{
+				if(! PageHelper.IsAuthenticated )
+					throw new Utils.TTTException( "Not logged-in" );
+				var logHelper = PageHelper.ScopeLogs;
+
+				var fileID		= Guid.NewGuid().ToString().Replace( "-", "" );
+				var filePath	= TempUploadPrefix+fileID;
+
+				logHelper.AddLogMessage( $"{nameof(TempUpload)}: Save to '{filePath}'" );
+				using( var fos = System.IO.File.OpenWrite(filePath) )
+					await file.CopyToAsync( fos );
+
+				logHelper.AddLogMessage( $"{nameof(TempUpload)}: END" );
+				return Utils.TTTServiceResult.New( PageHelper, new{ FileID=fileID } );
+			}
+			catch( System.Exception ex )
+			{
+				return Utils.TTTServiceResult.LogAndNew( PageHelper, ex );
+			}
 		}
 	}
 

@@ -28,6 +28,7 @@ namespace ItemTTT
 		internal const string	TreeSanitizePath	= "/tree/sanitizepath";
 		internal const string	TreeSanitizeName	= "/tree/sanitizename";
 		internal const string	TreeDownload		= "/tree/download";
+		internal const string	TreeTempUpload		= "/tree/tempupload";
 		internal const string	TreeOperations		= "/tree/operations";
 
 		// Internals ; i.e. not requested directly but used as routing endpoints
@@ -68,6 +69,8 @@ namespace ItemTTT
 							Tree = new {
 									SanitizePath= tr( TreeSanitizePath ),
 									SanitizeName= tr( TreeSanitizeName ),
+									Download	= tr( TreeDownload ),
+									TempUpload	= tr( TreeTempUpload ),
 									Operations	= tr( TreeOperations ),
 									File		= tr( TreeFile ),
 									Image		= tr( TreeImage ),

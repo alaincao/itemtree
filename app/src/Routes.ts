@@ -13,6 +13,8 @@ export interface Routes
 			tree : {
 					sanitizePath: string,
 					sanitizeName: string,
+					download	: string,
+					tempUpload	: string,
 					operations	: string,
 					file		: string,
 					image		: string,
