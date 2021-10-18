@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Builder;
@@ -15,15 +16,18 @@ using Microsoft.Extensions.Logging;
 
 namespace ItemTTT
 {
+	using OAuthScheme = AppSettingsKeys.OAuthSchemes;
+
 	public class Startup
 	{
-		internal const string 	AuthScheme 		= Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme;
-		internal const string	ViewsLocation	= "/src/Views/";
+		internal const string 	CookieAuthenticationScheme 	= Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme;
+		internal const string	ViewsLocation				= "/src/Views/";
 
-		internal LogHelper						InitializationLog;
-		internal readonly IConfigurationRoot	Configuration;
-		internal static string					ContentRootPath		{ get; private set; }
-		internal string							ConnectionString	{ get; private set; }
+		internal LogHelper							InitializationLog;
+		internal readonly IConfigurationRoot		Configuration;
+		internal static string						ContentRootPath		{ get; private set; }
+		internal string								ConnectionString	{ get; private set; }
+		internal IDictionary<string,OAuthScheme>	OAuthSchemes		{ get; private set; }
 
 		public Startup(IWebHostEnvironment env)
 		{
@@ -69,8 +73,41 @@ namespace ItemTTT
 			services.AddSingleton<Startup>( v=>this );
 
 			InitializationLog.AddLogMessage( $"{nameof(Startup)}.{nameof(ConfigureServices)}: Register cookie authentication" );
-			var authentication = services.AddAuthentication( AuthScheme );
-			authentication.AddCookie( AuthScheme );
+			var authentication = services.AddAuthentication( options=>
+				{
+					options.DefaultScheme			= CookieAuthenticationScheme;
+					options.DefaultChallengeScheme	= CookieAuthenticationScheme;
+				} );
+			authentication.AddCookie( CookieAuthenticationScheme, options=>
+				{
+					options.LoginPath	= Routes.Login;
+					options.LogoutPath	= Routes.Logout;
+				} );
+
+			OAuthSchemes = Services.OAuthHandler.GetSchemes( InitializationLog, Configuration );
+			foreach( var pair in OAuthSchemes )
+			{
+				var schemeName = pair.Key;
+				var scheme = pair.Value;
+				InitializationLog.AddLogMessage( $"{nameof(Startup)}.{nameof(ConfigureServices)}: Add OAuth scheme '{schemeName}'" );
+				authentication.AddOAuth<Microsoft.AspNetCore.Authentication.OAuth.OAuthOptions,Services.OAuthHandler>( authenticationScheme:schemeName, displayName:$"OAuth - {schemeName}", configureOptions:(options)=>
+					{
+						options.ClaimsIssuer			= schemeName;
+						options.AuthorizationEndpoint	= scheme.AuthorizationEndpoint;
+						options.TokenEndpoint			= scheme.TokenEndpoint;
+						options.ClientId				= scheme.ClientId;
+						options.ClientSecret			= scheme.ClientSecret;
+						options.CallbackPath			= scheme.SigningCallbackPath;
+						options.UserInformationEndpoint = scheme.UserInformationEndpoint;
+						foreach( var scope in scheme.Scope??new string[]{} )
+							options.Scope.Add( scope );
+
+						// cf. https://github.com/IdentityServer/IdentityServer4/issues/4165#issuecomment-599146559
+						options.CorrelationCookie.SameSite		= SameSiteMode.None;
+						options.CorrelationCookie.SecurePolicy	= CookieSecurePolicy.Always;
+						options.CorrelationCookie.IsEssential	= true;
+					} );
+			}
 
 			InitializationLog.AddLogMessage( $"{nameof(Startup)}.{nameof(ConfigureServices)}: Setup routing & MVC" );
 			services.AddRouting();

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -16,14 +17,20 @@ namespace ItemTTT.Services
 		private const string	LoginDefaultName		= "admin";	// Changeme after installation on production !!!
 		private const string	LoginDefaultPassword	= "123";
 
-		private class UserNode
+		internal class UserNode
 		{
 			public CredentialNode	Credentials		{ get; set; }
 		}
-		private class CredentialNode
+		internal class CredentialNode
 		{
 			public string	Seed		{ get; set; }
 			public string	Hash		{ get; set; }
+			/// <summary>Key:schema name</summary>
+			public Dictionary<string,OAuthNode>		OAuth		{ get; set; }	= null;
+		}
+		internal class OAuthNode
+		{
+			public string	UserClaim	{ get; set; }
 		}
 
 		public LoginController(Models.ItemTTTContext dataContext, PageHelper pageHelper)
@@ -94,9 +101,9 @@ namespace ItemTTT.Services
 				var claimsIdentity = new ClaimsIdentity( new Claim[]
 												{
 													new Claim( ClaimTypes.Name, login, ClaimValueTypes.String, issuer:"ItemTTT login" ),
-												}, Startup.AuthScheme );
+												}, Startup.CookieAuthenticationScheme );
 				var authProperties = new AuthenticationProperties{};
-				await HttpContext.SignInAsync( Startup.AuthScheme, new ClaimsPrincipal(claimsIdentity), authProperties );
+				await HttpContext.SignInAsync( Startup.CookieAuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties );
 
 				return new Utils.TTTServiceResult( PageHelper );
 
@@ -120,7 +127,7 @@ namespace ItemTTT.Services
 			}
 			else
 			{
-				await HttpContext.SignOutAsync( Startup.AuthScheme );
+				await HttpContext.SignOutAsync( Startup.CookieAuthenticationScheme );
 				return new Utils.TTTServiceResult( PageHelper );
 			}
 		}
@@ -155,13 +162,20 @@ namespace ItemTTT.Services
 			}
 		}
 
+		internal static string SanitizeLogin(string src)
+		{
+			var dst = Tree.Cwd.SanitizeName( src );
+			dst = dst.ToLower();
+			return dst;
+		}
+
 		private static async Task<bool> CheckLogin(LogHelper logHelper, IServiceProvider services, string login, string password)
 		{
 			logHelper.AddLogMessage( $"{nameof(CheckLogin)}: Sanitize" );
 			{
 				var orig = login;
-				login = Tree.Cwd.SanitizeName( login );
-				if( orig != login.ToLower() )
+				login = SanitizeLogin( login );
+				if( orig != login )
 				{
 					logHelper.AddLogMessage( $"{nameof(CheckLogin)}: Invalid chars" );
 					goto FAILED;
@@ -198,8 +212,8 @@ namespace ItemTTT.Services
 			logHelper.AddLogMessage( $"{nameof(SetPassword)}: Sanitize" );
 			{
 				var orig = login;
-				login = Tree.Cwd.SanitizeName( login );
-				if( orig != login.ToLower() )
+				login = SanitizeLogin( login );
+				if( orig != login )
 					throw new Utils.TTTException( "The login contains invalid chars" );
 			}
 

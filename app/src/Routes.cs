@@ -17,6 +17,8 @@ namespace ItemTTT
 		public const string		Home2				= "/"+LangParameter;
 		public const string		AdminHome			= "/admin";
 		public const string		Login				= "/admin/login";
+		public const string		LoginPassword		= "/admin/login";
+		public const string		LoginOAuth			= "/admin/login/oauth/{scheme}";
 		public const string		Logout				= "/admin/logout";
 		internal const string	Redirections		= "/admin/redirections";
 		internal const string	TreeBrowse			= "/admin/tree";

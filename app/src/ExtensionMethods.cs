@@ -53,6 +53,7 @@ namespace ItemTTT
 			var settings = new Newtonsoft.Json.JsonSerializerSettings();
 			settings.Formatting = indented ? Newtonsoft.Json.Formatting.Indented : Newtonsoft.Json.Formatting.None;  // Indent or not
 			settings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();  // Lower-case the first letter of the property names
+			settings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
 			return Newtonsoft.Json.JsonConvert.SerializeObject( obj, settings );
 		}
 

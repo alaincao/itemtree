@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ItemTTT
 {
-	internal class LogHelper
+	public class LogHelper
 	{
 		private struct Entry
 		{
@@ -17,7 +17,7 @@ namespace ItemTTT
 
 		internal void AddLogMessage(string message)
 		{
-			Utils.Assert( !string.IsNullOrWhiteSpace(message), this, $"Missing parameter {nameof(message)}" );
+			Utils.Assert( message != null, this, $"Missing parameter {nameof(message)}" );
 
 			Messages.Add( new Entry{ Date=DateTime.Now, Message=message } );
 			Utils.Log( this, message );

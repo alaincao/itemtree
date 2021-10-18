@@ -12,5 +12,17 @@ namespace ItemTTT
 		{
 			internal const string		ItemTTT			= "ConnectionStrings:ItemTTT";
 		}
+		internal class OAuthSchemes
+		{
+			internal bool		AllowAlLUsers;
+			internal string		AuthorizationEndpoint;
+			internal string		TokenEndpoint;
+			internal string		ClientId;
+			internal string		ClientSecret;
+			internal string[]	Scope						= null;
+			internal string		SigningCallbackPath;
+			internal string		UserInformationEndpoint;
+			internal string		UserClaimField;
+		}
 	}
 }

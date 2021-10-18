@@ -28,7 +28,6 @@ namespace ItemTTT
 			Assert( false, sender, message );
 		}
 
-		// TODO: ACA: Assertion & conditional compilation
 		public static void Log(object sender, string message)
 		{
 			if( IsDebug )

@@ -1,6 +1,8 @@
 @inherits ItemTTT.Views.BaseView
 @{
 	Init( PageHelper );
+
+	var hasPassword = (bool)ViewBag.CurrentUserHasPassword;
 }
 @section Scripts
 {
@@ -14,6 +16,9 @@
 }
 
 <div id="f32ddc64">
+
+	@if( hasPassword )
+	{
 	<div id="e25dc6e6" data-bind="with:changePassword">
 		Changer le mot de passe pour '@PageHelper.UserName'<br/>
 		<label>Mot de passe originel :			<input type="password" data-bind="value:original"/></label><br/>
@@ -21,6 +26,7 @@
 		<label>Nouveau mot de passe (encore) :	<input type="password" data-bind="value:newPasswordAgain"/></label><br/>
 		<button data-bind="click:change">Changer</button>
 	</div>
+	}
 
 @*
 	<hr/>
